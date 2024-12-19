@@ -1,0 +1,150 @@
+.homeScreen {
+    position: relative;
+    height: 100%;
+    background: url("/images/bg4.png") center no-repeat;
+    background-size: cover;
+}
+
+.homeScreenBody > h1 {
+    font-size: 3.125rem;
+    margin-bottom: 20px;
+}
+
+.homeScreenBody > h2 {
+    font-size: 2rem;
+    font-weight: 400;
+    margin-bottom: 30px;
+}
+
+.homeScreenBody > h3 {
+    font-size: 1.3rem;
+    font-weight: 400;
+}
+
+.homeScreenBody {
+    z-index: 1;
+    color: #fff;
+    padding: 20px;
+    position: absolute;
+    top: 30%;
+    left: 18%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.homeScreenGradient {
+    width: 100%;
+    z-index: 1;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4) linear-gradient(
+            to top,
+            rgba(0, 0, 0, 0.8) 0,
+            rgba(0, 0, 0, 0) 60%,
+            rgba(0, 0, 0, 0.8) 100%);
+}
+
+.homeScreenLogo {
+    position: fixed;
+    left: 0;
+    width: 200px;
+    object-fit: contain;
+    padding-left: 100px;
+    padding-top: 20px;
+}
+
+.homeScreenButton {
+    position: fixed;
+    right: 100px;
+    top: 20px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #CB1106;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.homeScreenInput > form > input {
+    padding: 10px;
+    outline-color: green;
+    height: 30px;
+    width: 35%;
+    border: none;
+    max-width: 600px;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+}
+
+.homeScreenInput {
+    margin: 20px;
+}
+
+
+.homeScreenGetStarted {
+    padding: 14px 21px;
+    font-size: 1.2rem;
+    color: white;
+    background-color: #CB1106;
+    border: none;
+    margin-left: 7px;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: "Calibri Light", serif;
+}
+
+
+/*
+.homeScreenInput > form > h1 {
+    margin-bottom: 25px;
+}
+
+.homeScreenInput > form > h2 {
+    font-size: 30px;
+    font-family: Arial, serif;
+    color: white;
+}
+
+.homeScreenInput > form > h4 {
+    margin-top: 20px;
+}
+
+.bodyGray {
+    color: rgb(128, 128, 128);
+}
+
+.homeScreenInput > form {
+    display: grid;
+    flex-direction: column;
+}
+
+.homeScreenInput > form > input {
+    outline-width: 0;
+    height: 40px;
+    margin-bottom: 14px;
+    border-radius: 5px;
+    border: 0.3px solid gainsboro;
+    padding: 5px 15px;
+    width: 400px;
+}
+
+.homeScreenInput > form > button {
+    padding: 16px 20px;
+    font-size: 1rem;
+    color: white;
+    border-radius: 5px;
+    background-color: #CB1106;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.bodyLink:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}*/
