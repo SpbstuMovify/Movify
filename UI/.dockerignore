@@ -1,0 +1,3 @@
+./node_modules
+docker_run.ps1
+.gitignore
