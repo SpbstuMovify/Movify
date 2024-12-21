@@ -1,11 +1,23 @@
-var builder = WebApplication.CreateBuilder(args);
+using AuthMicroservice;
 
-builder.Services.AddControllers();
+var builder = Host.CreateDefaultBuilder(args)
+    .ConfigureAppConfiguration((hostingContext, config) =>
+    {
+        config
+            .SetBasePath(hostingContext.HostingEnvironment.ContentRootPath)
+            .AddJsonFile("appsettings.json", true, true)
+            .AddJsonFile($"appsettings.{hostingContext.HostingEnvironment.EnvironmentName}.json", true, true)
+            .AddEnvironmentVariables();
 
-var app = builder.Build();
+        if (hostingContext.HostingEnvironment.EnvironmentName == "Development")
+        {
+            config.AddJsonFile("appsettings.Local.json", true, true);
+        }
+    })
+    .ConfigureWebHostDefaults(webBuilder =>
+    {
+        webBuilder.UseStartup<Startup>();
+    });
 
-app.UseAuthorization();
+builder.Build().Run();
 
-app.MapControllers();
-
-app.Run();
