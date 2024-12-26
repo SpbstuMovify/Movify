@@ -42,16 +42,6 @@ public record UserDto(
         )
         String email,
         @Schema(
-                description = "Номер телефона пользователя",
-                example = "89219324553"
-        )
-        String phone,
-        @Schema(
-                description = "День рождения пользователя",
-                example = "2003-04-04"
-        )
-        LocalDate birthday,
-        @Schema(
             description = "Пароль пользователя",
             example = "VIP"
         )

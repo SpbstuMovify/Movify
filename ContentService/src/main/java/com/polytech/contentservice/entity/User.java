@@ -28,8 +28,6 @@ public class User {
     private String lastName;
     private String password;
     private String email;
-    private String phone;
-    private LocalDate birthday;
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
     @Column(name = "updated_date")
