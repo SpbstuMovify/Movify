@@ -37,24 +37,20 @@ public class UserServiceImpl implements UserService {
 
     private UserDto convertToUserDto(User user) {
         return UserDto.builder()
-                .phone(user.getPhone())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
-                .birthday(user.getBirthday())
                 .login(user.getLogin())
                 .build();
     }
 
     private User convertToUserDto(UserDto user) {
         return User.builder()
-                .phone(user.phone())
                 .firstName(user.firstName())
                 .lastName(user.lastName())
                 .email(user.email())
                 .creationDate(LocalDateTime.now())
                 .updateDate(LocalDateTime.now())
-                .birthday(user.birthday())
                 .login(user.login())
                 .password(user.password())
                 .build();

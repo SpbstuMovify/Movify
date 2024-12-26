@@ -3,3 +3,5 @@ databaseChangeLog:
       file: db/changelog/001-init-movify-service-schema.sql
   - include:
       file: db/changelog/002-add-password-field-to-user.sql
+  - include:
+      file: db/changelog/003-delete-fields-from-user.sql
