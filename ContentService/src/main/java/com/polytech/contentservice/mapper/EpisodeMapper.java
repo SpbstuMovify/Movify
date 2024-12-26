@@ -4,10 +4,14 @@ import com.polytech.contentservice.dto.EpisodeDto;
 import com.polytech.contentservice.entity.Content;
 import com.polytech.contentservice.entity.Episode;
 
-import java.util.UUID;
+import org.springframework.stereotype.Component;
 
+/**
+ * Маппер для Episode.
+ */
+@Component
 public final class EpisodeMapper {
-    public static EpisodeDto convertToEpisodeDto(Episode episode) {
+    public EpisodeDto convertToEpisodeDto(Episode episode) {
         return EpisodeDto.builder()
                 .id(episode.getId())
                 .s3BucketName(episode.getS3BucketName())
@@ -19,7 +23,7 @@ public final class EpisodeMapper {
                 .build();
     }
 
-    public static Episode patchUpdate(Episode oldEpisode, EpisodeDto newDto) {
+    public Episode patchUpdate(Episode oldEpisode, EpisodeDto newDto) {
         return Episode.builder()
                 .title(newDto.title() == null ? oldEpisode.getTitle() : newDto.title())
                 .thumbnail(newDto.thumbnail()  == null ? oldEpisode.getThumbnail() : newDto.thumbnail())
@@ -31,7 +35,7 @@ public final class EpisodeMapper {
                 .build();
     }
 
-    public static Episode convertToEpisodeEntity(EpisodeDto episodeDto, Content content) {
+    public Episode convertToEpisodeEntity(EpisodeDto episodeDto, Content content) {
         return Episode.builder()
                 .s3BucketName(episodeDto.s3BucketName())
                 .episodeNumber(episodeDto.episodeNumber())
@@ -41,9 +45,5 @@ public final class EpisodeMapper {
                 .storyline(episodeDto.storyline())
                 .content(content)
                 .build();
-    }
-
-    private EpisodeMapper() {
-
     }
 }

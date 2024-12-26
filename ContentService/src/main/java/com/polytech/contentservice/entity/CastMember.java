@@ -6,6 +6,9 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * Сущность cast_member.
+ */
 @Entity
 @Table(name = "cast_member")
 @Getter

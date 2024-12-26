@@ -2,57 +2,59 @@ package com.polytech.contentservice.service;
 
 import com.polytech.contentservice.dto.UserDto;
 import com.polytech.contentservice.entity.User;
+import com.polytech.contentservice.mapper.UserMapper;
 import com.polytech.contentservice.repository.UserRepository;
-import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+/**
+ * Реализация {@link UserService}
+ */
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
+    private final UserSearchService userSearchService;
 
     @Override
-    public UserDto getUserInformation(UUID id) {
-        return convertToUserDto(userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found")));
+    public UserDto getUserById(UUID id) {
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        return userMapper.convertToUserDto(user);
     }
 
     @Override
-    public UserDto getUserInformation(String login) {
-        return convertToUserDto(userRepository.findByLogin(login).orElseThrow(() -> new RuntimeException("User not found")));
+    public UserDto getUserByLogin(String login) {
+        User user = userRepository.findByLogin(login)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        return userMapper.convertToUserDto(user);
+    }
+
+    @Override
+    public UserDto getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        return userMapper.convertToUserDto(user);
+    }
+
+    @Override
+    public UserDto getUserInformation(UserDto userDto) {
+        return userSearchService.findUser(userDto.searchType(), userDto);
     }
 
     @Override
     public void updateUserInformation(UUID userId, UserDto userDto) {
-        User user = convertToUserDto(userDto);
+        User user = userMapper.convertToUserDto(userDto);
         user.setId(userId);
         userRepository.save(user);
     }
 
     @Override
     public UserDto saveUserInformation(UserDto userDto) {
-        return convertToUserDto(userRepository.save(convertToUserDto(userDto)));
-    }
-
-    private UserDto convertToUserDto(User user) {
-        return UserDto.builder()
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .email(user.getEmail())
-                .login(user.getLogin())
-                .build();
-    }
-
-    private User convertToUserDto(UserDto user) {
-        return User.builder()
-                .firstName(user.firstName())
-                .lastName(user.lastName())
-                .email(user.email())
-                .creationDate(LocalDateTime.now())
-                .updateDate(LocalDateTime.now())
-                .login(user.login())
-                .password(user.password())
-                .build();
+        User userToSave = userMapper.convertToUserDto(userDto);
+        User user = userRepository.save(userToSave);
+        return userMapper.convertToUserDto(user);
     }
 }

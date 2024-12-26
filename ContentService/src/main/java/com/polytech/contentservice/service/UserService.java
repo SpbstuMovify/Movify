@@ -3,20 +3,37 @@ package com.polytech.contentservice.service;
 import com.polytech.contentservice.dto.UserDto;
 import java.util.UUID;
 
+/**
+ * Класс бизнес логики по управлению сущностью пользователь.
+ */
 public interface UserService {
     /**
      * Получение информации о пользователе по id пользователя
      * @param id Идентификатор пользователя
      * @return Информация о пользователе
      */
-    UserDto getUserInformation(UUID id);
+    UserDto getUserById(UUID id);
 
     /**
      * Получение информации о пользователе по логину пользователя в системе
      * @param login Логин в система
      * @return Информация о пользователе
      */
-    UserDto getUserInformation(String login);
+    UserDto getUserByLogin(String login);
+
+    /**
+     * Получение информации о пользователе по email пользователя в системе
+     * @param email Электронный адрес
+     * @return Информация о пользователе
+     */
+    UserDto getUserByEmail(String email);
+
+    /**
+     * Получение пользователя некоторой информации о пользователе в системе
+     * @param userDto данные по которым необходимо найти пользователя
+     * @return Информация о пользователе
+     */
+    UserDto getUserInformation(UserDto userDto);
 
     /**
      * Обновление информации по пользователю

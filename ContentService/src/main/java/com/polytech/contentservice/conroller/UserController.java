@@ -1,6 +1,7 @@
 package com.polytech.contentservice.conroller;
 
 import com.polytech.contentservice.dto.UserDto;
+import com.polytech.contentservice.service.AuthService;
 import com.polytech.contentservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -24,41 +25,52 @@ import org.springframework.web.bind.annotation.RestController;
 )
 public class UserController {
     private final UserService userService;
+    private final AuthService authService;
 
     @GetMapping("/{user-id}")
     @Operation(
-            summary = "Получения конкретного пользователя по ID",
-            description = "Позволяет получить пользовательскую информацию по заданному ID"
+            summary = "Получения конкретного пользователя по ИД",
+            description = "Позволяет получить пользовательскую информацию по заданному ИД"
     )
     public UserDto getUserById(
-            @Parameter(description = "Пользовательский ID, по которому будем искать информацию", example = "f7d1b2c1-cedb-4099-99d8-e4ec9302dcde")
+            @Parameter(description = "Пользовательский ИД, по которому будем искать информацию", example = "f7d1b2c1-cedb-4099-99d8-e4ec9302dcde")
             @PathVariable("user-id")
             UUID userId) {
-        return userService.getUserInformation(userId);
+        return userService.getUserById(userId);
     }
 
-    @GetMapping("/{login}")
+    @PostMapping("/info")
     @Operation(
-            summary = "Получения конкретного пользователя по login",
-            description = "Позволяет получить пользовательскую информацию по заданному логину"
+            summary = "Получения конкретного пользователя по некоторой информации",
+            description = "Позволяет получить пользовательскую информацию по некоторой информации: email/login/id"
     )
-    public UserDto getUserByLogin(
-            @Parameter(description = "Пользовательский логин, по которому будем искать информацию", example = "Greed")
-            @PathVariable("login")
-            String login) {
-        return userService.getUserInformation(login);
+    public UserDto findUser(
+            @Parameter(description = "Пользовательские данные, по которым будем искать информацию")
+            @RequestBody UserDto userDto) {
+        return userService.getUserInformation(userDto);
     }
 
-    @PostMapping
+    @PostMapping("/register")
     @Operation(
         summary = "Сохранения пользователя",
         description = "Позволяет добавить пользователя в систему"
     )
-    public UserDto createUser(@RequestBody UserDto userDto) {
-      return userService.saveUserInformation(userDto);
+    public UserDto register(@RequestBody UserDto userDto) {
+      UserDto savedUser = userService.saveUserInformation(userDto);
+      return authService.registerUser(savedUser);
     }
 
-    @PutMapping("/{user-id}")
+  @PostMapping("/login")
+  @Operation(
+      summary = "Аунтефикация пользователя",
+      description = "Позволяет войти пользователю в систему"
+  )
+  public UserDto login(@RequestBody UserDto userDto) {
+    UserDto user = userService.getUserInformation(userDto);
+    return authService.login(user);
+  }
+
+  @PutMapping("/{user-id}")
     @Operation(
             summary = "Редактирование пользовательской информации",
             description = "Позволяет изменять информацию о заданном пользователе"

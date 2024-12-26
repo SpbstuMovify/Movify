@@ -1,4 +1,4 @@
-package com.polytech.contentservice.converter;
+package com.polytech.contentservice.common.converter;
 
 import com.polytech.contentservice.common.Quality;
 import jakarta.persistence.AttributeConverter;
@@ -6,6 +6,9 @@ import jakarta.persistence.Converter;
 
 import java.util.stream.Stream;
 
+/**
+ * Конвертация жанров из бд для entity.
+ */
 @Converter
 public class QualityConverter implements AttributeConverter<Quality, String> {
     @Override
