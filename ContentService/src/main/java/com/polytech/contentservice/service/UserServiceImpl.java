@@ -1,7 +1,9 @@
 package com.polytech.contentservice.service;
 
+import com.polytech.contentservice.dto.UserDto;
 import com.polytech.contentservice.entity.User;
 import com.polytech.contentservice.repository.UserRepository;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,19 +30,19 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    @Override
+    public UserDto saveUserInformation(UserDto userDto) {
+        return convertToUserDto(userRepository.save(convertToUserDto(userDto)));
+    }
+
     private UserDto convertToUserDto(User user) {
         return UserDto.builder()
                 .phone(user.getPhone())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
-                .createdDate(user.getCreatedDate())
-                .subscription(user.getSubscriptionCode())
                 .birthday(user.getBirthday())
-                .endDate(user.getEndDate())
-                .startDate(user.getStartDate())
                 .login(user.getLogin())
-                .status(user.getStatus())
                 .build();
     }
 
@@ -50,13 +52,11 @@ public class UserServiceImpl implements UserService {
                 .firstName(user.firstName())
                 .lastName(user.lastName())
                 .email(user.email())
-                .createdDate(user.createdDate())
-                .subscriptionCode(user.subscription())
+                .creationDate(LocalDateTime.now())
+                .updateDate(LocalDateTime.now())
                 .birthday(user.birthday())
-                .endDate(user.endDate())
-                .startDate(user.startDate())
                 .login(user.login())
-                .status(user.status())
+                .password(user.password())
                 .build();
     }
 }
