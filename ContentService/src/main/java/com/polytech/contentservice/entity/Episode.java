@@ -7,6 +7,9 @@ import org.hibernate.annotations.UuidGenerator;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * Сущность episode.
+ */
 @Entity
 @Getter
 @Setter

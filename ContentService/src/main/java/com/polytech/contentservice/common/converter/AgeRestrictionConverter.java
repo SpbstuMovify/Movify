@@ -1,4 +1,4 @@
-package com.polytech.contentservice.converter;
+package com.polytech.contentservice.common.converter;
 
 import com.polytech.contentservice.common.AgeRestriction;
 import jakarta.persistence.AttributeConverter;
@@ -6,6 +6,9 @@ import jakarta.persistence.Converter;
 
 import java.util.stream.Stream;
 
+/**
+ * Конвертация возрастных ограничений из бд для entity.
+ */
 @Converter
 public class AgeRestrictionConverter implements AttributeConverter<AgeRestriction, String> {
     @Override

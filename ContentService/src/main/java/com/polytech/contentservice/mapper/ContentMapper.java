@@ -1,19 +1,24 @@
 package com.polytech.contentservice.mapper;
 
-import com.polytech.contentservice.dto.CastMemberDto;
 import com.polytech.contentservice.dto.ContentDto;
-import com.polytech.contentservice.entity.CastMember;
 import com.polytech.contentservice.entity.Content;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import org.springframework.stereotype.Component;
 
+/**
+ * Маппер для Content.
+ */
+@Component
+@RequiredArgsConstructor
 public class ContentMapper {
-    public static ContentDto convertToContentDto(Content content) {
+    private final CastMemberMapper castMemberMapper;
+
+    public ContentDto convertToContentDto(Content content) {
         return ContentDto.builder()
                 .id(content.getId())
                 .title(content.getTitle())
@@ -24,11 +29,11 @@ public class ContentMapper {
                 .description(content.getDescription())
                 .publisher(content.getPublisher())
                 .thumbnail(content.getThumbnail())
-                .castMembers(content.getCastMembers() == null ? Collections.emptySet() : convertToSetOfCastMemberDto(content.getCastMembers()))
+                .castMembers(content.getCastMembers() == null ? Collections.emptySet() : castMemberMapper.convertToSetOfCastMemberDto(content.getCastMembers()))
                 .build();
     }
 
-    public static Content convertToContentEntity(ContentDto contentDto) {
+    public Content convertToContentEntity(ContentDto contentDto) {
         return Content.builder()
                 .title(contentDto.title())
                 .ageRestriction(contentDto.ageRestriction())
@@ -43,13 +48,13 @@ public class ContentMapper {
                 .build();
     }
 
-    public static List<ContentDto> convertToListOfContentDto(Page<Content> contents) {
+    public List<ContentDto> convertToListOfContentDto(Page<Content> contents) {
         return contents.stream()
-                .map(ContentMapper::convertToContentDto)
+                .map(this::convertToContentDto)
                 .toList();
     }
 
-    public static Content patchUpdate(Content oldEpisodeDetail, ContentDto contentDto) {
+    public Content patchUpdate(Content oldEpisodeDetail, ContentDto contentDto) {
         return Content.builder()
                 .id(oldEpisodeDetail.getId())
                 .title(contentDto.title() != null ? contentDto.title() : oldEpisodeDetail.getTitle())
@@ -63,16 +68,5 @@ public class ContentMapper {
                 .updatedDate(LocalDateTime.now())
                 .creationDate(oldEpisodeDetail.getCreationDate())
                 .build();
-    }
-
-
-    private static Set<CastMemberDto> convertToSetOfCastMemberDto(Set<CastMember> contents) {
-        return contents.stream()
-                .map(CastMemberMapper::convertToCastMemberDto)
-                .collect(Collectors.toSet());
-    }
-
-    private ContentMapper() {
-
     }
 }

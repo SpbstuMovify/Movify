@@ -4,8 +4,8 @@ import com.polytech.contentservice.common.AgeRestriction;
 import com.polytech.contentservice.common.Category;
 import com.polytech.contentservice.common.Genre;
 import com.polytech.contentservice.common.Quality;
-import com.polytech.contentservice.converter.AgeRestrictionConverter;
-import com.polytech.contentservice.converter.QualityConverter;
+import com.polytech.contentservice.common.converter.AgeRestrictionConverter;
+import com.polytech.contentservice.common.converter.QualityConverter;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
@@ -14,6 +14,9 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Сущность content.
+ */
 @Entity
 @Getter
 @Setter
