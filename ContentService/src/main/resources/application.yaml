@@ -4,3 +4,20 @@ server:
 spring:
   application:
     name: ContentService
+
+  mvc:
+    static-path-pattern: /swagger*
+
+  datasource:
+    url: "jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_DATABASE}"
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+
+  liquibase:
+    change-log: db/changelog-master.yaml
+    enabled: true
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
