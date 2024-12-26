@@ -14,7 +14,7 @@ import java.util.UUID;
 @Builder
 @Getter
 @Setter
-@Table(name = "user")
+@Table(name = "`user`")
 public class User {
     @Id
     @GeneratedValue
