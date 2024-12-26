@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
       file: db/changelog/001-init-movify-service-schema.sql
+  - include:
+      file: db/changelog/002-add-password-field-to-user.sql
