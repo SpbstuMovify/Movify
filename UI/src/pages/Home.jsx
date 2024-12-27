@@ -1,9 +1,11 @@
 // src/pages/home.js
 import {React} from 'react';
 import './Home.css'
+import Navigation from '../components/Navigation';
 
 function Home() {
     return <div className="homeScreen">
+        <Navigation />
         <div className="homeScreenGradient" />
         <div className="homeScreenBody">
             <>
