@@ -1,0 +1,170 @@
+.signUpScreen {
+    background-color: white;
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: center;
+    flex-direction: column;
+    overflow: auto;
+}
+
+.signUpScreenButton {
+    position: relative;
+    right: 20px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    color: black;
+    background-color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.response-message {
+    color: green;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 15px
+}
+
+.error-message {
+    color: red;
+}
+
+.error-message-small {
+    margin-top:0%;
+    font-size: small;
+}
+
+.loading-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+.custom-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-top: 1px;
+    border: 2px solid #ccc;
+    border-radius: 2px;
+    vertical-align: middle;
+    position: relative;
+    cursor: pointer;
+}
+
+.error-checkbox {
+    transition: border-color 0.75s ease;
+    border-color: red;
+}
+
+input[type="checkbox"]:hover {
+    border-color: rgb(62, 62, 62);
+  }
+
+input[type="checkbox"]:checked {
+    background-color: rgb(255, 59, 59);
+    border-color: rgb(93, 93, 93);
+  }
+
+.terms-button {
+    border: none;
+    background-color: transparent;
+    font-family: 'Sergoe UI', sans-serif;
+    color: red;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+    text-decoration: underline;
+}
+
+.terms-window {
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    margin-top: auto;
+    margin-bottom: auto;
+    top: 0;
+    bottom: 0;
+    text-align: center;
+    width: 60%;
+    height: 70%;
+    z-index: 10;
+    border: 5px solid black;
+    background-color: white;
+    overflow-y: scroll;
+}
+
+.terms-window > .button-wrapper {
+    display: flex;
+    justify-content: end;
+}
+
+.button-wrapper > button {
+    background-color: transparent;
+    border: none;
+    color: black;
+    font-size: 30px;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-right: 10px;
+    z-index: 11;
+}
+
+.button-wrapper > button:hover {
+    color: red;
+    cursor: pointer;
+}
+
+#terms-header {
+    position: absolute;
+    margin-left: auto;
+    left:0;
+    right:0;
+    margin-right: auto;
+}
+
+.input-container > div {
+    margin-bottom: 14px;
+}
+
+.input-container > div > input {
+    outline-width: 0;
+    height: 40px;
+    border-radius: 5px;
+    border: 0.3px solid gainsboro;
+    padding: 5px 15px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.input-container > div > select {
+    outline-width: 0;
+    height: 40px;
+    margin-bottom: 14px;
+    border-radius: 5px;
+    border: 0.3px solid gainsboro;
+    padding: 5px 15px;
+    width: 90%;
+}
+.input-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-flow: row;
+    column-gap: 15px;
+    column-count: 2;
+    height: 20%;
+    width: 70%;
+    box-sizing: border-box;
+}
+
+#preference-list-wrapper {
+    margin-bottom: 15px;
+}
