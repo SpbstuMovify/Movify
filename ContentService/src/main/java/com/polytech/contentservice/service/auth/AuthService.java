@@ -1,6 +1,8 @@
-package com.polytech.contentservice.service;
+package com.polytech.contentservice.service.auth;
 
-import com.polytech.contentservice.dto.UserDto;
+import com.polytech.contentservice.dto.user.detailed.UserDto;
+import com.polytech.contentservice.dto.user.login.UserLoginResponseDto;
+import com.polytech.contentservice.dto.user.register.UserRegistrationResponseDto;
 
 /**
  * Описание для бизнес слоя по аунтефикации пользователя.
@@ -12,7 +14,7 @@ public interface AuthService {
    * @param userDto данные для регистрации
    * @return данные пользователя + токен
    */
-  UserDto registerUser(UserDto userDto);
+  UserRegistrationResponseDto registerUser(UserDto userDto);
 
   /**
    * Метод для получения токена.
@@ -20,7 +22,7 @@ public interface AuthService {
    * @param userDto данные пользователя для аунтефикации
    * @return данные пользователя + токен
    */
-  UserDto login(UserDto userDto);
+  UserLoginResponseDto login(UserDto userDto);
 
   /**
    * Метод по валидации токена.

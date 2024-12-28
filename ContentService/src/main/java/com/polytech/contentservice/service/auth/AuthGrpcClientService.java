@@ -1,9 +1,9 @@
-package com.polytech.contentservice.service;
+package com.polytech.contentservice.service.auth;
 
 import com.polytech.contentservice.dto.LoginUserDto;
 import com.polytech.contentservice.dto.RegisterUserDto;
 import com.polytech.contentservice.dto.TokenValidationDto;
-import com.polytech.contentservice.dto.UserDto;
+import com.polytech.contentservice.dto.user.detailed.UserDto;
 
 /**
  * Описание для взаимодействия с сервисом авторизации.

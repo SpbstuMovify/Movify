@@ -1,11 +1,18 @@
 package com.polytech.contentservice.conroller;
 
-import com.polytech.contentservice.dto.UserDto;
-import com.polytech.contentservice.service.AuthService;
-import com.polytech.contentservice.service.UserService;
+import com.polytech.contentservice.dto.user.login.UserLoginResponseDto;
+import com.polytech.contentservice.dto.user.register.UserRegistrationResponseDto;
+import com.polytech.contentservice.dto.user.search.UserSearchDto;
+import com.polytech.contentservice.dto.user.login.UserLoginDto;
+import com.polytech.contentservice.dto.user.detailed.UserDto;
+import com.polytech.contentservice.dto.user.register.UserRegisterDto;
+import com.polytech.contentservice.mapper.UserMapper;
+import com.polytech.contentservice.service.auth.AuthService;
+import com.polytech.contentservice.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final UserService userService;
     private final AuthService authService;
+    private final UserMapper userMapper;
 
     @GetMapping("/{user-id}")
     @Operation(
@@ -46,7 +54,7 @@ public class UserController {
     )
     public UserDto findUser(
             @Parameter(description = "Пользовательские данные, по которым будем искать информацию")
-            @RequestBody UserDto userDto) {
+            @Valid @RequestBody UserSearchDto userDto) {
         return userService.getUserInformation(userDto);
     }
 
@@ -55,7 +63,7 @@ public class UserController {
         summary = "Сохранения пользователя",
         description = "Позволяет добавить пользователя в систему"
     )
-    public UserDto register(@RequestBody UserDto userDto) {
+    public UserRegistrationResponseDto register(@Valid @RequestBody UserRegisterDto userDto) {
       UserDto savedUser = userService.saveUserInformation(userDto);
       return authService.registerUser(savedUser);
     }
@@ -65,8 +73,8 @@ public class UserController {
       summary = "Аунтефикация пользователя",
       description = "Позволяет войти пользователю в систему"
   )
-  public UserDto login(@RequestBody UserDto userDto) {
-    UserDto user = userService.getUserInformation(userDto);
+  public UserLoginResponseDto login(@Valid @RequestBody UserLoginDto userDto) {
+    UserDto user = userService.getUserInformation(userMapper.toFindUserDto(userDto));
     return authService.login(user);
   }
 

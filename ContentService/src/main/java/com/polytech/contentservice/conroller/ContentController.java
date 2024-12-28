@@ -1,7 +1,7 @@
 package com.polytech.contentservice.conroller;
 
-import com.polytech.contentservice.dto.ContentDto;
-import com.polytech.contentservice.service.ContentService;
+import com.polytech.contentservice.dto.content.ContentDto;
+import com.polytech.contentservice.service.content.ContentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
