@@ -1,6 +1,6 @@
 package com.polytech.contentservice.mapper;
 
-import com.polytech.contentservice.dto.ContentDto;
+import com.polytech.contentservice.dto.content.ContentDto;
 import com.polytech.contentservice.entity.Content;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

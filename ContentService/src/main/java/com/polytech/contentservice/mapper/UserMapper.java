@@ -1,12 +1,45 @@
 package com.polytech.contentservice.mapper;
 
-import com.polytech.contentservice.dto.UserDto;
+import com.polytech.contentservice.dto.user.login.UserLoginDto;
+import com.polytech.contentservice.dto.user.search.UserSearchDto;
+import com.polytech.contentservice.dto.user.detailed.UserDto;
+import com.polytech.contentservice.dto.user.register.UserRegisterDto;
 import com.polytech.contentservice.entity.User;
 import java.time.LocalDateTime;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserMapper {
+  public UserSearchDto toFindUserDto(UserLoginDto userDto) {
+    return UserSearchDto.builder()
+        .searchType(userDto.searchType())
+        .email(userDto.email())
+        .login(userDto.login())
+        .build();
+  }
+
+  public UserSearchDto toFindUserDto(UserDto userDto) {
+    return UserSearchDto.builder()
+        .searchType(userDto.searchType())
+        .email(userDto.email())
+        .login(userDto.login())
+        .userId(userDto.userId())
+        .build();
+  }
+
+  public User convertToUserDto(UserRegisterDto user) {
+    return User.builder()
+        .firstName(user.firstName())
+        .lastName(user.lastName())
+        .email(user.email())
+        .creationDate(LocalDateTime.now())
+        .updateDate(LocalDateTime.now())
+        .login(user.login())
+        .password(user.password())
+        .role(user.role())
+        .build();
+  }
+
   public UserDto convertToUserDto(User user) {
     return UserDto.builder()
         .userId(user.getId())
@@ -24,7 +57,6 @@ public class UserMapper {
         .firstName(user.firstName())
         .lastName(user.lastName())
         .email(user.email())
-        .creationDate(LocalDateTime.now())
         .updateDate(LocalDateTime.now())
         .login(user.login())
         .password(user.password())

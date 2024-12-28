@@ -1,6 +1,8 @@
-package com.polytech.contentservice.service;
+package com.polytech.contentservice.service.user;
 
-import com.polytech.contentservice.dto.UserDto;
+import com.polytech.contentservice.dto.user.search.UserSearchDto;
+import com.polytech.contentservice.dto.user.detailed.UserDto;
+import com.polytech.contentservice.dto.user.register.UserRegisterDto;
 import java.util.UUID;
 
 /**
@@ -33,7 +35,7 @@ public interface UserService {
      * @param userDto данные по которым необходимо найти пользователя
      * @return Информация о пользователе
      */
-    UserDto getUserInformation(UserDto userDto);
+    UserDto getUserInformation(UserSearchDto userDto);
 
     /**
      * Обновление информации по пользователю
@@ -48,5 +50,5 @@ public interface UserService {
      * @param userDto данные пользователя для сохранения
      * @return сохранённый пользователь
      */
-    UserDto saveUserInformation(UserDto userDto);
+    UserDto saveUserInformation(UserRegisterDto userDto);
 }
