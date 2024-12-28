@@ -2,20 +2,23 @@
 import React, { useState } from 'react';
 import './Register.css'
 import {Link, useNavigate} from "react-router-dom";
-import { useForm, Controller } from "react-hook-form"
+import {register as registerUser} from "../services/api";
+import { useForm, Controller } from "react-hook-form";
 import DropdownMultiSelect from '../components/DropdownMultiSelect';
 
 const Register = () => {
     const navigate = useNavigate();
-    const { register, control, handleSubmit, formState: {errors, isSubmitting, isSubmitSuccessful}, getValues, setError } = useForm();
+    const { register, control, handleSubmit, formState: {errors, isSubmitting, isSubmitSuccessful}, 
+    getValues, setError, clearErrors } = useForm();
 
     const [openedTerms, setOpenedTerms] = useState(false);
     const [terms, setTerms] = useState('');
     
     const handleRegister = async (data) => {
         try {
-            //await registerUser(data.email, data.password, data.login, data.firstName, data.lastName);
-            // add message and sleep
+            const userData = await registerUser(data.email, data.password, data.login, data.firstName, data.lastName);
+            localStorage.setItem('userData', userData);
+            setTimeout(() => {navigate('/films')}, 1000);
         } catch (error) {
             switch (error.response?.status) {
                 case 400:
@@ -125,6 +128,15 @@ const Register = () => {
                                 if (!/[A-Z]/.test(value)) {
                                     return "Password should include at least one uppercase latin letter";
                                 }
+                                const values = getValues();
+                                if (value !== values.repeatedPassword) {
+                                    setError("repeatedPassword", {
+                                        message: "Passwords do not match"
+                                    });
+                                }
+                                else {
+                                    clearErrors("repeatedPassword");
+                                }
                                 return true;
                             },
                             minLength: {
@@ -193,8 +205,7 @@ const Register = () => {
                 {isSubmitting ? 
                     <p className='loading-wrapper'><img src="/images/loading.gif"></img></p> 
                     : isSubmitSuccessful ? 
-                        <p className='response-message'>Registration successful! 
-                        <span className="bodyLink" onClick={() => navigate("/login")}>Please log in!</span></p> 
+                        <p className='response-message'>Registration successful!</p> 
                         : <p className='response-message error-message'>{errors.root && (errors.root.message)}</p>}
                 <h4 style={{marginTop: "0"}}>
                     <span className="bodyGray">Already have an account? </span>
