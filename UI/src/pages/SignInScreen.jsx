@@ -5,17 +5,16 @@ import {login as loginUser} from "../services/api"
 import {Link, useNavigate} from "react-router-dom";
 
 function Login() {
-    const { register, handleSubmit, formState: {errors, isSubmitting}, setError } = useForm();
+    const { register, handleSubmit, formState: {errors, isSubmitting, isSubmitSuccessful}, setError } = useForm();
     const navigate = useNavigate();
-    //const {login} = useContext(AuthContext);
 
     const handleLogin = async (data) => {
         try {
             const ipResponse = await fetch('https://api.ipify.org?format=json');
             const ipData = await ipResponse.json();
             const userData = await loginUser(data.login, data.password, ipData.ip);
-            localStorage.setItem('userData', userData);
-            setTimeout(() => {navigate('/films')}, 1000);
+            localStorage.setItem('userData', JSON.stringify(userData));
+            navigate('/films');
             } catch (error) {
                 switch (error.response?.status) {
                     case 404:
@@ -68,6 +67,8 @@ function Login() {
 
                     <button type="submit" disabled={isSubmitting}>Sign in</button>
                     {isSubmitting ? <p className='loading-wrapper'><img src="/images/loading.gif"></img></p> 
+                        : isSubmitSuccessful ? 
+                        <p className='response-message'>Login successful!</p> 
                         : <p className='error-message'>{errors.root && (errors.root.message)}</p>}
                     <h4>
                         <span className="bodyGray">New to Movify? </span>

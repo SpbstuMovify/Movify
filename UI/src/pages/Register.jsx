@@ -17,8 +17,8 @@ const Register = () => {
     const handleRegister = async (data) => {
         try {
             const userData = await registerUser(data.email, data.password, data.login, data.firstName, data.lastName);
-            localStorage.setItem('userData', userData);
-            setTimeout(() => {navigate('/films')}, 1000);
+            localStorage.setItem('userData', JSON.stringify(userData));
+            navigate('/films');
         } catch (error) {
             switch (error.response?.status) {
                 case 400:

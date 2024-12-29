@@ -7,6 +7,7 @@ COPY . .
 
 RUN npm install
 RUN npm install react-hook-form
+RUN npm install jwt-decode
 
 EXPOSE 5173
 
