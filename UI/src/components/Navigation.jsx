@@ -6,7 +6,7 @@ import './Navigation.css'
 const Navigation = () => {
     return <div className="nav nav-black">
         <div className="nav-contents">
-            <Link to="/">
+            <Link className='nav-logo-link' to="/">
                 <img
                     className="nav-logo"
                     src="../images/movify_logo_red.png"

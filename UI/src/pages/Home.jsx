@@ -8,7 +8,7 @@ function Home() {
         <Navigation />
         <div className="homeScreenGradient" />
         <div className="homeScreenBody">
-            <>
+            <div className="home-label-container">
                 <h1>Unlimited movies, TV shows, and more</h1>
                 <h2>Watch anywhere. Cancel at any time.</h2>
                 <h3>Ready to watch?</h3>
@@ -17,7 +17,7 @@ function Home() {
                         Get Started
                     </button>
                 </div>
-            </>
+            </div>
         </div>
     </div>;
 }
