@@ -13,13 +13,18 @@ public class Startup(IConfiguration configuration)
     {
         services.AddGrpc();
         services.AddJwt(Configuration);
-        services.AddGrpcClient<Content.ContentClient>(o =>
+        services.AddGrpcClient<ContentService.ContentServiceClient>(o =>
         {
-            o.Address = new Uri("https://localhost:5001");
+            var address = Configuration["GrpcClientSettings:ContentServiceAddress"];
+            if (string.IsNullOrEmpty(address))
+            {
+                throw new InvalidOperationException("ContentServiceAddress is not configured.");
+            }
+            o.Address = new Uri(address);
         });
         services.AddTransient<IEncryptor, Encryptor>();
         services.AddTransient<IContentGrpcClient, ContentGrpcClient>();
-        services.AddTransient<IAuthService, AuthService>();
+        services.AddTransient<IAuthService, AuthMicroservice.Services.AuthService>();
 
         services.AddLogging(loggingBuilder =>
         {

@@ -5,17 +5,17 @@ option csharp_namespace = "AuthMicroservice";
  
 package auth;
 
-service Auth {
-    rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse);
+service AuthService {
+    rpc ValidateToken(ValidationTokenRequest) returns (ValidationTokenResponse);
     rpc RegisterUser(RegisterUserRequest) returns (RegisterUserResponse);
     rpc LoginUser(LoginUserRequest) returns (LoginUserResponse);
 }
 
-message ValidateTokenRequest {
+message ValidationTokenRequest {
     string token = 1;
 }
 
-message ValidateTokenResponse {
+message ValidationTokenResponse {
     string email = 1;
     string role = 2;
 }

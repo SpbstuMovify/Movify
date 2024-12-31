@@ -4,13 +4,13 @@ using AuthMicroservice.Services;
 
 namespace AuthMicroservice.Grpc;
 
-public class ContentGrpcClient(ILogger<ContentGrpcClient> logger, Content.ContentClient contentClient) : IContentGrpcClient
+public class ContentGrpcClient(ILogger<ContentGrpcClient> logger, ContentService.ContentServiceClient contentClient) : IContentGrpcClient
 {
     public async Task<string> GetUserRoleAsync(string email)
     {
         try
         {
-            var response = await contentClient.GetUserRoleAsync(new GetUserRoleRequest { Email = email });
+            var response = await contentClient.GetUserRoleAsync(new UserRoleRequest { Email = email });
             return response.Role;
         }
         catch (RpcException e)

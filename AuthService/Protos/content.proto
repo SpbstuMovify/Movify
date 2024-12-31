@@ -5,14 +5,14 @@ option csharp_namespace = "AuthMicroservice";
  
 package content;
 
-service Content {
-  rpc GetUserRole(GetUserRoleRequest) returns (GetUserRoleResponse);
+service ContentService {
+  rpc GetUserRole(UserRoleRequest) returns (UserRoleResponse);
 }
 
-message GetUserRoleRequest {
+message UserRoleRequest {
   string email = 1;
 }
 
-message GetUserRoleResponse {
+message UserRoleResponse {
   string role = 1;
 }
