@@ -11,14 +11,14 @@ public class JwtBuilder(IOptions<JwtOptions> options) : IJwtBuilder
 {
     private readonly JwtOptions _options = options.Value;
 
-    public string GetToken(string email, bool isAdmin)
+    public string GetToken(UserClaimsData userClaimsData)
     {
         var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Secret));
         var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
         var claims = new[]
         {
-            new Claim("userEmail", email),
-            new Claim("userIsAdmin", isAdmin.ToString())
+            new Claim("userEmail", userClaimsData.Email),
+            new Claim("userRole", userClaimsData.Role)
         };
         var expirationDate = DateTime.Now.AddMinutes(_options.ExpiryMinutes);
         var jwt = new JwtSecurityToken(claims: claims, signingCredentials: signingCredentials, expires: expirationDate);
@@ -27,33 +27,33 @@ public class JwtBuilder(IOptions<JwtOptions> options) : IJwtBuilder
         return encodedJwt;
     }
 
-    public (string, bool) ValidateToken(string token)
+    public UserClaimsData ValidateToken(string token)
     {
         var principal = GetPrincipal(token);
         if (principal == null)
         {
-            return (string.Empty, false);
+            throw new Exception("Principal missing");
         }
 
         ClaimsIdentity identity;
 
         if (principal.Identity == null)
         {
-            return (string.Empty, false);
+            throw new Exception("Identity missing");
         }
 
         identity = (ClaimsIdentity)principal.Identity;
 
         var userEmailClaim = identity.FindFirst("userEmail");
-        var userIsAdminClaim = identity.FindFirst("userIsAdmin");
-        if (userEmailClaim == null || userIsAdminClaim == null)
+        var userRoleClaim = identity.FindFirst("userRole");
+        if (userEmailClaim == null || userRoleClaim == null)
         {
-            return (string.Empty, false);
+            throw new Exception("Claims missing");
         }
-        
+
         var userEmail = userEmailClaim.Value;
-        var userIsAdmin = bool.Parse(userIsAdminClaim.Value);
-        return (userEmail, userIsAdmin);
+        var userIsAdmin = userRoleClaim.Value;
+        return new UserClaimsData{Email = userEmail, Role = userIsAdmin};
     }
 
     private ClaimsPrincipal? GetPrincipal(string token)
