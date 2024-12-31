@@ -5,7 +5,7 @@ using AuthMicroservice.Dtos;
 
 namespace AuthMicroservice.Grpc;
 
-public class AuthGrpcServer(ILogger<AuthGrpcServer> logger, IAuthService authService) : Auth.AuthBase
+public class AuthGrpcServer(ILogger<AuthGrpcServer> logger, IAuthService authService) : AuthService.AuthServiceBase
 {
     public override Task<LoginUserResponse> LoginUser(LoginUserRequest request, ServerCallContext context)
     {
@@ -55,7 +55,7 @@ public class AuthGrpcServer(ILogger<AuthGrpcServer> logger, IAuthService authSer
         }
     }
 
-    public override async Task<ValidateTokenResponse> ValidateToken(ValidateTokenRequest request, ServerCallContext context)
+    public override async Task<ValidationTokenResponse> ValidateToken(ValidationTokenRequest request, ServerCallContext context)
     {
         logger.LogInformation("ValidateToken request received");
 
@@ -65,7 +65,7 @@ public class AuthGrpcServer(ILogger<AuthGrpcServer> logger, IAuthService authSer
                 Token = request.Token
             });
 
-            return new ValidateTokenResponse{
+            return new ValidationTokenResponse{
                 Email = response.Email,
                 Role = response.Role
             };
