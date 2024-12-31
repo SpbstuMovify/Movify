@@ -1,3 +1,4 @@
+using AuthMicroservice.Grpc;
 using AuthMicroservice.Services;
 using AuthMicroservice.Utils;
 using Microsoft.Extensions.Logging;
@@ -10,9 +11,14 @@ public class Startup(IConfiguration configuration)
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllers();
+        services.AddGrpc();
         services.AddJwt(Configuration);
+        services.AddGrpcClient<Content.ContentClient>(o =>
+        {
+            o.Address = new Uri("https://localhost:5001");
+        });
         services.AddTransient<IEncryptor, Encryptor>();
+        services.AddTransient<IContentGrpcClient, ContentGrpcClient>();
         services.AddTransient<IAuthService, AuthService>();
 
         services.AddLogging(loggingBuilder =>
@@ -40,12 +46,9 @@ public class Startup(IConfiguration configuration)
         app.UseRouting();
         logger.LogInformation("Routing configured");
 
-        app.UseAuthorization();
-        logger.LogInformation("Authorization middleware configured");
-
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapControllers();
+            endpoints.MapGrpcService<AuthGrpcServer>();
             logger.LogInformation("Endpoints mapped");
         });
     }

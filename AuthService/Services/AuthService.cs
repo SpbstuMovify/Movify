@@ -15,6 +15,7 @@ public class AuthService(
 {
     public LoginUserResponseDto LoginUser(LoginUserRequestDto loginUserRequest)
     {
+        logger.LogDebug($"{loginUserRequest.PwdHash} and {encryptor.GetHash(loginUserRequest.Password, loginUserRequest.Salt)}");
         if (loginUserRequest.PwdHash != encryptor.GetHash(loginUserRequest.Password, loginUserRequest.Salt))
         {
             throw new Exception("Could not authenticate user");
