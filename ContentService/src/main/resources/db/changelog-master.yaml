@@ -7,3 +7,5 @@ databaseChangeLog:
       file: db/changelog/003-delete-fields-from-user.sql
   - include:
       file: db/changelog/004-add-role-field-to-user.sql
+  - include:
+      file: db/changelog/005-add-auth_attempt_table.sql

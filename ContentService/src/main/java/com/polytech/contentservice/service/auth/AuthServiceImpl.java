@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
   private final AuthGrpcClientService authGrpcClientService;
+  private final AuthAttemptsService authAttemptsService;
 
   @Override
   public UserRegistrationResponseDto registerUser(UserDto userDto) {
@@ -28,7 +29,7 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
-  public UserLoginResponseDto login(UserDto userDto) {
+  public UserLoginResponseDto login(UserDto userDto, String ip) {
     LoginUserDto loginUserDto = authGrpcClientService.sendLoginRequest(userDto);
     return UserLoginResponseDto.builder()
         .token(loginUserDto.getToken())

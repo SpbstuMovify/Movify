@@ -11,9 +11,9 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class ValidUserLoginParametersValidator implements
-    ConstraintValidator<ValidUserSearchParameters, UserLoginDto> {
+    ConstraintValidator<ValidUserLoginParameters, UserLoginDto> {
   @Override
-  public void initialize(ValidUserSearchParameters constraintAnnotation) {
+  public void initialize(ValidUserLoginParameters constraintAnnotation) {
     ConstraintValidator.super.initialize(constraintAnnotation);
   }
 
