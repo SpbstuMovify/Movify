@@ -1,6 +1,7 @@
 package com.polytech.contentservice.config;
 
 import com.polytech.contentservice.exception.BadRequestException;
+import com.polytech.contentservice.exception.LoginException;
 import com.polytech.contentservice.exception.NotFoundException;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,13 @@ public class GlobalExceptionHandler
     {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(ErrorResponse.builder(ex, HttpStatus.NOT_FOUND, ex.getMessage()).build());
+    }
+
+    @ExceptionHandler(LoginException.class)
+    public ResponseEntity<ErrorResponse> handleNotFoundException(LoginException ex)
+    {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(ErrorResponse.builder(ex, HttpStatus.UNAUTHORIZED, ex.getMessage()).build());
     }
 
     @ExceptionHandler(ValidationException.class)

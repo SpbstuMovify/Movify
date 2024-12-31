@@ -20,9 +20,10 @@ public interface AuthService {
    * Метод для получения токена.
    *
    * @param userDto данные пользователя для аунтефикации
+   * @param ip IP адрес пользователя
    * @return данные пользователя + токен
    */
-  UserLoginResponseDto login(UserDto userDto);
+  UserLoginResponseDto login(UserDto userDto, String ip);
 
   /**
    * Метод по валидации токена.

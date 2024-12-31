@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -73,9 +74,10 @@ public class UserController {
       summary = "Аунтефикация пользователя",
       description = "Позволяет войти пользователю в систему"
   )
-  public UserLoginResponseDto login(@Valid @RequestBody UserLoginDto userDto) {
+  public UserLoginResponseDto login(@Valid @RequestBody UserLoginDto userDto,
+                                    @RequestHeader String ip) {
     UserDto user = userService.getUserInformation(userMapper.toFindUserDto(userDto));
-    return authService.login(user);
+    return authService.login(user, ip);
   }
 
   @PutMapping("/{user-id}")

@@ -25,3 +25,7 @@ spring:
 springdoc:
   api-docs:
     path: /api-docs
+
+auth:
+  ban-time-in-seconds: 5
+  default-attempts-amount: 3
