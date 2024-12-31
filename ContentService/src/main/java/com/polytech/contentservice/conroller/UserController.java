@@ -28,46 +28,45 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/v1/users")
 @Tag(
-        name = "Контролер пользовательской информации",
-        description = "Позволяет манипулировать информацией о пользователях"
+    name = "Контролер пользовательской информации",
+    description = "Позволяет манипулировать информацией о пользователях"
 )
 public class UserController {
-    private final UserService userService;
-    private final AuthService authService;
-    private final UserMapper userMapper;
+  private final UserService userService;
+  private final AuthService authService;
+  private final UserMapper userMapper;
 
-    @GetMapping("/{user-id}")
-    @Operation(
-            summary = "Получения конкретного пользователя по ИД",
-            description = "Позволяет получить пользовательскую информацию по заданному ИД"
-    )
-    public UserDto getUserById(
-            @Parameter(description = "Пользовательский ИД, по которому будем искать информацию", example = "f7d1b2c1-cedb-4099-99d8-e4ec9302dcde")
-            @PathVariable("user-id")
-            UUID userId) {
-        return userService.getUserById(userId);
-    }
+  @GetMapping("/{user-id}")
+  @Operation(
+      summary = "Получения конкретного пользователя по ИД",
+      description = "Позволяет получить пользовательскую информацию по заданному ИД"
+  )
+  public UserDto getUserById(
+      @Parameter(description = "Пользовательский ИД, по которому будем искать информацию", example = "f7d1b2c1-cedb-4099-99d8-e4ec9302dcde")
+      @PathVariable("user-id")
+      UUID userId) {
+    return userService.getUserById(userId);
+  }
 
-    @PostMapping("/info")
-    @Operation(
-            summary = "Получения конкретного пользователя по некоторой информации",
-            description = "Позволяет получить пользовательскую информацию по некоторой информации: email/login/id"
-    )
-    public UserDto findUser(
-            @Parameter(description = "Пользовательские данные, по которым будем искать информацию")
-            @Valid @RequestBody UserSearchDto userDto) {
-        return userService.getUserInformation(userDto);
-    }
+  @PostMapping("/info")
+  @Operation(
+      summary = "Получения конкретного пользователя по некоторой информации",
+      description = "Позволяет получить пользовательскую информацию по некоторой информации: email/login/id"
+  )
+  public UserDto findUser(
+      @Parameter(description = "Пользовательские данные, по которым будем искать информацию")
+      @Valid @RequestBody UserSearchDto userDto) {
+    return userService.getUserInformation(userDto);
+  }
 
-    @PostMapping("/register")
-    @Operation(
-        summary = "Сохранения пользователя",
-        description = "Позволяет добавить пользователя в систему"
-    )
-    public UserRegistrationResponseDto register(@Valid @RequestBody UserRegisterDto userDto) {
-      UserDto savedUser = userService.saveUserInformation(userDto);
-      return authService.registerUser(savedUser);
-    }
+  @PostMapping("/register")
+  @Operation(
+      summary = "Сохранения пользователя",
+      description = "Позволяет добавить пользователя в систему"
+  )
+  public UserRegistrationResponseDto register(@Valid @RequestBody UserRegisterDto userDto) {
+    return authService.registerUser(userDto);
+  }
 
   @PostMapping("/login")
   @Operation(
@@ -77,19 +76,34 @@ public class UserController {
   public UserLoginResponseDto login(@Valid @RequestBody UserLoginDto userDto,
                                     @RequestHeader String ip) {
     UserDto user = userService.getUserInformation(userMapper.toFindUserDto(userDto));
-    return authService.login(user, ip);
+    UserDto newUser = createUserDtoWithPassword(userDto, user);
+    return authService.login(newUser, ip);
+  }
+
+  private UserDto createUserDtoWithPassword(UserLoginDto userDto, UserDto user) {
+    return UserDto.builder()
+        .userId(user.userId())
+        .firstName(user.firstName())
+        .lastName(user.lastName())
+        .email(user.email())
+        .login(user.login())
+        .role(user.role())
+        .passwordHash(user.passwordHash())
+        .passwordSalt(user.passwordSalt())
+        .password(userDto.password())
+        .build();
   }
 
   @PutMapping("/{user-id}")
-    @Operation(
-            summary = "Редактирование пользовательской информации",
-            description = "Позволяет изменять информацию о заданном пользователе"
-    )
-    public void updateUserInfo(
-            @Parameter(description = "Пользовательский ID для обновления информации", example = "f7d1b2c1-cedb-4099-99d8-e4ec9302dcde")
-            @PathVariable("user-id") UUID userId,
-            @Parameter(description = "Сущность для обновления пользовательской информации, которая передаётся в теле запроса")
-            @RequestBody UserDto userDto) {
-        userService.updateUserInformation(userId, userDto);
-    }
+  @Operation(
+      summary = "Редактирование пользовательской информации",
+      description = "Позволяет изменять информацию о заданном пользователе"
+  )
+  public void updateUserInfo(
+      @Parameter(description = "Пользовательский ID для обновления информации", example = "f7d1b2c1-cedb-4099-99d8-e4ec9302dcde")
+      @PathVariable("user-id") UUID userId,
+      @Parameter(description = "Сущность для обновления пользовательской информации, которая передаётся в теле запроса")
+      @RequestBody UserDto userDto) {
+    userService.updateUserInformation(userId, userDto);
+  }
 }

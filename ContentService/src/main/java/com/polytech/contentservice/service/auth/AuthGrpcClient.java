@@ -1,20 +1,24 @@
 package com.polytech.contentservice.service.auth;
 
-import com.polytech.contentservice.dto.LoginUserDto;
-import com.polytech.contentservice.dto.RegisterUserDto;
-import com.polytech.contentservice.dto.TokenValidationDto;
+import auth.LoginUserResponse;
+import auth.RegisterUserResponse;
+import auth.ValidationTokenResponse;
 import com.polytech.contentservice.dto.user.detailed.UserDto;
+import com.polytech.contentservice.dto.user.register.UserRegisterDto;
+import java.util.Optional;
 
 /**
  * Описание для взаимодействия с сервисом авторизации.
  */
-public interface AuthGrpcClientService {
+public interface AuthGrpcClient {
   /**
    * Метод по отправке запроса для аунтефикации.
+   *
    * @param userDto - информация о пользователе
+   * @param ip      - IP адрес
    * @return токен для дальнейшей работы в сервисе
    */
-   LoginUserDto sendLoginRequest(UserDto userDto);
+  LoginUserResponse sendLoginRequest(UserDto userDto, String ip);
 
   /**
    * Метод по отправки запроса для регистрации пользователя в сервисе.
@@ -22,12 +26,13 @@ public interface AuthGrpcClientService {
    * @param userDto пользовательская информация
    * @return зашифрованная информация
    */
-   RegisterUserDto sendRegisterRequest(UserDto userDto);
+  RegisterUserResponse sendRegisterRequest(UserRegisterDto userDto);
 
   /**
    * Метод по отправке запроса для валидации токена.
+   *
    * @param userDto токен для валидации
    * @return валиден ли токен
    */
-  TokenValidationDto sendTokenValidationRequest(UserDto userDto);
+  ValidationTokenResponse sendTokenValidationRequest(UserDto userDto);
 }

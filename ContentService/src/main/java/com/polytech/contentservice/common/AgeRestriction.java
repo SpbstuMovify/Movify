@@ -9,10 +9,10 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum AgeRestriction {
-    SIX_PLUS("6+"),
-    TWELVE_PLUS("12+"),
-    SIXTEEN_PLUS("16+"),
-    EIGHTEEN_PLUS("18+");
+  SIX_PLUS("6+"),
+  TWELVE_PLUS("12+"),
+  SIXTEEN_PLUS("16+"),
+  EIGHTEEN_PLUS("18+");
 
-    private final String restriction;
+  private final String restriction;
 }

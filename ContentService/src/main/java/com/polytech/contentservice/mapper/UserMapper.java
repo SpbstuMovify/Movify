@@ -35,7 +35,8 @@ public class UserMapper {
         .creationDate(LocalDateTime.now())
         .updateDate(LocalDateTime.now())
         .login(user.login())
-        .password(user.password())
+        .passwordHash(user.passwordHash())
+        .passwordSalt(user.passwordSalt())
         .role(user.role())
         .build();
   }
@@ -48,7 +49,8 @@ public class UserMapper {
         .email(user.getEmail())
         .login(user.getLogin())
         .role(user.getRole())
-        .token("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
+        .passwordHash(user.getPasswordHash())
+        .passwordSalt(user.getPasswordSalt())
         .build();
   }
 
@@ -59,7 +61,8 @@ public class UserMapper {
         .email(user.email())
         .updateDate(LocalDateTime.now())
         .login(user.login())
-        .password(user.password())
+        .passwordSalt(user.passwordSalt())
+        .passwordHash(user.passwordHash())
         .role(user.role())
         .build();
   }

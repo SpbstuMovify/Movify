@@ -29,22 +29,25 @@ import java.util.UUID;
 @Setter
 @Table(name = "`user`")
 public class User {
-    @Id
-    @GeneratedValue
-    @UuidGenerator
-    @Column(name = "user_id")
-    private UUID id;
-    private String login;
-    @Column(name = "first_name")
-    private String firstName;
-    @Column(name = "last_name")
-    private String lastName;
-    private String password;
-    @Enumerated(EnumType.STRING)
-    private Role role;
-    private String email;
-    @Column(name = "creation_date")
-    private LocalDateTime creationDate;
-    @Column(name = "updated_date")
-    private LocalDateTime updateDate;
+  @Id
+  @GeneratedValue
+  @UuidGenerator
+  @Column(name = "user_id")
+  private UUID id;
+  private String login;
+  @Column(name = "first_name")
+  private String firstName;
+  @Column(name = "last_name")
+  private String lastName;
+  @Column(name = "password_hash")
+  private String passwordHash;
+  @Column(name = "password_salt")
+  private String passwordSalt;
+  @Enumerated(EnumType.STRING)
+  private Role role;
+  private String email;
+  @Column(name = "creation_date")
+  private LocalDateTime creationDate;
+  @Column(name = "updated_date")
+  private LocalDateTime updateDate;
 }

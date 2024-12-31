@@ -9,10 +9,10 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum Category {
-    MOVIE("Фильм"),
-    SERIES("Сериал"),
-    ANIMATED_FILM("Анимационный фильм"),
-    ANIMATED_SERIES("Анимационный сериал");
+  MOVIE("Фильм"),
+  SERIES("Сериал"),
+  ANIMATED_FILM("Анимационный фильм"),
+  ANIMATED_SERIES("Анимационный сериал");
 
-    private final String name;
+  private final String name;
 }

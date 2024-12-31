@@ -13,7 +13,34 @@ services:
       - '5434:5432'
     volumes:
       - db:/var/lib/postgresql/movify
+    networks:
+      - app
 
+  content-service:
+    image: content-service:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - movify-db
+    ports:
+      - "8085:8085"
+      - "9095:9095"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://movify-db/movify-db
+    container_name: content-service
+    networks:
+      - app
+
+  auth-service:
+    image: myapp:latest
+    ports:
+      - "8079:8079"
+    networks:
+      - app
 volumes:
   db:
     driver: local
+networks:
+  app:
+    driver: bridge

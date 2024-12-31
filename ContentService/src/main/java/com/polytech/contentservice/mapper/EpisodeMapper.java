@@ -11,39 +11,42 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public final class EpisodeMapper {
-    public EpisodeDto convertToEpisodeDto(Episode episode) {
-        return EpisodeDto.builder()
-                .id(episode.getId())
-                .s3BucketName(episode.getS3BucketName())
-                .episodeNumber(episode.getEpisodeNumber())
-                .seasonNumber(episode.getSeasonNumber())
-                .title(episode.getTitle())
-                .thumbnail(episode.getThumbnail())
-                .storyline(episode.getStoryline())
-                .build();
-    }
+  public EpisodeDto convertToEpisodeDto(Episode episode) {
+    return EpisodeDto.builder()
+        .id(episode.getId())
+        .s3BucketName(episode.getS3BucketName())
+        .episodeNumber(episode.getEpisodeNumber())
+        .seasonNumber(episode.getSeasonNumber())
+        .title(episode.getTitle())
+        .thumbnail(episode.getThumbnail())
+        .storyline(episode.getStoryline())
+        .build();
+  }
 
-    public Episode patchUpdate(Episode oldEpisode, EpisodeDto newDto) {
-        return Episode.builder()
-                .title(newDto.title() == null ? oldEpisode.getTitle() : newDto.title())
-                .thumbnail(newDto.thumbnail()  == null ? oldEpisode.getThumbnail() : newDto.thumbnail())
-                .storyline(newDto.storyline()  == null ? oldEpisode.getStoryline() : newDto.storyline())
-                .seasonNumber(newDto.seasonNumber()  == null ? oldEpisode.getSeasonNumber() : newDto.seasonNumber())
-                .episodeNumber(newDto.episodeNumber()  == null ? oldEpisode.getEpisodeNumber() : newDto.episodeNumber())
-                .storyline(newDto.storyline() == null ? oldEpisode.getStoryline() : newDto.storyline())
-                .s3BucketName(newDto.s3BucketName() == null ? oldEpisode.getS3BucketName() : newDto.s3BucketName())
-                .build();
-    }
+  public Episode patchUpdate(Episode oldEpisode, EpisodeDto newDto) {
+    return Episode.builder()
+        .title(newDto.title() == null ? oldEpisode.getTitle() : newDto.title())
+        .thumbnail(newDto.thumbnail() == null ? oldEpisode.getThumbnail() : newDto.thumbnail())
+        .storyline(newDto.storyline() == null ? oldEpisode.getStoryline() : newDto.storyline())
+        .seasonNumber(
+            newDto.seasonNumber() == null ? oldEpisode.getSeasonNumber() : newDto.seasonNumber())
+        .episodeNumber(
+            newDto.episodeNumber() == null ? oldEpisode.getEpisodeNumber() : newDto.episodeNumber())
+        .storyline(newDto.storyline() == null ? oldEpisode.getStoryline() : newDto.storyline())
+        .s3BucketName(
+            newDto.s3BucketName() == null ? oldEpisode.getS3BucketName() : newDto.s3BucketName())
+        .build();
+  }
 
-    public Episode convertToEpisodeEntity(EpisodeDto episodeDto, Content content) {
-        return Episode.builder()
-                .s3BucketName(episodeDto.s3BucketName())
-                .episodeNumber(episodeDto.episodeNumber())
-                .seasonNumber(episodeDto.seasonNumber())
-                .title(episodeDto.title())
-                .thumbnail(episodeDto.thumbnail())
-                .storyline(episodeDto.storyline())
-                .content(content)
-                .build();
-    }
+  public Episode convertToEpisodeEntity(EpisodeDto episodeDto, Content content) {
+    return Episode.builder()
+        .s3BucketName(episodeDto.s3BucketName())
+        .episodeNumber(episodeDto.episodeNumber())
+        .seasonNumber(episodeDto.seasonNumber())
+        .title(episodeDto.title())
+        .thumbnail(episodeDto.thumbnail())
+        .storyline(episodeDto.storyline())
+        .content(content)
+        .build();
+  }
 }

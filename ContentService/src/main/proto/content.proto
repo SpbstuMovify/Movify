@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option csharp_namespace = "AuthMicroservice";
+ 
+package content;
+
+service ContentService {
+  rpc GetUserRole(UserRoleRequest) returns (UserRoleResponse);
+}
+
+message UserRoleRequest {
+  string email = 1;
+}
+
+message UserRoleResponse {
+  string role = 1;
+}

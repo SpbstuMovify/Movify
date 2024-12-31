@@ -8,16 +8,17 @@ import lombok.Builder;
 
 /**
  * Сущность для пользователя нашего сервиса
+ *
  * @param login Логин пользователя
  * @param email Электронная почта пользователя
- * @param role Роль пользователя
+ * @param role  Роль пользователя
  * @param token Токен для аунтефикации
  */
 @Builder
 @Schema(
     description = "Сущность ответа на запрос по входу пользователя в сервис"
 )
-public record UserLoginResponseDto (
+public record UserLoginResponseDto(
     @Schema(
         description = "ИД пользователя",
         example = "ee48c2c9-e39e-4014-ae1f-1ae45193d62a"

@@ -9,16 +9,16 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum Genre {
-    ACTION_FILM("Боевик"),
-    BLOCKBUSTER("Блокбастер"),
-    CARTOON("Мультфильм"),
-    COMEDY("Комедия"),
-    DOCUMENTARY("Документальный фильм"),
-    HISTORICAL_FILM("Исторический фильм"),
-    HORROR_FILM("Ужастик"),
-    MUSICAL("Мюзикл"),
-    DRAMA("Драма"),
-    THRILLER("Триллер");
+  ACTION_FILM("Боевик"),
+  BLOCKBUSTER("Блокбастер"),
+  CARTOON("Мультфильм"),
+  COMEDY("Комедия"),
+  DOCUMENTARY("Документальный фильм"),
+  HISTORICAL_FILM("Исторический фильм"),
+  HORROR_FILM("Ужастик"),
+  MUSICAL("Мюзикл"),
+  DRAMA("Драма"),
+  THRILLER("Триллер");
 
-    private final String name;
+  private final String name;
 }

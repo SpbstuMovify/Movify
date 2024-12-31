@@ -1,7 +1,6 @@
 package com.polytech.contentservice.service.auth;
 
 import com.polytech.contentservice.entity.AuthAttempts;
-import com.polytech.contentservice.exception.LoginException;
 import com.polytech.contentservice.repository.AuthAttemptsRepository;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -23,18 +22,18 @@ public class AuthAttemptsServiceImpl implements AuthAttemptsService {
   private int defaultAttemptsAmount;
 
   @Override
-  public void checkLoginAttempts(String ip) {
+  public boolean isMaxLoginAttemptsReached(String ip) {
     Optional<AuthAttempts> optionalAuthAttempts = authAttemptsRepository.findByIp(ip);
     if (optionalAuthAttempts.isEmpty()) {
       authAttemptsRepository.save(createDefaultAuthAttemptsEntity(ip));
-      return;
+      return false;
     }
 
     AuthAttempts authAttempts = optionalAuthAttempts.get();
     int authAttemptsLeft = authAttempts.getAttemptsLeft();
 
     if (authAttemptsLeft == 0 && authAttempts.getNextAttemptsTime().isAfter(LocalDateTime.now())) {
-      throw new LoginException("Max amount of attempts is reached");
+      return true;
     }
 
     if (authAttemptsLeft == 0 && authAttempts.getNextAttemptsTime().isBefore(LocalDateTime.now())) {
@@ -42,13 +41,14 @@ public class AuthAttemptsServiceImpl implements AuthAttemptsService {
       authAttempts.setNextAttemptsTime(null);
       authAttempts.setAttemptsLeft(defaultAttemptsAmount - 1);
       authAttemptsRepository.save(authAttempts);
-      return;
+      return false;
     }
     if (authAttemptsLeft == 1) {
       authAttempts.setNextAttemptsTime(LocalDateTime.now().plusSeconds(banTimeInSeconds));
     }
     authAttempts.setAttemptsLeft(authAttempts.getAttemptsLeft() - 1);
     authAttemptsRepository.save(authAttempts);
+    return false;
   }
 
   private AuthAttempts createDefaultAuthAttemptsEntity(String ip) {

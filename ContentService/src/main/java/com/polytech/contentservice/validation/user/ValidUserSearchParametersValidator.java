@@ -13,7 +13,8 @@ import org.springframework.stereotype.Component;
 public class ValidUserSearchParametersValidator implements
     ConstraintValidator<ValidUserSearchParameters, UserSearchDto> {
   @Override
-  public boolean isValid(UserSearchDto user, ConstraintValidatorContext constraintValidatorContext) {
+  public boolean isValid(UserSearchDto user,
+                         ConstraintValidatorContext constraintValidatorContext) {
     return (user.userId() != null && user.searchType() == UserSearchType.ID)
         || (StringUtils.isNotEmpty(user.email()) && user.searchType() == UserSearchType.EMAIL)
         || (StringUtils.isNotEmpty(user.login()) && user.searchType() == UserSearchType.LOGIN);

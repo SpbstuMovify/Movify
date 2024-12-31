@@ -14,47 +14,41 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @Slf4j
 @ControllerAdvice
-public class GlobalExceptionHandler
-{
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException ex)
-    {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(ErrorResponse.builder(ex, HttpStatus.NOT_FOUND, ex.getMessage()).build());
-    }
+public class GlobalExceptionHandler {
+  @ExceptionHandler(NotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException ex) {
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body(ErrorResponse.builder(ex, HttpStatus.NOT_FOUND, ex.getMessage()).build());
+  }
 
-    @ExceptionHandler(LoginException.class)
-    public ResponseEntity<ErrorResponse> handleNotFoundException(LoginException ex)
-    {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-            .body(ErrorResponse.builder(ex, HttpStatus.UNAUTHORIZED, ex.getMessage()).build());
-    }
+  @ExceptionHandler(LoginException.class)
+  public ResponseEntity<ErrorResponse> handleNotFoundException(LoginException ex) {
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        .body(ErrorResponse.builder(ex, HttpStatus.UNAUTHORIZED, ex.getMessage()).build());
+  }
 
-    @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<ErrorResponse> handleBadRequestException(ValidationException ex)
-    {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(ErrorResponse.builder(ex, HttpStatus.BAD_REQUEST, ex.getMessage()).build());
-    }
+  @ExceptionHandler(ValidationException.class)
+  public ResponseEntity<ErrorResponse> handleBadRequestException(ValidationException ex) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        .body(ErrorResponse.builder(ex, HttpStatus.BAD_REQUEST, ex.getMessage()).build());
+  }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleBadRequestException(MethodArgumentNotValidException ex)
-    {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(ErrorResponse.builder(ex, HttpStatus.BAD_REQUEST, ex.getMessage()).build());
-    }
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<ErrorResponse> handleBadRequestException(
+      MethodArgumentNotValidException ex) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        .body(ErrorResponse.builder(ex, HttpStatus.BAD_REQUEST, ex.getMessage()).build());
+  }
 
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException ex)
-    {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(ErrorResponse.builder(ex, HttpStatus.BAD_REQUEST, ex.getMessage()).build());
-    }
+  @ExceptionHandler(BadRequestException.class)
+  public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException ex) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        .body(ErrorResponse.builder(ex, HttpStatus.BAD_REQUEST, ex.getMessage()).build());
+  }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex)
-    {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(ErrorResponse.builder(ex, HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage()).build());
-    }
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body(ErrorResponse.builder(ex, HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage()).build());
+  }
 }

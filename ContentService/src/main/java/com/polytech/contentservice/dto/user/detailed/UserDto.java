@@ -1,5 +1,6 @@
 package com.polytech.contentservice.dto.user.detailed;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.polytech.contentservice.common.Role;
 import com.polytech.contentservice.common.UserSearchType;
@@ -9,17 +10,18 @@ import lombok.Builder;
 
 /**
  * Сущность для пользователя нашего сервиса
- * @param firstName Имя пользователя
- * @param lastName Фамилия пользователя
- * @param login Логин пользователя
- * @param email Электронная почта пользователя
- * @param role Роль пользователя
- * @param token Токен для аунтефикации
+ *
+ * @param firstName  Имя пользователя
+ * @param lastName   Фамилия пользователя
+ * @param login      Логин пользователя
+ * @param email      Электронная почта пользователя
+ * @param role       Роль пользователя
+ * @param token      Токен для аунтефикации
  * @param searchType поле по которому необходимо искать пользователя в бд
  */
 @Builder
 @Schema(
-        description = "Сущность для пользователя нашего сервиса"
+    description = "Сущность для пользователя нашего сервиса"
 )
 public record UserDto(
     @Schema(
@@ -29,33 +31,37 @@ public record UserDto(
     @JsonProperty(value = "user_id")
     UUID userId,
     @Schema(
-                description = "Имя пользователя",
-                example = "Эрдем"
-        )
-        @JsonProperty(value = "first_name")
-        String firstName,
+        description = "Имя пользователя",
+        example = "Эрдем"
+    )
+    @JsonProperty(value = "first_name")
+    String firstName,
     @Schema(
-                description = "Фамилия пользователя",
-                example = "Истаев"
-        )
-        @JsonProperty(value = "last_name")
-        String lastName,
+        description = "Фамилия пользователя",
+        example = "Истаев"
+    )
+    @JsonProperty(value = "last_name")
+    String lastName,
     @Schema(
-                description = "Логин пользователя",
-                example = "Greed"
-        )
-        String login,
+        description = "Логин пользователя",
+        example = "Greed"
+    )
+    String login,
     @Schema(
-                description = "Электронная почта пользователя",
-                example = "greed2003@mail.ru"
-        )
-        String email,
+        description = "Электронная почта пользователя",
+        example = "greed2003@mail.ru"
+    )
+    String email,
     @Schema(
-            description = "Пароль пользователя",
-            example = "VIP"
-        )
-        @JsonProperty(value = "password")
-        String password,
+        description = "Пароль пользователя",
+        example = "VIP"
+    )
+    @JsonProperty(value = "password")
+    String password,
+    @JsonIgnore
+    String passwordHash,
+    @JsonIgnore
+    String passwordSalt,
     @Schema(
         description = "Роль пользоватея",
         example = "ADMIN"

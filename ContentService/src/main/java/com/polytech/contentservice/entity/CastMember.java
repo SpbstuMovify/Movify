@@ -17,22 +17,22 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 public class CastMember {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cast_member_id")
-    private UUID id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "cast_member_id")
+  private UUID id;
 
-    @JoinColumn(name = "content_id", insertable = false, updatable = false)
-    @ManyToOne(targetEntity = Content.class, fetch = FetchType.LAZY)
-    private Content content;
+  @JoinColumn(name = "content_id", insertable = false, updatable = false)
+  @ManyToOne(targetEntity = Content.class, fetch = FetchType.LAZY)
+  private Content content;
 
-    @Column(nullable = false)
-    private String role;
+  @Column(nullable = false)
+  private String role;
 
-    @Column(name = "full_name", nullable = false)
-    private String fullName;
-    @Column(name = "creation_date")
-    private LocalDateTime creationDate;
-    @Column(name = "updated_date")
-    private LocalDateTime updateDate;
+  @Column(name = "full_name", nullable = false)
+  private String fullName;
+  @Column(name = "creation_date")
+  private LocalDateTime creationDate;
+  @Column(name = "updated_date")
+  private LocalDateTime updateDate;
 }

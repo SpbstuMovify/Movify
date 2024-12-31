@@ -9,6 +9,7 @@ import com.polytech.contentservice.entity.User;
 public interface SearchUserStrategy {
   /**
    * Метод по поиску пользователей в базе данных по id/login/email.
+   *
    * @param userDto данные, по которым надо искать
    * @return найденный в БД пользователь
    */

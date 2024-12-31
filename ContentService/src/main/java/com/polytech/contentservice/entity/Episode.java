@@ -17,36 +17,36 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Episode {
-    @Id
-    @GeneratedValue
-    @UuidGenerator
-    @Column(name = "episode_id")
-    private UUID id;
+  @Id
+  @GeneratedValue
+  @UuidGenerator
+  @Column(name = "episode_id")
+  private UUID id;
 
-    @Column(nullable = false)
-    private String title;
+  @Column(nullable = false)
+  private String title;
 
-    private String thumbnail;
+  private String thumbnail;
 
-    private String storyline;
+  private String storyline;
 
-    @Column(name = "s3_bucket_name", nullable = false)
-    private String s3BucketName;
+  @Column(name = "s3_bucket_name", nullable = false)
+  private String s3BucketName;
 
-    @Column(name = "episode_num", nullable = false)
-    private Integer episodeNumber;
+  @Column(name = "episode_num", nullable = false)
+  private Integer episodeNumber;
 
-    @Column(name = "season_num", nullable = false)
-    private Integer seasonNumber;
+  @Column(name = "season_num", nullable = false)
+  private Integer seasonNumber;
 
-    @JoinColumn(name = "content_id", insertable = false, updatable = false)
-    @ManyToOne(targetEntity = Content.class, fetch = FetchType.LAZY)
-    private Content content;
-//    todo сделать миграцию по добавлению колонок
-    @Column(name = "creation_date")
-    private LocalDateTime creationDate;
+  @JoinColumn(name = "content_id", insertable = false, updatable = false)
+  @ManyToOne(targetEntity = Content.class, fetch = FetchType.LAZY)
+  private Content content;
+  //    todo сделать миграцию по добавлению колонок
+  @Column(name = "creation_date")
+  private LocalDateTime creationDate;
 
-    //    todo сделать миграцию по добавлению колонок
-    @Column(name = "updated_date")
-    private LocalDateTime updateDate;
+  //    todo сделать миграцию по добавлению колонок
+  @Column(name = "updated_date")
+  private LocalDateTime updateDate;
 }

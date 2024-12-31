@@ -12,7 +12,7 @@ public interface UserSearchService {
    * Метод по поиску пользователей по userSearchType в БД.
    *
    * @param userSearchType название колонки по которой ищем
-   * @param userDto - исходные данные для поиска
+   * @param userDto        - исходные данные для поиска
    * @return найденный пользователь в БД
    */
   UserDto findUser(UserSearchType userSearchType, UserSearchDto userDto);
