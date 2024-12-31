@@ -1,6 +1,6 @@
 package com.polytech.contentservice.mapper;
 
-import com.polytech.contentservice.dto.CastMemberDto;
+import com.polytech.contentservice.dto.castmember.CastMemberDto;
 import com.polytech.contentservice.entity.CastMember;
 import java.util.Set;
 import java.util.stream.Collectors;

@@ -1,6 +1,6 @@
 package com.polytech.contentservice.common.strategy;
 
-import com.polytech.contentservice.dto.UserDto;
+import com.polytech.contentservice.dto.user.search.UserSearchDto;
 import com.polytech.contentservice.entity.User;
 
 /**
@@ -12,5 +12,5 @@ public interface SearchUserStrategy {
    * @param userDto данные, по которым надо искать
    * @return найденный в БД пользователь
    */
-  User findUser(UserDto userDto);
+  User findUser(UserSearchDto userDto);
 }

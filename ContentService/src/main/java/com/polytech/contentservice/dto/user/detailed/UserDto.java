@@ -1,4 +1,4 @@
-package com.polytech.contentservice.dto;
+package com.polytech.contentservice.dto.user.detailed;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.polytech.contentservice.common.Role;

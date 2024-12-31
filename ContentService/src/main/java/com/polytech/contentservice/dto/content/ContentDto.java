@@ -1,10 +1,11 @@
-package com.polytech.contentservice.dto;
+package com.polytech.contentservice.dto.content;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.polytech.contentservice.common.AgeRestriction;
 import com.polytech.contentservice.common.Category;
 import com.polytech.contentservice.common.Genre;
 import com.polytech.contentservice.common.Quality;
+import com.polytech.contentservice.dto.castmember.CastMemberDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 

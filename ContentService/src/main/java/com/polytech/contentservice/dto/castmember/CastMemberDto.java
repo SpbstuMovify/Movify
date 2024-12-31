@@ -1,4 +1,4 @@
-package com.polytech.contentservice.dto;
+package com.polytech.contentservice.dto.castmember;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;

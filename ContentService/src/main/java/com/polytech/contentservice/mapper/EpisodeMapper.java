@@ -1,6 +1,6 @@
 package com.polytech.contentservice.mapper;
 
-import com.polytech.contentservice.dto.EpisodeDto;
+import com.polytech.contentservice.dto.episode.EpisodeDto;
 import com.polytech.contentservice.entity.Content;
 import com.polytech.contentservice.entity.Episode;
 

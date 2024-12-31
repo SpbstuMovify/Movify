@@ -1,7 +1,10 @@
-package com.polytech.contentservice.service;
+package com.polytech.contentservice.service.user;
 
-import com.polytech.contentservice.dto.UserDto;
+import com.polytech.contentservice.dto.user.search.UserSearchDto;
+import com.polytech.contentservice.dto.user.detailed.UserDto;
+import com.polytech.contentservice.dto.user.register.UserRegisterDto;
 import com.polytech.contentservice.entity.User;
+import com.polytech.contentservice.exception.NotFoundException;
 import com.polytech.contentservice.mapper.UserMapper;
 import com.polytech.contentservice.repository.UserRepository;
 import java.util.UUID;
@@ -21,26 +24,26 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getUserById(UUID id) {
         User user = userRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new NotFoundException("User not found"));
         return userMapper.convertToUserDto(user);
     }
 
     @Override
     public UserDto getUserByLogin(String login) {
         User user = userRepository.findByLogin(login)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new NotFoundException("User not found"));
         return userMapper.convertToUserDto(user);
     }
 
     @Override
     public UserDto getUserByEmail(String email) {
         User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new NotFoundException("User not found"));
         return userMapper.convertToUserDto(user);
     }
 
     @Override
-    public UserDto getUserInformation(UserDto userDto) {
+    public UserDto getUserInformation(UserSearchDto userDto) {
         return userSearchService.findUser(userDto.searchType(), userDto);
     }
 
@@ -52,7 +55,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto saveUserInformation(UserDto userDto) {
+    public UserDto saveUserInformation(UserRegisterDto userDto) {
         User userToSave = userMapper.convertToUserDto(userDto);
         User user = userRepository.save(userToSave);
         return userMapper.convertToUserDto(user);

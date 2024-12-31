@@ -1,8 +1,10 @@
-package com.polytech.contentservice.service;
+package com.polytech.contentservice.service.auth;
 
 import com.polytech.contentservice.dto.LoginUserDto;
 import com.polytech.contentservice.dto.RegisterUserDto;
-import com.polytech.contentservice.dto.UserDto;
+import com.polytech.contentservice.dto.user.detailed.UserDto;
+import com.polytech.contentservice.dto.user.login.UserLoginResponseDto;
+import com.polytech.contentservice.dto.user.register.UserRegistrationResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +17,9 @@ public class AuthServiceImpl implements AuthService {
   private final AuthGrpcClientService authGrpcClientService;
 
   @Override
-  public UserDto registerUser(UserDto userDto) {
+  public UserRegistrationResponseDto registerUser(UserDto userDto) {
     RegisterUserDto registerUserDto = authGrpcClientService.sendRegisterRequest(userDto);
-    return UserDto.builder()
+    return UserRegistrationResponseDto.builder()
         .token(registerUserDto.getToken())
         .userId(userDto.userId())
         .login(userDto.login())
@@ -26,9 +28,9 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
-  public UserDto login(UserDto userDto) {
+  public UserLoginResponseDto login(UserDto userDto) {
     LoginUserDto loginUserDto = authGrpcClientService.sendLoginRequest(userDto);
-    return UserDto.builder()
+    return UserLoginResponseDto.builder()
         .token(loginUserDto.getToken())
         .role(userDto.role())
         .userId(userDto.userId())
