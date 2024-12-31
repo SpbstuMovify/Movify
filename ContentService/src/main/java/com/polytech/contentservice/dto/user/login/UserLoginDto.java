@@ -9,9 +9,10 @@ import lombok.Builder;
 
 /**
  * Сущность для пользователя нашего сервиса
- * @param password Пароль пользователя
- * @param login Логин пользователя
- * @param email Электронная почта пользователя
+ *
+ * @param password   Пароль пользователя
+ * @param login      Логин пользователя
+ * @param email      Электронная почта пользователя
  * @param searchType поле по которому необходимо искать пользователя в бд
  */
 @Schema(
@@ -37,14 +38,14 @@ public record UserLoginDto(
     @JsonProperty(value = "password")
     @NotNull
     String password,
-        @Schema(
-            description = "Способ поиска пользователя",
-            examples = {
-                "ID",
-                "LOGIN",
-                "EMAIL"
-            }
-        )
+    @Schema(
+        description = "Способ поиска пользователя",
+        examples = {
+            "ID",
+            "LOGIN",
+            "EMAIL"
+        }
+    )
     @JsonProperty(value = "search_type")
     @NotNull
     UserSearchType searchType

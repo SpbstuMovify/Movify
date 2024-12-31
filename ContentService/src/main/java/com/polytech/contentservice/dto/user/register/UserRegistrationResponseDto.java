@@ -7,6 +7,7 @@ import lombok.Builder;
 
 /**
  * Сущность для ответа на запрос по регистрации пользователя
+ *
  * @param login Логин пользователя
  * @param email Электронная почта пользователя
  * @param token Токен для аунтефикации
@@ -15,7 +16,7 @@ import lombok.Builder;
 @Schema(
     description = "Сущность ответа на запрос по регистрации пользователя в сервисе"
 )
-public record UserRegistrationResponseDto (
+public record UserRegistrationResponseDto(
     @Schema(
         description = "ИД пользователя",
         example = "ee48c2c9-e39e-4014-ae1f-1ae45193d62a"

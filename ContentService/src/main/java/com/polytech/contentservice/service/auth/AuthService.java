@@ -1,7 +1,9 @@
 package com.polytech.contentservice.service.auth;
 
+import auth.ValidationTokenResponse;
 import com.polytech.contentservice.dto.user.detailed.UserDto;
 import com.polytech.contentservice.dto.user.login.UserLoginResponseDto;
+import com.polytech.contentservice.dto.user.register.UserRegisterDto;
 import com.polytech.contentservice.dto.user.register.UserRegistrationResponseDto;
 
 /**
@@ -14,22 +16,22 @@ public interface AuthService {
    * @param userDto данные для регистрации
    * @return данные пользователя + токен
    */
-  UserRegistrationResponseDto registerUser(UserDto userDto);
+  UserRegistrationResponseDto registerUser(UserRegisterDto userDto);
 
   /**
    * Метод для получения токена.
    *
    * @param userDto данные пользователя для аунтефикации
-   * @param ip IP адрес пользователя
+   * @param ip      IP адрес пользователя
    * @return данные пользователя + токен
    */
   UserLoginResponseDto login(UserDto userDto, String ip);
 
   /**
-   * Метод по валидации токена.
+   * Метод по получению данных из токена и его проверке.
    *
    * @param userDto информация о пользователе для валидации
-   * @return валиден ли токен
+   * @return данные из токена
    */
-  boolean isTokenValid(UserDto userDto);
+  ValidationTokenResponse getTokenData(UserDto userDto);
 }

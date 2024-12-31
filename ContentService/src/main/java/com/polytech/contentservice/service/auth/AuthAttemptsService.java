@@ -8,6 +8,7 @@ public interface AuthAttemptsService {
    * Проверка, что лимит попыток на вход не превышен.
    *
    * @param ip - IP адресс, с которого пытаются войти в систему
+   * @return true - лимит превышен
    */
-  void checkLoginAttempts(String ip);
+  boolean isMaxLoginAttemptsReached(String ip);
 }
