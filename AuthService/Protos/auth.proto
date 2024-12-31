@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option csharp_namespace = "AuthMicroservice";
+ 
+package auth;
+
+service Auth {
+    rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse);
+    rpc RegisterUser(RegisterUserRequest) returns (RegisterUserResponse);
+    rpc LoginUser(LoginUserRequest) returns (LoginUserResponse);
+}
+
+message ValidateTokenRequest {
+    string token = 1;
+}
+
+message ValidateTokenResponse {
+    string email = 1;
+    string role = 2;
+}
+
+message RegisterUserRequest {
+    string email = 1;
+    string role = 2;
+    string password = 3;
+}
+
+message RegisterUserResponse {
+    string token = 1;
+    string passwordHash = 2;
+    string passwordSalt = 3;
+}
+
+message LoginUserRequest {
+    // For token
+    string email = 1;
+    string role = 2;
+    // For password
+    string password = 3;
+    string passwordHash = 4;
+    string passwordSalt = 5;
+}
+
+message LoginUserResponse {
+    string token = 1;
+}

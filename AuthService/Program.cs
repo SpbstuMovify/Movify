@@ -20,4 +20,3 @@ var builder = Host.CreateDefaultBuilder(args)
     });
 
 builder.Build().Run();
-
