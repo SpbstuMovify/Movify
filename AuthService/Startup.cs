@@ -1,3 +1,4 @@
+using AuthMicroservice.Services;
 using AuthMicroservice.Utils;
 using Microsoft.Extensions.Logging;
 
@@ -12,6 +13,7 @@ public class Startup(IConfiguration configuration)
         services.AddControllers();
         services.AddJwt(Configuration);
         services.AddTransient<IEncryptor, Encryptor>();
+        services.AddTransient<IAuthService, AuthService>();
 
         services.AddLogging(loggingBuilder =>
         {
