@@ -17,6 +17,7 @@ import java.util.UUID;
  *
  * @param id             Идентификатор сущности контента
  * @param title          Название видео
+ * @param year           Год создания
  * @param quality        Качество видео
  * @param genre          Жанр воспроизводимового видео
  * @param category       Категория контента
@@ -31,6 +32,8 @@ import java.util.UUID;
 public record ContentDto(
     @Schema(description = "Идентификатор сущности контента", example = "1b12236a-aca9-47bc-95ac-f3978836de2c")
     UUID id,
+    @Schema(description = "Год создания", example = "2000")
+    Integer year,
     @Schema(description = "Название видео", example = "Баки Ханма")
     String title,
     @Schema(description = "Качество видео", example = "P1080")

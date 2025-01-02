@@ -1,13 +1,17 @@
 package com.polytech.contentservice.entity;
 
 import com.polytech.contentservice.common.Role;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -50,4 +54,6 @@ public class User {
   private LocalDateTime creationDate;
   @Column(name = "updated_date")
   private LocalDateTime updateDate;
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+  private Set<PersonalList> personalList = new HashSet<>();
 }

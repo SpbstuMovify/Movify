@@ -65,4 +65,17 @@ public interface UserService {
    * @return Информация о пользователе
    */
   Optional<UserDto> getUserByEmailNonExcept(String email);
+
+  /**
+   * Удаление пользователя.
+   * @param userId ИД пользователя
+   */
+  void deleteById(UUID userId);
+
+  /**
+   * Повышение прав пользователя
+   * @param userId ИД пользователя
+   * @return обновлённые данные
+   */
+  UserDto grantToAdmin(UUID userId);
 }

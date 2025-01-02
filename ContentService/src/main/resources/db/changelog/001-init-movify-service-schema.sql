@@ -32,7 +32,7 @@ create table if not exists cast_member
 (
     cast_member_id uuid primary key   default gen_random_uuid(),
     full_name      varchar   not null,
-    content_id     uuid      not null,
+    content_id     uuid,
     role           varchar   not null,
     creation_date  timestamp not null default now(),
     updated_date   timestamp not null default now(),
@@ -74,7 +74,7 @@ create table if not exists episode
     thumbnail      varchar,
     storyline      varchar,
     s3_bucket_name varchar,
-    content_id     uuid    not null,
+    content_id     uuid,
 
     constraint episode_fk1 foreign key (content_id) references content (content_id)
 );

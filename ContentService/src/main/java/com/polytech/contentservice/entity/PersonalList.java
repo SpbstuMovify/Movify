@@ -7,7 +7,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -17,34 +16,28 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
 
-/**
- * Сущность cast_member.
- */
 @Entity
-@Table(name = "cast_member")
+@Table(name = "personal_list")
 @Getter
 @Setter
-@NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class CastMember {
+@NoArgsConstructor
+public class PersonalList {
   @Id
-  @UuidGenerator
   @GeneratedValue
-  @Column(name = "cast_member_id")
+  @UuidGenerator
+  @Column(name = "personal_list_id")
   private UUID id;
 
-  @JoinColumn(name = "content_id")
   @ManyToOne
+  @JoinColumn(name = "user_id")
+  private User user;
+
+  @ManyToOne
+  @JoinColumn(name = "content_id")
   private Content content;
 
-  @Column(nullable = false)
-  private String role;
-
-  @Column(name = "full_name")
-  private String fullName;
   @Column(name = "creation_date")
   private LocalDateTime creationDate;
-  @Column(name = "updated_date")
-  private LocalDateTime updateDate;
 }

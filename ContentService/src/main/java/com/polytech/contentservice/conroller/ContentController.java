@@ -1,6 +1,7 @@
 package com.polytech.contentservice.conroller;
 
 import com.polytech.contentservice.dto.content.ContentDto;
+import com.polytech.contentservice.dto.content.ContentSearchDto;
 import com.polytech.contentservice.service.content.ContentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -51,6 +52,15 @@ public class ContentController {
   public ContentDto getContentById(
       @PathVariable(name = "content-id") UUID contentId) {
     return contentService.findContentById(contentId);
+  }
+
+  @PostMapping("/search")
+  @Operation(
+      summary = "Получение фильма или сериала по фильтрам",
+      description = "Позволяет получить все фильмы или сериалы по фильтрам"
+  )
+  public List<ContentDto> getContentByFilters(@RequestBody ContentSearchDto contentDto) {
+    return contentService.getAllContentsByFilter(contentDto);
   }
 
   @PutMapping("/{content-id}")
