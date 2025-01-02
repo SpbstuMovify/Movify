@@ -1,5 +1,7 @@
 package com.polytech.contentservice.conroller;
 
+import com.polytech.contentservice.dto.content.ContentDto;
+import com.polytech.contentservice.dto.personallist.PersonalListDto;
 import com.polytech.contentservice.dto.user.login.UserLoginResponseDto;
 import com.polytech.contentservice.dto.user.register.UserRegistrationResponseDto;
 import com.polytech.contentservice.dto.user.search.UserSearchDto;
@@ -8,13 +10,16 @@ import com.polytech.contentservice.dto.user.detailed.UserDto;
 import com.polytech.contentservice.dto.user.register.UserRegisterDto;
 import com.polytech.contentservice.mapper.UserMapper;
 import com.polytech.contentservice.service.auth.AuthService;
+import com.polytech.contentservice.service.personallist.PersonalListService;
 import com.polytech.contentservice.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
   private final UserService userService;
   private final AuthService authService;
+  private final PersonalListService personalListService;
   private final UserMapper userMapper;
 
   @GetMapping("/{user-id}")
@@ -48,6 +54,18 @@ public class UserController {
     return userService.getUserById(userId);
   }
 
+  @DeleteMapping("/{user-id}")
+  @Operation(
+      summary = "Удаление конкретного пользователя по ИД",
+      description = "Позволяет удалить пользователя по заданному ИД"
+  )
+  public void deleteUserById(
+      @Parameter(description = "Пользовательский ИД, по которому будем искать информацию", example = "f7d1b2c1-cedb-4099-99d8-e4ec9302dcde")
+      @PathVariable("user-id")
+      UUID userId) {
+    userService.deleteById(userId);
+  }
+
   @PostMapping("/info")
   @Operation(
       summary = "Получения конкретного пользователя по некоторой информации",
@@ -57,6 +75,33 @@ public class UserController {
       @Parameter(description = "Пользовательские данные, по которым будем искать информацию")
       @Valid @RequestBody UserSearchDto userDto) {
     return userService.getUserInformation(userDto);
+  }
+
+  @PostMapping("/personal-list")
+  @Operation(
+      summary = "Сохранения понравившегося фильма или сериала",
+      description = "Позволяет добавить понравившийся фильм"
+  )
+  public PersonalListDto addToPersonalList(@RequestBody PersonalListDto personalListDto) {
+    return personalListService.addFavoriteMovie(personalListDto);
+  }
+
+  @DeleteMapping("/personal-list/{personal-list-id}")
+  @Operation(
+      summary = "Удалить понравившегося фильма или сериала",
+      description = "Позволяет удалить понравившийся фильм"
+  )
+  public void deleteFromPersonalList(@PathVariable(name = "personal-list-id") UUID personalListId) {
+    personalListService.removeFavoriteMovie(personalListId);
+  }
+
+  @GetMapping("/personal-list/{user-id}")
+  @Operation(
+      summary = "Получение понравившихся фильмов или сериала",
+      description = "Позволяет получить понравившиеся фильм"
+  )
+  public List<ContentDto> getAllPersonalList(@PathVariable(name = "user-id") UUID userId) {
+    return personalListService.getFavoriteMoviesByUser(userId);
   }
 
   @PostMapping("/register")
@@ -78,6 +123,16 @@ public class UserController {
     UserDto user = userService.getUserInformation(userMapper.toFindUserDto(userDto));
     UserDto newUser = createUserDtoWithPassword(userDto, user);
     return authService.login(newUser, ip);
+  }
+
+
+  @PutMapping("/role/{user-id}")
+  @Operation(
+      summary = "Выдача прав администратора",
+      description = "Позволяет выдать пользователю права администратора"
+  )
+  public UserDto grantToAdmin(@PathVariable("user-id") UUID userId) {
+    return userService.grantToAdmin(userId);
   }
 
   private UserDto createUserDtoWithPassword(UserLoginDto userDto, UserDto user) {

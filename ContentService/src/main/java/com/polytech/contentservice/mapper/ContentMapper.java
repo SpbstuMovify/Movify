@@ -22,6 +22,7 @@ public class ContentMapper {
     return ContentDto.builder()
         .id(content.getId())
         .title(content.getTitle())
+        .year(content.getYear())
         .ageRestriction(content.getAgeRestriction())
         .genre(content.getGenre())
         .category(content.getCategory())
@@ -37,6 +38,7 @@ public class ContentMapper {
   public Content convertToContentEntity(ContentDto contentDto) {
     return Content.builder()
         .title(contentDto.title())
+        .year(contentDto.year())
         .ageRestriction(contentDto.ageRestriction())
         .genre(contentDto.genre())
         .category(contentDto.category())
@@ -46,6 +48,7 @@ public class ContentMapper {
         .description(contentDto.description())
         .publisher(contentDto.publisher())
         .thumbnail(contentDto.thumbnail())
+        .castMembers(castMemberMapper.convertToSetOfCastMemberEntity(contentDto.castMembers()))
         .build();
   }
 
@@ -59,6 +62,7 @@ public class ContentMapper {
     return Content.builder()
         .id(oldEpisodeDetail.getId())
         .title(contentDto.title() != null ? contentDto.title() : oldEpisodeDetail.getTitle())
+        .year(contentDto.year() != null ? contentDto.year() : oldEpisodeDetail.getYear())
         .ageRestriction(contentDto.ageRestriction() != null ? contentDto.ageRestriction() :
             oldEpisodeDetail.getAgeRestriction())
         .genre(contentDto.genre() != null ? contentDto.genre() : oldEpisodeDetail.getGenre())

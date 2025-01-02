@@ -7,12 +7,7 @@ import com.polytech.contentservice.dto.user.detailed.UserDto;
 import com.polytech.contentservice.dto.user.login.UserLoginResponseDto;
 import com.polytech.contentservice.dto.user.register.UserRegisterDto;
 import com.polytech.contentservice.dto.user.register.UserRegistrationResponseDto;
-import com.polytech.contentservice.entity.User;
-import com.polytech.contentservice.exception.NotFoundException;
-import com.polytech.contentservice.mapper.UserMapper;
-import com.polytech.contentservice.repository.UserRepository;
 import com.polytech.contentservice.service.user.UserService;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

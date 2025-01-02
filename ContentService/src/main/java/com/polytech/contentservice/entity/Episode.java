@@ -30,23 +30,16 @@ public class Episode {
 
   private String storyline;
 
-  @Column(name = "s3_bucket_name", nullable = false)
+  @Column(name = "s3_bucket_name")
   private String s3BucketName;
 
-  @Column(name = "episode_num", nullable = false)
+  @Column(name = "episode_num")
   private Integer episodeNumber;
 
-  @Column(name = "season_num", nullable = false)
+  @Column(name = "season_num")
   private Integer seasonNumber;
 
   @JoinColumn(name = "content_id", insertable = false, updatable = false)
   @ManyToOne(targetEntity = Content.class, fetch = FetchType.LAZY)
   private Content content;
-  //    todo сделать миграцию по добавлению колонок
-  @Column(name = "creation_date")
-  private LocalDateTime creationDate;
-
-  //    todo сделать миграцию по добавлению колонок
-  @Column(name = "updated_date")
-  private LocalDateTime updateDate;
 }

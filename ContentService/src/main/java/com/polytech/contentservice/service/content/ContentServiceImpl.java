@@ -1,13 +1,20 @@
 package com.polytech.contentservice.service.content;
 
 import com.polytech.contentservice.dto.content.ContentDto;
+import com.polytech.contentservice.dto.content.ContentSearchDto;
 import com.polytech.contentservice.dto.episode.EpisodeDto;
 import com.polytech.contentservice.entity.Content;
+import com.polytech.contentservice.entity.QContent;
 import com.polytech.contentservice.mapper.ContentMapper;
 import com.polytech.contentservice.mapper.EpisodeMapper;
 import com.polytech.contentservice.repository.ContentRepository;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,9 +30,14 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ContentServiceImpl implements ContentService {
+  private final QContent content = QContent.content;
+
   private final ContentRepository contentRepository;
   private final ContentMapper contentMapper;
   private final EpisodeMapper episodeMapper;
+
+  @PersistenceContext
+  private EntityManager entityManager;
 
   @Override
   public ContentDto createContent(ContentDto contentDto) {
@@ -60,6 +72,33 @@ public class ContentServiceImpl implements ContentService {
   public List<ContentDto> findAllContent(Pageable pageable) {
     Page<Content> contents = contentRepository.findAll(pageable);
     return contentMapper.convertToListOfContentDto(contents);
+  }
+
+  @Override
+  public List<ContentDto> getAllContentsByFilter(ContentSearchDto contentSearchDto) {
+    JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+
+    BooleanBuilder booleanBuilder = new BooleanBuilder();
+
+    if (StringUtils.isNoneEmpty(contentSearchDto.title())) {
+      booleanBuilder.and(content.title.equalsIgnoreCase(contentSearchDto.title()));
+    }
+    if (contentSearchDto.genre() != null) {
+      booleanBuilder.and(content.genre.eq(contentSearchDto.genre()));
+    }
+    if (contentSearchDto.ageRestriction() != null) {
+      booleanBuilder.and(content.ageRestriction.eq(contentSearchDto.ageRestriction()));
+    }
+    if (contentSearchDto.year() != null) {
+      booleanBuilder.and(content.year.eq(contentSearchDto.year()));
+    }
+
+    return queryFactory.selectFrom(content)
+        .where(booleanBuilder)
+        .fetch()
+        .stream()
+        .map(contentMapper::convertToContentDto)
+        .toList();
   }
 
   @Override

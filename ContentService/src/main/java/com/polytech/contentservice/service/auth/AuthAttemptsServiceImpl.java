@@ -2,6 +2,7 @@ package com.polytech.contentservice.service.auth;
 
 import com.polytech.contentservice.entity.AuthAttempts;
 import com.polytech.contentservice.repository.AuthAttemptsRepository;
+import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class AuthAttemptsServiceImpl implements AuthAttemptsService {
   private int defaultAttemptsAmount;
 
   @Override
+  @Transactional
   public boolean isMaxLoginAttemptsReached(String ip) {
     Optional<AuthAttempts> optionalAuthAttempts = authAttemptsRepository.findByIp(ip);
     if (optionalAuthAttempts.isEmpty()) {

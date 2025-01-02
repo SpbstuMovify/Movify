@@ -1,5 +1,6 @@
 package com.polytech.contentservice.service.user;
 
+import com.polytech.contentservice.common.Role;
 import com.polytech.contentservice.dto.user.search.UserSearchDto;
 import com.polytech.contentservice.dto.user.detailed.UserDto;
 import com.polytech.contentservice.dto.user.register.UserRegisterDto;
@@ -7,6 +8,7 @@ import com.polytech.contentservice.entity.User;
 import com.polytech.contentservice.exception.NotFoundException;
 import com.polytech.contentservice.mapper.UserMapper;
 import com.polytech.contentservice.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +26,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserDto getUserById(UUID id) {
-    User user = userRepository.findById(id)
-        .orElseThrow(() -> new NotFoundException("User not found"));
+    User user = getUserInfoById(id);
     return userMapper.convertToUserDto(user);
   }
 
@@ -52,6 +53,22 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional
+  public void deleteById(UUID userId) {
+    userRepository.findById(userId)
+        .orElseThrow(() -> new NotFoundException("User not found"));
+    userRepository.deleteById(userId);
+  }
+
+  @Override
+  @Transactional
+  public UserDto grantToAdmin(UUID userId) {
+    User user = getUserInfoById(userId);
+    user.setRole(Role.ADMIN);
+    return userMapper.convertToUserDto(userRepository.save(user));
+  }
+
+  @Override
   public UserDto getUserInformation(UserSearchDto userDto) {
     return userSearchService.findUser(userDto.searchType(), userDto);
   }
@@ -68,5 +85,10 @@ public class UserServiceImpl implements UserService {
     User userToSave = userMapper.convertToUserDto(userDto);
     User user = userRepository.save(userToSave);
     return userMapper.convertToUserDto(user);
+  }
+
+  private User getUserInfoById(UUID id) {
+    return userRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("User not found"));
   }
 }
