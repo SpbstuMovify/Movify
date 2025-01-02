@@ -1,3 +1,5 @@
+using Amazon.S3;
+using MediaService.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace MediaService;
@@ -9,6 +11,9 @@ public class Startup(IConfiguration configuration)
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
+        services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
+        services.AddAWSService<IAmazonS3>();
+        services.AddScoped<IBucketRepository, BucketRepository>();
 
         services.AddLogging(loggingBuilder =>
         {

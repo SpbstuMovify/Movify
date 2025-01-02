@@ -55,35 +55,34 @@ public class BucketController : ControllerBase
         return await Task.FromResult(Ok());
     }
 
-    [HttpGet("{bucket-name}/files/{file-name}")]
+    [HttpGet("{bucket-name}/files/{*key}")]
     public async Task<IActionResult> GetFile(
         [FromRoute(Name = "bucket-name")] string bucketName,
-        [FromRoute(Name = "file-name")] string fileName
+        [FromRoute(Name = "key")] string key
     )
     {
         return await Task.FromResult(Ok());
     }
 
-    [HttpPut("{bucket-name}/files/{file-name}")]
+    [HttpPut("{bucket-name}/files/{*key}")]
     [Authorize]
     public async Task<IActionResult> UpdateFile(
         [FromBody] IFormFile file,
         [FromRoute(Name = "bucket-name")] string bucketName,
-        [FromRoute(Name = "file-name")] string fileName,
+        [FromRoute(Name = "key")] string key,
         [FromQuery(Name = "proc-video")] bool isVideoProcNecessary
     )
     {
         return await Task.FromResult(Ok());
     }
 
-    [HttpDelete("{bucket-name}/files/{file-name}")]
+    [HttpDelete("{bucket-name}/files/{*key}")]
     [Authorize]
     public async Task<IActionResult> DeleteFile(
         [FromRoute(Name = "bucket-name")] string bucketName,
-        [FromRoute(Name = "file-name")] string fileName
+        [FromRoute(Name = "key")] string key
     )
     {
         return await Task.FromResult(NoContent());
     }
-
 }
