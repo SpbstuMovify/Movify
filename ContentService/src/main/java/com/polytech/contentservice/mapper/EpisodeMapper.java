@@ -18,15 +18,14 @@ public final class EpisodeMapper {
         .episodeNumber(episode.getEpisodeNumber())
         .seasonNumber(episode.getSeasonNumber())
         .title(episode.getTitle())
-        .thumbnail(episode.getThumbnail())
         .storyline(episode.getStoryline())
+        .contentId(episode.getContent().getId())
         .build();
   }
 
   public Episode patchUpdate(Episode oldEpisode, EpisodeDto newDto) {
     return Episode.builder()
         .title(newDto.title() == null ? oldEpisode.getTitle() : newDto.title())
-        .thumbnail(newDto.thumbnail() == null ? oldEpisode.getThumbnail() : newDto.thumbnail())
         .storyline(newDto.storyline() == null ? oldEpisode.getStoryline() : newDto.storyline())
         .seasonNumber(
             newDto.seasonNumber() == null ? oldEpisode.getSeasonNumber() : newDto.seasonNumber())
@@ -44,7 +43,6 @@ public final class EpisodeMapper {
         .episodeNumber(episodeDto.episodeNumber())
         .seasonNumber(episodeDto.seasonNumber())
         .title(episodeDto.title())
-        .thumbnail(episodeDto.thumbnail())
         .storyline(episodeDto.storyline())
         .content(content)
         .build();

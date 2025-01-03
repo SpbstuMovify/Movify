@@ -59,6 +59,14 @@ public interface UserService {
   UserDto saveUserInformation(UserRegisterDto userDto);
 
   /**
+   * Сохранение для существующего пользователя.
+   *
+   * @param userDto данные пользователя для сохранения
+   * @return сохранённый пользователь
+   */
+  UserDto resetPassword(UserRegisterDto userDto);
+
+  /**
    * Получение информации о пользователе по email пользователя в системе
    *
    * @param email Электронный адрес

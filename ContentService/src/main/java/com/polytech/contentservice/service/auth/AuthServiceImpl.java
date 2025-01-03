@@ -33,6 +33,18 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
+  public UserRegistrationResponseDto resetUserPassword(UserRegisterDto userDto) {
+    RegisterUserResponse registerUserDto = authGrpcClient.sendRegisterRequest(userDto);
+    UserDto savedDto = userService.resetPassword(convertToUserDto(registerUserDto, userDto));
+    return UserRegistrationResponseDto.builder()
+        .token(registerUserDto.getToken())
+        .userId(savedDto.userId())
+        .login(savedDto.login())
+        .email(savedDto.email())
+        .build();
+  }
+
+  @Override
   public UserLoginResponseDto login(UserDto userDto, String ip) {
     LoginUserResponse loginUserDto = authGrpcClient.sendLoginRequest(userDto, ip);
     return UserLoginResponseDto.builder()
