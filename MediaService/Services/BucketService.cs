@@ -1,12 +1,9 @@
-using Amazon.S3;
-using Amazon.S3.Model;
-
 using MediaService.Dtos.Bucket;
 using MediaService.Dtos.FileInfo;
-using MediaService.Exceptions;
 using MediaService.Models;
 using MediaService.Repositories;
-using MediaService.Utils;
+using MediaService.Utils.Exceptions;
+using MediaService.Utils.FileProcessing;
 
 namespace MediaService.Services;
 

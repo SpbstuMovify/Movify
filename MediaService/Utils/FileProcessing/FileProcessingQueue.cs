@@ -1,6 +1,6 @@
 using System.Threading.Channels;
 
-namespace MediaService.Utils;
+namespace MediaService.Utils.FileProcessing;
 
 public class FileProcessingQueue : IFileProcessingQueue
 {

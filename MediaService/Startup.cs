@@ -1,6 +1,8 @@
 using Amazon.S3;
 using MediaService.Repositories;
-using Microsoft.Extensions.Logging;
+using MediaService.Services;
+using MediaService.Utils.FileProcessing;
+using MediaService.Utils.Middleware;
 
 namespace MediaService;
 public class Startup(IConfiguration configuration)
@@ -13,7 +15,10 @@ public class Startup(IConfiguration configuration)
         services.AddControllers();
         services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
         services.AddAWSService<IAmazonS3>();
-        services.AddScoped<IBucketRepository, BucketRepository>();
+        services.AddSingleton<IBucketRepository, BucketRepository>();
+        services.AddSingleton<IFileProcessingQueue, FileProcessingQueue>();
+        services.AddScoped<IBucketService, BucketService>();
+        services.AddHostedService<FileProcessingService>();
 
         services.AddLogging(loggingBuilder =>
         {
@@ -39,6 +44,8 @@ public class Startup(IConfiguration configuration)
 
         app.UseRouting();
         logger.LogInformation("Routing configured");
+
+        app.UseMiddleware<ExceptionHandlingMiddleware>();
 
         app.UseAuthentication();
         logger.LogInformation("Authentication configured");
