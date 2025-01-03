@@ -19,7 +19,7 @@ services:
   content-service:
     image: content-service:latest
     build:
-      context: .
+      context: ./ContentService
       dockerfile: Dockerfile
     depends_on:
       - movify-db
@@ -27,20 +27,27 @@ services:
       - "8085:8085"
       - "9095:9095"
     environment:
+      - GRPC_AUTH_HOST=auth-service
       - SPRING_DATASOURCE_URL=jdbc:postgresql://movify-db/movify-db
     container_name: content-service
     networks:
       - app
 
   auth-service:
-    image: myapp:latest
+    container_name: auth-service
+    build:
+      context: ./AuthService
+      dockerfile: Dockerfile
     ports:
       - "8079:8079"
     networks:
       - app
+
 volumes:
   db:
     driver: local
+
 networks:
   app:
     driver: bridge
+

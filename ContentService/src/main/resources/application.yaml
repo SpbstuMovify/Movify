@@ -34,7 +34,7 @@ content:
   client:
     auth:
       grpc:
-        host: localhost
+        host: ${GRPC_AUTH_HOST:localhost}
         port: 8079
 
 auth:
