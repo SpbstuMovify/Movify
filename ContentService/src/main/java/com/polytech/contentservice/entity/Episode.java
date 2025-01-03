@@ -26,8 +26,6 @@ public class Episode {
   @Column(nullable = false)
   private String title;
 
-  private String thumbnail;
-
   private String storyline;
 
   @Column(name = "s3_bucket_name")
@@ -39,7 +37,7 @@ public class Episode {
   @Column(name = "season_num")
   private Integer seasonNumber;
 
-  @JoinColumn(name = "content_id", insertable = false, updatable = false)
-  @ManyToOne(targetEntity = Content.class, fetch = FetchType.LAZY)
+  @JoinColumn(name = "content_id")
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   private Content content;
 }
