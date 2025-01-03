@@ -1,5 +1,3 @@
-using Amazon.S3.Model;
-
 using MediaService.Dtos.Bucket;
 using MediaService.Dtos.FileInfo;
 using MediaService.Models;

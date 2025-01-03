@@ -1,4 +1,4 @@
-namespace MediaService.Utils;
+namespace MediaService.Utils.FileProcessing;
 
 public interface IFileProcessingQueue
 {

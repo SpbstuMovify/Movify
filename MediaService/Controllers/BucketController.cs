@@ -1,3 +1,6 @@
+using MediaService.Dtos.Bucket;
+using MediaService.Dtos.FileInfo;
+using MediaService.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,13 +9,14 @@ namespace MediaService.Controllers;
 
 [Route("api/v1/bucket")]
 [ApiController]
-public class BucketController : ControllerBase
+public class BucketController(IBucketService bucketService) : ControllerBase
 {
     [HttpGet]
     [Authorize]
     public async Task<IActionResult> GetAll()
     {
-        return await Task.FromResult(Ok());
+        var result = await bucketService.GetBucketsAsync();
+        return Ok(result);
     }
 
     [HttpPost]
@@ -21,7 +25,8 @@ public class BucketController : ControllerBase
         [FromQuery(Name = "bucket-name")] string bucketName
     )
     {
-        return await Task.FromResult(Created());
+        var result = await bucketService.CreateBucketAsync(new CreateBucketDto { Name = bucketName });
+        return Ok(result);
     }
 
     [HttpDelete("{bucket-name}")]
@@ -30,7 +35,8 @@ public class BucketController : ControllerBase
         [FromRoute(Name = "bucket-name")] string bucketName
     )
     {
-        return await Task.FromResult(NoContent());
+        await bucketService.DeleteBucketAsync(new DeleteBucketDto { Name = bucketName });
+        return NoContent();
     }
 
     [HttpGet("{bucket-name}/files")]
@@ -40,19 +46,30 @@ public class BucketController : ControllerBase
         [FromQuery(Name = "prefix")] string prefix
     )
     {
-        return await Task.FromResult(Ok());
+        var result = await bucketService.GetFilesAsync(new GetFilesInfoDto
+        {
+            BucketName = bucketName,
+            Prefix = prefix
+        });
+        return Ok(result);
     }
 
     [HttpPost("{bucket-name}/files")]
     [Authorize]
-    public async Task<IActionResult> CreateFile(
+    public IActionResult CreateFile(
         [FromBody] IFormFile file,
         [FromRoute(Name = "bucket-name")] string bucketName,
         [FromQuery(Name = "prefix")] string prefix,
         [FromQuery(Name = "proc-video")] bool isVideoProcNecessary
     )
     {
-        return await Task.FromResult(Ok());
+        var result = bucketService.CreateFile(file, new CreateFileInfoDto
+        {
+            BucketName = bucketName,
+            Prefix = prefix,
+            IsVideoProcNecessary = isVideoProcNecessary
+        });
+        return Ok(result);
     }
 
     [HttpGet("{bucket-name}/files/{*key}")]
@@ -61,19 +78,26 @@ public class BucketController : ControllerBase
         [FromRoute(Name = "key")] string key
     )
     {
-        return await Task.FromResult(Ok());
+        var result = await bucketService.GetFileAsync(new GetFileInfoDto { BucketName = bucketName, Key = key });
+        return File(result.Content, result.ContentType, result.FileName);
     }
 
     [HttpPut("{bucket-name}/files/{*key}")]
     [Authorize]
-    public async Task<IActionResult> UpdateFile(
+    public IActionResult UpdateFile(
         [FromBody] IFormFile file,
         [FromRoute(Name = "bucket-name")] string bucketName,
         [FromRoute(Name = "key")] string key,
         [FromQuery(Name = "proc-video")] bool isVideoProcNecessary
     )
     {
-        return await Task.FromResult(Ok());
+        var result = bucketService.UpdateFile(file, new UpdateFileInfoDto
+        {
+            BucketName = bucketName,
+            Key = key,
+            IsVideoProcNecessary = isVideoProcNecessary
+        });
+        return Ok(result);
     }
 
     [HttpDelete("{bucket-name}/files/{*key}")]
@@ -83,6 +107,11 @@ public class BucketController : ControllerBase
         [FromRoute(Name = "key")] string key
     )
     {
-        return await Task.FromResult(NoContent());
+        await bucketService.DeleteFileAsync(new DeleteFileInfoDto
+        {
+            BucketName = bucketName,
+            Key = key
+        });
+        return NoContent();
     }
 }

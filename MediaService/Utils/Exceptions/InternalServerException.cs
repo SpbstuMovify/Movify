@@ -1,4 +1,4 @@
-namespace MediaService.Exceptions;
+namespace MediaService.Utils.Exceptions;
 
 public class InternalServerException : Exception
 {
