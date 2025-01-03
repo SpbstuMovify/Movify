@@ -1,12 +1,15 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
-option csharp_namespace = "AuthMicroservice";
- 
+option csharp_namespace = "Movify";
+
 package content;
+import "google/protobuf/empty.proto";
 
 service ContentService {
   rpc GetUserRole(UserRoleRequest) returns (UserRoleResponse);
+  rpc SetContentImageUrl(SetContentImageUrlRequest) returns (google.protobuf.Empty);
+  rpc SetEpisodeVideoUrl(SetEpisodeVideoUrlRequest) returns (google.protobuf.Empty);
 }
 
 message UserRoleRequest {
@@ -15,4 +18,14 @@ message UserRoleRequest {
 
 message UserRoleResponse {
   string role = 1;
+}
+
+message SetContentImageUrlRequest {
+  string contentId = 1;
+  string url = 2;
+}
+
+message SetEpisodeVideoUrlRequest {
+  string episodeId = 1;
+  string url = 2;
 }
