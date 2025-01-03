@@ -19,6 +19,14 @@ public interface AuthService {
   UserRegistrationResponseDto registerUser(UserRegisterDto userDto);
 
   /**
+   * Восстановление пароля пользователя.
+   *
+   * @param userDto данные для сброса пароля
+   * @return данные пользователя + новый токен
+   */
+  UserRegistrationResponseDto resetUserPassword(UserRegisterDto userDto);
+
+  /**
    * Метод для получения токена.
    *
    * @param userDto данные пользователя для аунтефикации

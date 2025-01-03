@@ -87,6 +87,16 @@ public class UserServiceImpl implements UserService {
     return userMapper.convertToUserDto(user);
   }
 
+  @Override
+  public UserDto resetPassword(UserRegisterDto userDto) {
+    User userToUpdate = userRepository.findByEmail(userDto.email())
+        .orElseThrow(() -> new NotFoundException("User not found"));
+    userToUpdate.setPasswordSalt(userDto.passwordSalt());
+    userToUpdate.setPasswordHash(userDto.passwordHash());
+    User user = userRepository.save(userToUpdate);
+    return userMapper.convertToUserDto(user);
+  }
+
   private User getUserInfoById(UUID id) {
     return userRepository.findById(id)
         .orElseThrow(() -> new NotFoundException("User not found"));

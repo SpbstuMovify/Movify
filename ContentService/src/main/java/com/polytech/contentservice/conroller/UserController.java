@@ -113,6 +113,15 @@ public class UserController {
     return authService.registerUser(userDto);
   }
 
+  @PostMapping("/password-recovery")
+  @Operation(
+      summary = "Восстановление пароля пользователя",
+      description = "Позволяет восстановить пароль пользователя в системе"
+  )
+  public UserRegistrationResponseDto resetPassword(@Valid @RequestBody UserRegisterDto userDto) {
+    return authService.resetUserPassword(userDto);
+  }
+
   @PostMapping("/login")
   @Operation(
       summary = "Аунтефикация пользователя",
