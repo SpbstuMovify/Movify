@@ -13,3 +13,5 @@ databaseChangeLog:
       file: db/changelog/006-add-password-hash-field-to-user.sql
   - include:
       file: db/changelog/007-add-year-field-to-content.sql
+  - include:
+      file: db/changelog/008-alter-episode-table.sql
