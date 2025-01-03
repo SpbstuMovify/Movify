@@ -12,7 +12,7 @@ namespace MediaService.Controllers;
 public class BucketController(IBucketService bucketService) : ControllerBase
 {
     [HttpGet]
-    [Authorize]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> GetAll()
     {
         var result = await bucketService.GetBucketsAsync();
@@ -20,7 +20,7 @@ public class BucketController(IBucketService bucketService) : ControllerBase
     }
 
     [HttpPost]
-    [Authorize]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> Create(
         [FromQuery(Name = "bucket-name")] string bucketName
     )
@@ -30,7 +30,7 @@ public class BucketController(IBucketService bucketService) : ControllerBase
     }
 
     [HttpDelete("{bucket-name}")]
-    [Authorize]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> Delete(
         [FromRoute(Name = "bucket-name")] string bucketName
     )
@@ -40,7 +40,7 @@ public class BucketController(IBucketService bucketService) : ControllerBase
     }
 
     [HttpGet("{bucket-name}/files")]
-    [Authorize]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> GetAllFiles(
         [FromRoute(Name = "bucket-name")] string bucketName,
         [FromQuery(Name = "prefix")] string prefix
@@ -55,7 +55,7 @@ public class BucketController(IBucketService bucketService) : ControllerBase
     }
 
     [HttpPost("{bucket-name}/files")]
-    [Authorize]
+    [Authorize(Roles = "ADMIN")]
     public IActionResult CreateFile(
         [FromBody] IFormFile file,
         [FromRoute(Name = "bucket-name")] string bucketName,
@@ -83,7 +83,7 @@ public class BucketController(IBucketService bucketService) : ControllerBase
     }
 
     [HttpPut("{bucket-name}/files/{*key}")]
-    [Authorize]
+    [Authorize(Roles = "ADMIN")]
     public IActionResult UpdateFile(
         [FromBody] IFormFile file,
         [FromRoute(Name = "bucket-name")] string bucketName,
@@ -101,7 +101,7 @@ public class BucketController(IBucketService bucketService) : ControllerBase
     }
 
     [HttpDelete("{bucket-name}/files/{*key}")]
-    [Authorize]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> DeleteFile(
         [FromRoute(Name = "bucket-name")] string bucketName,
         [FromRoute(Name = "key")] string key

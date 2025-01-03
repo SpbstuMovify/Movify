@@ -1,6 +1,7 @@
 using Amazon.S3;
 using MediaService.Repositories;
 using MediaService.Services;
+using MediaService.Utils;
 using MediaService.Utils.FileProcessing;
 using MediaService.Utils.Middleware;
 
@@ -13,6 +14,8 @@ public class Startup(IConfiguration configuration)
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
+        services.AddGrpc();
+        services.AddJwtAuthentication(Configuration);
         services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
         services.AddAWSService<IAmazonS3>();
         services.AddSingleton<IBucketRepository, BucketRepository>();
@@ -46,9 +49,16 @@ public class Startup(IConfiguration configuration)
         logger.LogInformation("Routing configured");
 
         app.UseMiddleware<ExceptionHandlingMiddleware>();
+        logger.LogInformation("ExceptionHandlingMiddleware configured");
+
+        app.UseMiddleware<JwtMiddleware>();
+        logger.LogInformation("JwtMiddleware configured");
 
         app.UseAuthentication();
         logger.LogInformation("Authentication configured");
+
+        app.UseAuthorization();
+        logger.LogInformation("Authorization configured");
 
         app.UseEndpoints(endpoints =>
         {
