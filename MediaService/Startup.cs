@@ -4,6 +4,7 @@ using MediaService.Services;
 using MediaService.Utils;
 using MediaService.Utils.FileProcessing;
 using MediaService.Utils.Middleware;
+using Movify;
 
 namespace MediaService;
 public class Startup(IConfiguration configuration)
@@ -15,12 +16,26 @@ public class Startup(IConfiguration configuration)
     {
         services.AddControllers();
         services.AddGrpc();
+
         services.AddJwtAuthentication(Configuration);
+        
         services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
         services.AddAWSService<IAmazonS3>();
-        services.AddSingleton<IBucketRepository, BucketRepository>();
-        services.AddSingleton<IFileProcessingQueue, FileProcessingQueue>();
+
+        services.AddGrpcClient<ContentService.ContentServiceClient>(o =>
+        {
+            var address = Configuration["GrpcClientSettings:ContentServiceAddress"];
+            if (string.IsNullOrEmpty(address))
+            {
+                throw new InvalidOperationException("ContentServiceAddress is not configured.");
+            }
+            o.Address = new Uri(address);
+        });
+
+        services.AddScoped<IBucketRepository, BucketRepository>();
         services.AddScoped<IBucketService, BucketService>();
+
+        services.AddSingleton<IFileProcessingQueue, FileProcessingQueue>();
         services.AddHostedService<FileProcessingService>();
 
         services.AddLogging(loggingBuilder =>

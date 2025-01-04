@@ -86,8 +86,11 @@ public class BucketService(IBucketRepository bucketRepository, IFileProcessingQu
         var bucketName = createFileInfoDto.BucketName;
         var prefix = createFileInfoDto.Prefix;
         var key = string.IsNullOrEmpty(prefix) ? file.FileName : $"{prefix?.TrimEnd('/')}/{file.FileName}";
+        var isVideoProcNecessary = createFileInfoDto.IsVideoProcNecessary;
+        var destination = createFileInfoDto.Destination;
+        var baseUrl = createFileInfoDto.BaseUrl;
 
-        fileProcessingQueue.Enqueue(new FileProcessingTask(file, bucketName, key, false));
+        fileProcessingQueue.Enqueue(new FileProcessingTask(file, bucketName, key, isVideoProcNecessary, destination, baseUrl));
 
         return new FileInfoDto
         {
@@ -117,8 +120,11 @@ public class BucketService(IBucketRepository bucketRepository, IFileProcessingQu
     {
         var bucketName = updateFileInfoDto.BucketName;
         var key = updateFileInfoDto.Key;
+        var isVideoProcNecessary = updateFileInfoDto.IsVideoProcNecessary;
+        var destination = updateFileInfoDto.Destination;
+        var baseUrl = updateFileInfoDto.BaseUrl;
 
-        fileProcessingQueue.Enqueue(new FileProcessingTask(file, bucketName, key, false));
+        fileProcessingQueue.Enqueue(new FileProcessingTask(file, bucketName, key, isVideoProcNecessary, destination, baseUrl));
 
         return new FileInfoDto
         {

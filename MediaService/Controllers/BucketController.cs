@@ -1,13 +1,14 @@
+using System.ComponentModel.DataAnnotations;
 using MediaService.Dtos.Bucket;
 using MediaService.Dtos.FileInfo;
 using MediaService.Services;
+using MediaService.Utils.FileProcessing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MediaService.Controllers;
 
-
-[Route("api/v1/bucket")]
+[Route("api/v1/buckets")]
 [ApiController]
 public class BucketController(IBucketService bucketService) : ControllerBase
 {
@@ -43,13 +44,13 @@ public class BucketController(IBucketService bucketService) : ControllerBase
     [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> GetAllFiles(
         [FromRoute(Name = "bucket-name")] string bucketName,
-        [FromQuery(Name = "prefix")] string prefix
+        [FromQuery(Name = "prefix")] string? prefix
     )
     {
         var result = await bucketService.GetFilesAsync(new GetFilesInfoDto
         {
             BucketName = bucketName,
-            Prefix = prefix
+            Prefix = prefix ?? ""
         });
         return Ok(result);
     }
@@ -59,15 +60,18 @@ public class BucketController(IBucketService bucketService) : ControllerBase
     public IActionResult CreateFile(
         [FromBody] IFormFile file,
         [FromRoute(Name = "bucket-name")] string bucketName,
-        [FromQuery(Name = "prefix")] string prefix,
-        [FromQuery(Name = "proc-video")] bool isVideoProcNecessary
+        [FromQuery(Name = "prefix")] string? prefix,
+        [FromQuery(Name = "process")] bool? isVideoProcNecessary,
+        [FromQuery(Name = "destination")] FileDestination? destination
     )
     {
         var result = bucketService.CreateFile(file, new CreateFileInfoDto
         {
             BucketName = bucketName,
-            Prefix = prefix,
-            IsVideoProcNecessary = isVideoProcNecessary
+            Prefix = prefix ?? "",
+            IsVideoProcNecessary = isVideoProcNecessary ?? false,
+            Destination = destination ?? FileDestination.Internal,
+            BaseUrl = $"{Request.Scheme}://{Request.Host}"
         });
         return Ok(result);
     }
@@ -88,14 +92,17 @@ public class BucketController(IBucketService bucketService) : ControllerBase
         [FromBody] IFormFile file,
         [FromRoute(Name = "bucket-name")] string bucketName,
         [FromRoute(Name = "key")] string key,
-        [FromQuery(Name = "proc-video")] bool isVideoProcNecessary
+        [FromQuery(Name = "proc-video")] bool? isVideoProcNecessary,
+        [FromQuery(Name = "destination")] FileDestination? destination
     )
     {
         var result = bucketService.UpdateFile(file, new UpdateFileInfoDto
         {
             BucketName = bucketName,
             Key = key,
-            IsVideoProcNecessary = isVideoProcNecessary
+            IsVideoProcNecessary = isVideoProcNecessary ?? false,
+            Destination = destination ?? FileDestination.Internal,
+            BaseUrl = $"{Request.Scheme}://{Request.Host}"
         });
         return Ok(result);
     }

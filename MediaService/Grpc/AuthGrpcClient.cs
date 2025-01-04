@@ -1,4 +1,4 @@
-using AuthMicroservice;
+using Movify;
 using MediaService.Dtos.Claims;
 
 namespace MediaService.Grpc;
