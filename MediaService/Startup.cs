@@ -1,4 +1,5 @@
 using Amazon.S3;
+using MediaService.Grpc;
 using MediaService.Repositories;
 using MediaService.Services;
 using MediaService.Utils;
@@ -30,6 +31,8 @@ public class Startup(IConfiguration configuration)
             }
             o.Address = new Uri(address);
         });
+
+        services.AddScoped<IContentGrpcClient, ContentGrpcClient>();
 
         services.AddScoped<IBucketRepository, BucketRepository>();
         services.AddScoped<IBucketService, BucketService>();

@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Movify;
+using System.Security.Claims;
 using System.Text;
 
 namespace MediaService.Utils;
@@ -46,7 +47,8 @@ public static class Extentions
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = false,
-                    ValidateAudience = false
+                    ValidateAudience = false,
+                    RoleClaimType = "userRole"
                 };
             });
 
