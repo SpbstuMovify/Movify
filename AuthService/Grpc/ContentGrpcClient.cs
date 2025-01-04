@@ -1,16 +1,14 @@
 using Grpc.Core;
-using AuthMicroservice.Utils;
-using AuthMicroservice.Services;
 
-namespace AuthMicroservice.Grpc;
+namespace AuthService.Grpc;
 
-public class ContentGrpcClient(ILogger<ContentGrpcClient> logger, ContentService.ContentServiceClient contentClient) : IContentGrpcClient
+public class ContentGrpcClient(ILogger<ContentGrpcClient> logger, Movify.ContentService.ContentServiceClient contentClient) : IContentGrpcClient
 {
     public async Task<string> GetUserRoleAsync(string email)
     {
         try
         {
-            var response = await contentClient.GetUserRoleAsync(new UserRoleRequest { Email = email });
+            var response = await contentClient.GetUserRoleAsync(new Movify.UserRoleRequest { Email = email });
             return response.Role;
         }
         catch (RpcException e)

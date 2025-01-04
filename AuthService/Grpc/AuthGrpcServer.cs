@@ -1,13 +1,12 @@
 using Grpc.Core;
-using AuthMicroservice.Utils;
-using AuthMicroservice.Services;
-using AuthMicroservice.Dtos;
+using AuthService.Services;
+using AuthService.Dtos;
 
-namespace AuthMicroservice.Grpc;
+namespace AuthService.Grpc;
 
-public class AuthGrpcServer(ILogger<AuthGrpcServer> logger, IAuthService authService) : AuthService.AuthServiceBase
+public class AuthGrpcServer(ILogger<AuthGrpcServer> logger, IAuthService authService) : Movify.AuthService.AuthServiceBase
 {
-    public override Task<LoginUserResponse> LoginUser(LoginUserRequest request, ServerCallContext context)
+    public override Task<Movify.LoginUserResponse> LoginUser(Movify.LoginUserRequest request, ServerCallContext context)
     {
         logger.LogInformation("LoginUser request received");
 
@@ -21,7 +20,7 @@ public class AuthGrpcServer(ILogger<AuthGrpcServer> logger, IAuthService authSer
                 Salt = request.PasswordSalt
             });
 
-            return Task.FromResult(new LoginUserResponse{Token = response.Token });
+            return Task.FromResult(new Movify.LoginUserResponse{Token = response.Token });
         }
         catch (Exception e)
         {
@@ -30,7 +29,7 @@ public class AuthGrpcServer(ILogger<AuthGrpcServer> logger, IAuthService authSer
         }
     }
 
-    public override Task<RegisterUserResponse> RegisterUser(RegisterUserRequest request, ServerCallContext context)
+    public override Task<Movify.RegisterUserResponse> RegisterUser(Movify.RegisterUserRequest request, ServerCallContext context)
     {
         logger.LogInformation("RegisterUser request received");
 
@@ -42,7 +41,7 @@ public class AuthGrpcServer(ILogger<AuthGrpcServer> logger, IAuthService authSer
                 Password = request.Password
             });
 
-            return Task.FromResult(new RegisterUserResponse{
+            return Task.FromResult(new Movify.RegisterUserResponse{
                 Token = response.Token,
                 PasswordHash = response.PwdHash,
                 PasswordSalt = response.Salt
@@ -55,7 +54,7 @@ public class AuthGrpcServer(ILogger<AuthGrpcServer> logger, IAuthService authSer
         }
     }
 
-    public override async Task<ValidationTokenResponse> ValidateToken(ValidationTokenRequest request, ServerCallContext context)
+    public override async Task<Movify.ValidationTokenResponse> ValidateToken(Movify.ValidationTokenRequest request, ServerCallContext context)
     {
         logger.LogInformation("ValidateToken request received");
 
@@ -65,7 +64,7 @@ public class AuthGrpcServer(ILogger<AuthGrpcServer> logger, IAuthService authSer
                 Token = request.Token
             });
 
-            return new ValidationTokenResponse{
+            return new Movify.ValidationTokenResponse{
                 Email = response.Email,
                 Role = response.Role
             };

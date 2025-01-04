@@ -1,4 +1,4 @@
-namespace AuthMicroservice.Dtos;
+namespace AuthService.Dtos;
 
 public class LoginUserResponseDto
 {

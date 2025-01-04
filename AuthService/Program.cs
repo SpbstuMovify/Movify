@@ -1,4 +1,4 @@
-using AuthMicroservice;
+using AuthService;
 
 var builder = Host.CreateDefaultBuilder(args)
     .ConfigureAppConfiguration((hostingContext, config) =>

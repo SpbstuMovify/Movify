@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 
-namespace AuthMicroservice.Utils;
+namespace AuthService.Utils;
 
 public class Encryptor : IEncryptor
 {

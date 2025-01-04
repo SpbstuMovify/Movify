@@ -1,10 +1,10 @@
 using Grpc.Core;
 
-using AuthMicroservice.Utils;
-using AuthMicroservice.Grpc;
-using AuthMicroservice.Dtos;
+using AuthService.Utils;
+using AuthService.Grpc;
+using AuthService.Dtos;
 
-namespace AuthMicroservice.Services;
+namespace AuthService.Services;
 
 public class AuthService(
     ILogger<AuthService> logger,
