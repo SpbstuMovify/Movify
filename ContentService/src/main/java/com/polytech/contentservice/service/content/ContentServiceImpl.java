@@ -9,20 +9,22 @@ import com.polytech.contentservice.mapper.ContentMapper;
 import com.polytech.contentservice.mapper.EpisodeMapper;
 import com.polytech.contentservice.repository.ContentRepository;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 /**
  * Реализация {@link ContentService}.
@@ -75,8 +77,11 @@ public class ContentServiceImpl implements ContentService {
   }
 
   @Override
-  public List<ContentDto> getAllContentsByFilter(ContentSearchDto contentSearchDto) {
+  public Page<ContentDto> getAllContentsByFilter(ContentSearchDto contentSearchDto) {
     JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+    Pageable pageable = PageRequest.of(
+        contentSearchDto.pageNumber(),
+        contentSearchDto.pageSize());
 
     BooleanBuilder booleanBuilder = new BooleanBuilder();
 
@@ -92,13 +97,17 @@ public class ContentServiceImpl implements ContentService {
     if (contentSearchDto.year() != null) {
       booleanBuilder.and(content.year.eq(contentSearchDto.year()));
     }
+    JPAQuery<Content> query = queryFactory.selectFrom(content)
+        .where(booleanBuilder);
 
-    return queryFactory.selectFrom(content)
-        .where(booleanBuilder)
+    List<ContentDto> products = query.offset(pageable.getOffset())
+        .limit(pageable.getPageSize())
         .fetch()
         .stream()
         .map(contentMapper::convertToContentDto)
         .toList();
+
+    return new PageImpl<>(products, pageable, query.fetchCount());
   }
 
   @Override

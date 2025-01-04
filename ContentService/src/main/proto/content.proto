@@ -28,4 +28,5 @@ message SetContentImageUrlRequest {
 message SetEpisodeVideoUrlRequest {
   string episodeId = 1;
   string url = 2;
+  string status = 3;
 }

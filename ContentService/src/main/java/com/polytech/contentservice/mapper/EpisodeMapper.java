@@ -3,7 +3,6 @@ package com.polytech.contentservice.mapper;
 import com.polytech.contentservice.dto.episode.EpisodeDto;
 import com.polytech.contentservice.entity.Content;
 import com.polytech.contentservice.entity.Episode;
-
 import org.springframework.stereotype.Component;
 
 /**
@@ -20,12 +19,15 @@ public final class EpisodeMapper {
         .title(episode.getTitle())
         .storyline(episode.getStoryline())
         .contentId(episode.getContent().getId())
+        .status(episode.getStatus())
         .build();
   }
 
   public Episode patchUpdate(Episode oldEpisode, EpisodeDto newDto) {
     return Episode.builder()
+        .id(oldEpisode.getId())
         .title(newDto.title() == null ? oldEpisode.getTitle() : newDto.title())
+        .content(oldEpisode.getContent())
         .storyline(newDto.storyline() == null ? oldEpisode.getStoryline() : newDto.storyline())
         .seasonNumber(
             newDto.seasonNumber() == null ? oldEpisode.getSeasonNumber() : newDto.seasonNumber())
@@ -34,6 +36,7 @@ public final class EpisodeMapper {
         .storyline(newDto.storyline() == null ? oldEpisode.getStoryline() : newDto.storyline())
         .s3BucketName(
             newDto.s3BucketName() == null ? oldEpisode.getS3BucketName() : newDto.s3BucketName())
+        .status(newDto.status() == null ? oldEpisode.getStatus() : newDto.status())
         .build();
   }
 
@@ -45,6 +48,7 @@ public final class EpisodeMapper {
         .title(episodeDto.title())
         .storyline(episodeDto.storyline())
         .content(content)
+        .status(episodeDto.status())
         .build();
   }
 }

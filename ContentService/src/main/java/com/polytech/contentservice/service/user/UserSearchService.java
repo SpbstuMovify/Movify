@@ -1,8 +1,8 @@
 package com.polytech.contentservice.service.user;
 
 import com.polytech.contentservice.common.UserSearchType;
-import com.polytech.contentservice.dto.user.search.UserSearchDto;
 import com.polytech.contentservice.dto.user.detailed.UserDto;
+import com.polytech.contentservice.dto.user.search.UserSearchDto;
 
 /**
  * Описания сервиса для поиска пользователей в бд.

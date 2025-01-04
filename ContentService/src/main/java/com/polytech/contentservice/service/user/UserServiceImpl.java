@@ -1,9 +1,9 @@
 package com.polytech.contentservice.service.user;
 
 import com.polytech.contentservice.common.Role;
-import com.polytech.contentservice.dto.user.search.UserSearchDto;
 import com.polytech.contentservice.dto.user.detailed.UserDto;
 import com.polytech.contentservice.dto.user.register.UserRegisterDto;
+import com.polytech.contentservice.dto.user.search.UserSearchDto;
 import com.polytech.contentservice.entity.User;
 import com.polytech.contentservice.exception.NotFoundException;
 import com.polytech.contentservice.mapper.UserMapper;
@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 /**
- * Реализация {@link UserService}
+ * Реализация {@link UserService}.
  */
 @Service
 @RequiredArgsConstructor

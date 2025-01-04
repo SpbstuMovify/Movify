@@ -3,7 +3,6 @@ package com.polytech.contentservice.common.converter;
 import com.polytech.contentservice.common.AgeRestriction;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-
 import java.util.stream.Stream;
 
 /**

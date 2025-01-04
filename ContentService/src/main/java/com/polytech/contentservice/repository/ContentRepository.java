@@ -3,9 +3,8 @@ package com.polytech.contentservice.repository;
 import com.polytech.contentservice.entity.Content;
 import com.polytech.contentservice.entity.QContent;
 import com.querydsl.core.types.dsl.StringExpression;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.UUID;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;

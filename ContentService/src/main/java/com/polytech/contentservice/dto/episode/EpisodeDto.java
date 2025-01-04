@@ -1,20 +1,21 @@
 package com.polytech.contentservice.dto.episode;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.polytech.contentservice.common.EpisodeStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.UUID;
 import lombok.Builder;
 
-import java.util.UUID;
-
 /**
- * Сущность эпизода
- * @param id ИД эпизода
- * @param s3BucketName Ссылка на s3
+ * Сущность эпизода.
+ *
+ * @param id            ИД эпизода
+ * @param s3BucketName  Ссылка на s3
  * @param episodeNumber Номер эпизода
- * @param title Название эпизода
- * @param storyline Описание эпизода
- * @param seasonNumber Номер сезона
- * @param contentId ИД контента
+ * @param title         Название эпизода
+ * @param storyline     Описание эпизода
+ * @param seasonNumber  Номер сезона
+ * @param contentId     ИД контента
  */
 @Builder
 @Schema(
@@ -60,6 +61,12 @@ public record EpisodeDto(
         example = "cfb4e3bc-6bb6-46d8-943e-b32c0056e37f"
     )
     @JsonProperty("content_id")
-    UUID contentId
+    UUID contentId,
+    @Schema(
+        description = "Статус загрузки эпизода",
+        example = "ERROR"
+    )
+    @JsonProperty("status")
+    EpisodeStatus status
 ) {
 }

@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Различные категории фильмов
+ * Различные категории фильмов.
  */
 @Getter
 @RequiredArgsConstructor

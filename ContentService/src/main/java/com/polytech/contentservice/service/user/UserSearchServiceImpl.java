@@ -2,8 +2,8 @@ package com.polytech.contentservice.service.user;
 
 import com.polytech.contentservice.common.UserSearchType;
 import com.polytech.contentservice.common.strategy.SearchUserStrategy;
-import com.polytech.contentservice.dto.user.search.UserSearchDto;
 import com.polytech.contentservice.dto.user.detailed.UserDto;
+import com.polytech.contentservice.dto.user.search.UserSearchDto;
 import com.polytech.contentservice.entity.User;
 import com.polytech.contentservice.mapper.UserMapper;
 import java.util.Map;

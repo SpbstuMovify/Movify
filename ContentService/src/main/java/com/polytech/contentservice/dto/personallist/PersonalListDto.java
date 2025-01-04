@@ -5,11 +5,18 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.UUID;
 import lombok.Builder;
 
+/**
+ * Сущность любимых фильмов.
+ *
+ * @param personalListId - ИД персонального листа
+ * @param userId - ИД хозяина персонального листа
+ * @param contentId - ИД контента который добавили
+ */
 @Builder
 @Schema(
     description = "Сущность любимых фильмов"
 )
-public record PersonalListDto (
+public record PersonalListDto(
     @Schema(
         description = "ИД персонального листа",
         example = "cfb4e3bc-6bb6-46d8-943e-b32c0056e37f"

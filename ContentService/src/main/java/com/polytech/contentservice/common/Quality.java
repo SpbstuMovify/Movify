@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Различные разрешения для видео
+ * Различные разрешения для видео.
  */
 @RequiredArgsConstructor
 @Getter

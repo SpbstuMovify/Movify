@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Возрастные ограничения
+ * Возрастные ограничения.
  */
 @Getter
 @RequiredArgsConstructor

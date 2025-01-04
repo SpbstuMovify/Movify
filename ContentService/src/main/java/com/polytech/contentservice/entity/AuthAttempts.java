@@ -14,6 +14,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
 
+/**
+ * Сущность для попыток авторизации.
+ */
 @Entity
 @Table(name = "auth_attempt")
 @Getter

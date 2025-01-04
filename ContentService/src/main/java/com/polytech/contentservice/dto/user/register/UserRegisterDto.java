@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 /**
- * Сущность для пользователя нашего сервиса
+ * Сущность для пользователя нашего сервиса.
  *
  * @param firstName Имя пользователя
  * @param lastName  Фамилия пользователя

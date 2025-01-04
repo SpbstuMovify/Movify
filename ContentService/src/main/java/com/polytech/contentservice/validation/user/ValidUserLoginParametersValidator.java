@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+/**
+ * Валидатор для {@link UserLoginDto}.
+ */
 @Component
 @RequiredArgsConstructor
 public class ValidUserLoginParametersValidator implements

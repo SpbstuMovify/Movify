@@ -3,7 +3,6 @@ package com.polytech.contentservice.common.converter;
 import com.polytech.contentservice.common.Quality;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-
 import java.util.stream.Stream;
 
 /**
