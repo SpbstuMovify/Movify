@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-namespace AuthMicroservice.Utils;
+namespace AuthService.Utils;
 
 public static class Extentions
 {

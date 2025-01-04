@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace AuthMicroservice.Controllers;
+namespace AuthService.Controllers;
 
 [Route("api/v1")]
 [ApiController]

@@ -5,7 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace AuthMicroservice.Utils;
+namespace AuthService.Utils;
 
 public class JwtBuilder(IOptions<JwtOptions> options) : IJwtBuilder
 {

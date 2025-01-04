@@ -1,8 +1,8 @@
 using Grpc.Core;
-using AuthMicroservice.Utils;
-using AuthMicroservice.Services;
+using AuthService.Utils;
+using AuthService.Services;
 
-namespace AuthMicroservice.Grpc;
+namespace AuthService.Grpc;
 
 public interface IContentGrpcClient
 {

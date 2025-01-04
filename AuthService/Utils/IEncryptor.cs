@@ -1,4 +1,4 @@
-﻿namespace AuthMicroservice.Utils;
+﻿namespace AuthService.Utils;
 
 public interface IEncryptor
 {

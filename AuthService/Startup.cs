@@ -1,9 +1,9 @@
-using AuthMicroservice.Grpc;
-using AuthMicroservice.Services;
-using AuthMicroservice.Utils;
+using AuthService.Grpc;
+using AuthService.Services;
+using AuthService.Utils;
 using Microsoft.Extensions.Logging;
 
-namespace AuthMicroservice;
+namespace AuthService;
 public class Startup(IConfiguration configuration)
 {
     private IConfiguration Configuration { get; } = configuration;
@@ -13,7 +13,7 @@ public class Startup(IConfiguration configuration)
     {
         services.AddGrpc();
         services.AddJwt(Configuration);
-        services.AddGrpcClient<ContentService.ContentServiceClient>(o =>
+        services.AddGrpcClient<Movify.ContentService.ContentServiceClient>(o =>
         {
             var address = Configuration["GrpcClientSettings:ContentServiceAddress"];
             if (string.IsNullOrEmpty(address))
@@ -24,7 +24,7 @@ public class Startup(IConfiguration configuration)
         });
         services.AddTransient<IEncryptor, Encryptor>();
         services.AddTransient<IContentGrpcClient, ContentGrpcClient>();
-        services.AddTransient<IAuthService, AuthMicroservice.Services.AuthService>();
+        services.AddTransient<IAuthService, AuthService.Services.AuthService>();
 
         services.AddLogging(loggingBuilder =>
         {

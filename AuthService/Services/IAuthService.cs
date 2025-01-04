@@ -1,7 +1,7 @@
-using AuthMicroservice.Dtos;
-using AuthMicroservice.Utils;
+using AuthService.Dtos;
+using AuthService.Utils;
 
-namespace AuthMicroservice.Services;
+namespace AuthService.Services;
 
 public interface IAuthService
 {
