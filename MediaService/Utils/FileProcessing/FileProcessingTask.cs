@@ -1,8 +1,10 @@
+using MediaService.Repositories;
+
 namespace MediaService.Utils.FileProcessing;
 
 public record FileProcessingTask
 (
-    IFormFile File,
+    UploadedFile File,
     string BucketName,
     string Key,
     bool IsVideoProcNecessary, 

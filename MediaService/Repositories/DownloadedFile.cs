@@ -1,4 +1,4 @@
-namespace MediaService.Models;
+namespace MediaService.Repositories;
 
 public class DownloadedFile
 {
