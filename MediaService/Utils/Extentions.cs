@@ -1,4 +1,3 @@
-using AuthMicroservice;
 using MediaService.Grpc;
 using MediaService.Utils.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -7,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Movify;
 using System.Text;
 
 namespace MediaService.Utils;
@@ -25,7 +25,7 @@ public static class Extentions
             var address = configuration["GrpcClientSettings:AuthServiceAddress"];
             if (string.IsNullOrEmpty(address))
             {
-                throw new InvalidOperationException("ContentServiceAddress is not configured.");
+                throw new InvalidOperationException("AuthServiceAddress is not configured.");
             }
             o.Address = new Uri(address);
         });
