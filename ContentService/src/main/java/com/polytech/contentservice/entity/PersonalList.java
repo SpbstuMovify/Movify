@@ -16,6 +16,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
 
+/**
+ * Сущность personal_list.
+ */
 @Entity
 @Table(name = "personal_list")
 @Getter

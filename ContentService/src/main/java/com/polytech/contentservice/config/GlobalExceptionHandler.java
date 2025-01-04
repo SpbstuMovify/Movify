@@ -13,6 +13,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+/**
+ * Обработчик ошибок.
+ */
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -48,7 +51,8 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(DataIntegrityViolationException.class)
-  public ResponseEntity<ErrorResponse> handleBadRequestException(DataIntegrityViolationException ex) {
+  public ResponseEntity<ErrorResponse> handleBadRequestException(
+      DataIntegrityViolationException ex) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
         .body(ErrorResponse.builder(ex, HttpStatus.BAD_REQUEST, ex.getMessage()).build());
   }

@@ -15,3 +15,7 @@ databaseChangeLog:
       file: db/changelog/007-add-year-field-to-content.sql
   - include:
       file: db/changelog/008-alter-episode-table.sql
+  - include:
+      file: db/changelog/009-alter-episode-table-add-status.sql
+  - include:
+      file: db/changelog/010-alter-content-table-drop-text-column.sql

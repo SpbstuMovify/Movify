@@ -2,6 +2,7 @@ package com.polytech.contentservice.grpc;
 
 import com.google.rpc.Code;
 import com.google.rpc.Status;
+import com.polytech.contentservice.common.EpisodeStatus;
 import com.polytech.contentservice.dto.content.ContentDto;
 import com.polytech.contentservice.dto.episode.EpisodeDto;
 import com.polytech.contentservice.dto.user.detailed.UserDto;
@@ -53,6 +54,7 @@ public class ContentGrpcController extends ContentServiceGrpc.ContentServiceImpl
             .thumbnail(request.getUrl())
             .build());
     responseObserver.onNext(com.google.protobuf.Empty.getDefaultInstance());
+    responseObserver.onCompleted();
   }
 
   @Override
@@ -61,7 +63,9 @@ public class ContentGrpcController extends ContentServiceGrpc.ContentServiceImpl
     episodeService.updateEpisodeInfo(UUID.fromString(request.getEpisodeId()),
         EpisodeDto.builder()
             .s3BucketName(request.getUrl())
+            .status(EpisodeStatus.valueOf(request.getStatus()))
             .build());
     responseObserver.onNext(com.google.protobuf.Empty.getDefaultInstance());
+    responseObserver.onCompleted();
   }
 }

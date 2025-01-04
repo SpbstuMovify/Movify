@@ -2,12 +2,12 @@ package com.polytech.contentservice.conroller;
 
 import com.polytech.contentservice.dto.content.ContentDto;
 import com.polytech.contentservice.dto.personallist.PersonalListDto;
+import com.polytech.contentservice.dto.user.detailed.UserDto;
+import com.polytech.contentservice.dto.user.login.UserLoginDto;
 import com.polytech.contentservice.dto.user.login.UserLoginResponseDto;
+import com.polytech.contentservice.dto.user.register.UserRegisterDto;
 import com.polytech.contentservice.dto.user.register.UserRegistrationResponseDto;
 import com.polytech.contentservice.dto.user.search.UserSearchDto;
-import com.polytech.contentservice.dto.user.login.UserLoginDto;
-import com.polytech.contentservice.dto.user.detailed.UserDto;
-import com.polytech.contentservice.dto.user.register.UserRegisterDto;
 import com.polytech.contentservice.mapper.UserMapper;
 import com.polytech.contentservice.service.auth.AuthService;
 import com.polytech.contentservice.service.personallist.PersonalListService;

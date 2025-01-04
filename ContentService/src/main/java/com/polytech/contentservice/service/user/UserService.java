@@ -1,8 +1,8 @@
 package com.polytech.contentservice.service.user;
 
-import com.polytech.contentservice.dto.user.search.UserSearchDto;
 import com.polytech.contentservice.dto.user.detailed.UserDto;
 import com.polytech.contentservice.dto.user.register.UserRegisterDto;
+import com.polytech.contentservice.dto.user.search.UserSearchDto;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -11,7 +11,7 @@ import java.util.UUID;
  */
 public interface UserService {
   /**
-   * Получение информации о пользователе по id пользователя
+   * Получение информации о пользователе по id пользователя.
    *
    * @param id Идентификатор пользователя
    * @return Информация о пользователе
@@ -19,7 +19,7 @@ public interface UserService {
   UserDto getUserById(UUID id);
 
   /**
-   * Получение информации о пользователе по логину пользователя в системе
+   * Получение информации о пользователе по логину пользователя в системе.
    *
    * @param login Логин в система
    * @return Информация о пользователе
@@ -27,7 +27,7 @@ public interface UserService {
   UserDto getUserByLogin(String login);
 
   /**
-   * Получение информации о пользователе по email пользователя в системе
+   * Получение информации о пользователе по email пользователя в системе.
    *
    * @param email Электронный адрес
    * @return Информация о пользователе
@@ -35,7 +35,7 @@ public interface UserService {
   UserDto getUserByEmail(String email);
 
   /**
-   * Получение пользователя некоторой информации о пользователе в системе
+   * Получение пользователя некоторой информации о пользователе в системе.
    *
    * @param userDto данные по которым необходимо найти пользователя
    * @return Информация о пользователе
@@ -43,7 +43,7 @@ public interface UserService {
   UserDto getUserInformation(UserSearchDto userDto);
 
   /**
-   * Обновление информации по пользователю
+   * Обновление информации по пользователю.
    *
    * @param userId  Идентификатор пользователя
    * @param userDto Новая информация о пользователе
@@ -51,7 +51,7 @@ public interface UserService {
   void updateUserInformation(UUID userId, UserDto userDto);
 
   /**
-   * Сохранение пользователя
+   * Сохранение пользователя.
    *
    * @param userDto данные пользователя для сохранения
    * @return сохранённый пользователь
@@ -67,7 +67,7 @@ public interface UserService {
   UserDto resetPassword(UserRegisterDto userDto);
 
   /**
-   * Получение информации о пользователе по email пользователя в системе
+   * Получение информации о пользователе по email пользователя в системе.
    *
    * @param email Электронный адрес
    * @return Информация о пользователе
@@ -76,12 +76,14 @@ public interface UserService {
 
   /**
    * Удаление пользователя.
+   *
    * @param userId ИД пользователя
    */
   void deleteById(UUID userId);
 
   /**
-   * Повышение прав пользователя
+   * Повышение прав пользователя.
+   *
    * @param userId ИД пользователя
    * @return обновлённые данные
    */

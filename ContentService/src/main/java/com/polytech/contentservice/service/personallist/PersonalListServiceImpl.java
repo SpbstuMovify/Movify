@@ -17,6 +17,9 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+/**
+ * Реализация {@link PersonalListService}.
+ */
 @Service
 @RequiredArgsConstructor
 public class PersonalListServiceImpl implements PersonalListService {

@@ -2,12 +2,11 @@ package com.polytech.contentservice.dto.castmember;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.UUID;
 import lombok.Builder;
 
-import java.util.UUID;
-
 /**
- * Сущность члена состава
+ * Сущность члена состава.
  *
  * @param id               Идентификатор сущности члена состава
  * @param employeeFullName Полное имя члена состава

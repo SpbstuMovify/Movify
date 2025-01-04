@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Различные жанры для фильмов и сериалов
+ * Различные жанры для фильмов и сериалов.
  */
 @Getter
 @RequiredArgsConstructor

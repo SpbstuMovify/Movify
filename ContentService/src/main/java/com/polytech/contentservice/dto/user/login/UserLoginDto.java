@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 /**
- * Сущность для пользователя нашего сервиса
+ * Сущность для пользователя нашего сервиса.
  *
  * @param password   Пароль пользователя
  * @param login      Логин пользователя

@@ -3,11 +3,11 @@ package com.polytech.contentservice.service.content;
 import com.polytech.contentservice.dto.content.ContentDto;
 import com.polytech.contentservice.dto.content.ContentSearchDto;
 import com.polytech.contentservice.dto.episode.EpisodeDto;
-import org.springframework.data.domain.Pageable;
-
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Описание взаимодействия с таблицей content.
@@ -59,5 +59,5 @@ public interface ContentService {
    * @param contentSearchDto фильтры
    * @return список полученных контентов
    */
-  List<ContentDto> getAllContentsByFilter(ContentSearchDto contentSearchDto);
+  Page<ContentDto> getAllContentsByFilter(ContentSearchDto contentSearchDto);
 }
