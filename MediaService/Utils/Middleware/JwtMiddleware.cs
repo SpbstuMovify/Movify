@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MediaService.Utils.Middleware;
 
-public class JwtMiddleware(IAuthGrpcClient authGrpcClient) : IMiddleware
+public class JwtMiddleware(ILogger<JwtMiddleware> logger, IAuthGrpcClient authGrpcClient) : IMiddleware
 {
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
@@ -14,19 +14,25 @@ public class JwtMiddleware(IAuthGrpcClient authGrpcClient) : IMiddleware
 
         if (!string.IsNullOrEmpty(token))
         {
-            var claims = await authGrpcClient.ValidateToken(token);
-            context.Items["email"] = claims.Email;
-            context.Items["role"] = claims.Role;
-
-             if (claims != null)
+            try
             {
-                var identity = new ClaimsIdentity(
-                [
-                    new Claim(ClaimTypes.Email, claims.Email),
-                    new Claim(ClaimTypes.Role, claims.Role)
-                ], "jwt");
+                var claims = await authGrpcClient.ValidateToken(token);
 
-                context.User = new ClaimsPrincipal(identity);
+                if (claims != null)
+                {
+                    var identity = new ClaimsIdentity(
+                    [
+                        new Claim(ClaimTypes.Email, claims.Email),
+                    new Claim(ClaimTypes.Role, claims.Role)
+                    ], "jwt");
+
+                    context.User = new ClaimsPrincipal(identity);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "JWT validation failed");
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
             }
         }
 

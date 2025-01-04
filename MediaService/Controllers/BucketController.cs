@@ -9,12 +9,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MediaService.Controllers;
 
-[Route("api/v1/buckets")]
+[Route("v1/buckets")]
 [ApiController]
 public class BucketController(IBucketService bucketService) : ControllerBase
 {
     [HttpGet]
-    //[Authorize(Roles = "ADMIN")]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> GetAll()
     {
         var result = await bucketService.GetBucketsAsync();
@@ -22,7 +22,7 @@ public class BucketController(IBucketService bucketService) : ControllerBase
     }
 
     [HttpPost]
-    //[Authorize(Roles = "ADMIN")]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> Create(
         [FromQuery(Name = "bucket-name")] string bucketName
     )
@@ -32,7 +32,7 @@ public class BucketController(IBucketService bucketService) : ControllerBase
     }
 
     [HttpDelete("{bucket-name}")]
-    //[Authorize(Roles = "ADMIN")]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> Delete(
         [FromRoute(Name = "bucket-name")] string bucketName
     )
@@ -42,7 +42,7 @@ public class BucketController(IBucketService bucketService) : ControllerBase
     }
 
     [HttpGet("{bucket-name}/files")]
-    //[Authorize(Roles = "ADMIN")]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> GetAllFiles(
         [FromRoute(Name = "bucket-name")] string bucketName,
         [FromQuery(Name = "prefix")] string? prefix
@@ -57,7 +57,7 @@ public class BucketController(IBucketService bucketService) : ControllerBase
     }
 
     [HttpPost("{bucket-name}/files")]
-    //[Authorize(Roles = "ADMIN")]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> CreateFile(
         [FromForm] IFormFile file,
         [FromRoute(Name = "bucket-name")] string bucketName,
@@ -79,7 +79,7 @@ public class BucketController(IBucketService bucketService) : ControllerBase
             Prefix = prefix ?? "",
             IsVideoProcNecessary = isVideoProcNecessary ?? false,
             Destination = destination ?? FileDestination.Internal,
-            BaseUrl = $"{Request.Scheme}://{Request.Host}"
+            BaseUrl = $"{Request.Path.Value}"
         });
         return Ok(result);
     }
@@ -95,7 +95,7 @@ public class BucketController(IBucketService bucketService) : ControllerBase
     }
 
     [HttpPut("{bucket-name}/files/{*key}")]
-    //[Authorize(Roles = "ADMIN")]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> UpdateFile(
         [FromForm] IFormFile file,
         [FromRoute(Name = "bucket-name")] string bucketName,
@@ -123,7 +123,7 @@ public class BucketController(IBucketService bucketService) : ControllerBase
     }
 
     [HttpDelete("{bucket-name}/files/{*key}")]
-    //[Authorize(Roles = "ADMIN")]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> DeleteFile(
         [FromRoute(Name = "bucket-name")] string bucketName,
         [FromRoute(Name = "key")] string key

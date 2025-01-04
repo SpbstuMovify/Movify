@@ -83,7 +83,7 @@ public class FileProcessingService(
         var bucketName = task.BucketName;
         var key = task.Key;
         var contentId = ParseSegment(task.Key, 0);
-        var url = $"{task.BaseUrl}/buckets/{task.BucketName}/files/{task.Key}";
+        var url = $"{task.BaseUrl}/{task.Key}";
 
         var data = await bucketRepository.UploadFileAsync(file, bucketName, key);
         logger.LogInformation($"File uploaded: {data.PresignedUrl}");
@@ -104,7 +104,7 @@ public class FileProcessingService(
         var bucketName = task.BucketName;
         var key = task.Key;
         var episodeId = ParseSegment(task.Key, 1);
-        var url = $"{task.BaseUrl}/buckets/{task.BucketName}/files/{task.Key}";
+        var url = $"{task.BaseUrl}/{task.Key}";
 
         await contentGrpcClient.SetEpisodeVideoUrlDto(new EpisodeVideoUrlDto
         {
