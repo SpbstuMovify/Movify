@@ -43,6 +43,16 @@ services:
     networks:
       - app
 
+  media-service:
+    container_name: media-service
+    build:
+      context: ./MediaService
+      dockerfile: Dockerfile
+    ports:
+      - "8078:8078"
+    networks:
+      - app
+
 volumes:
   db:
     driver: local

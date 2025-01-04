@@ -1,14 +1,13 @@
 using MediaService.Dtos.Content;
 using MediaService.Utils.FileProcessing;
-using Movify;
 
 namespace MediaService.Grpc;
 
-public class ContentGrpcClient(ContentService.ContentServiceClient contentServiceClient) : IContentGrpcClient
+public class ContentGrpcClient(Movify.ContentService.ContentServiceClient contentServiceClient) : IContentGrpcClient
 {
     public async Task SetContentImageUrl(ContentImageUrlDto contentImageUrlDto)
     {
-        await contentServiceClient.SetContentImageUrlAsync(new SetContentImageUrlRequest
+        await contentServiceClient.SetContentImageUrlAsync(new Movify.SetContentImageUrlRequest
         {
             ContentId = contentImageUrlDto.ContentId,
             Url = contentImageUrlDto.Url
@@ -17,7 +16,7 @@ public class ContentGrpcClient(ContentService.ContentServiceClient contentServic
 
     public async Task SetEpisodeVideoUrlDto(EpisodeVideoUrlDto episodeVideoUrlDto)
     {
-        await contentServiceClient.SetEpisodeVideoUrlAsync(new SetEpisodeVideoUrlRequest
+        await contentServiceClient.SetEpisodeVideoUrlAsync(new Movify.SetEpisodeVideoUrlRequest
         {
             EpisodeId = episodeVideoUrlDto.EpisodeId,
             Url = episodeVideoUrlDto.Url,

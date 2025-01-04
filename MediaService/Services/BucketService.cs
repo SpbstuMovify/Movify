@@ -1,6 +1,5 @@
 using MediaService.Dtos.Bucket;
 using MediaService.Dtos.FileInfo;
-using MediaService.Models;
 using MediaService.Repositories;
 using MediaService.Utils.Exceptions;
 using MediaService.Utils.FileProcessing;
@@ -81,7 +80,7 @@ public class BucketService(IBucketRepository bucketRepository, IFileProcessingQu
         }
     }
 
-    public FileInfoDto CreateFile(IFormFile file, CreateFileInfoDto createFileInfoDto)
+    public FileInfoDto CreateFile(UploadedFile file, CreateFileInfoDto createFileInfoDto)
     {
         var bucketName = createFileInfoDto.BucketName;
         var prefix = createFileInfoDto.Prefix;
@@ -116,7 +115,7 @@ public class BucketService(IBucketRepository bucketRepository, IFileProcessingQu
         }
     }
 
-    public FileInfoDto UpdateFile(IFormFile file, UpdateFileInfoDto updateFileInfoDto)
+    public FileInfoDto UpdateFile(UploadedFile file, UpdateFileInfoDto updateFileInfoDto)
     {
         var bucketName = updateFileInfoDto.BucketName;
         var key = updateFileInfoDto.Key;

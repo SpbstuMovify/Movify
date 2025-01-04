@@ -1,13 +1,12 @@
-using Movify;
 using MediaService.Dtos.Claims;
 
 namespace MediaService.Grpc;
 
-public class AuthGrpcClient(AuthService.AuthServiceClient client) : IAuthGrpcClient
+public class AuthGrpcClient(Movify.AuthService.AuthServiceClient client) : IAuthGrpcClient
 {
     public async Task<ClaimsDto> ValidateToken(string token)
     {
-        var response = await client.ValidateTokenAsync(new ValidationTokenRequest
+        var response = await client.ValidateTokenAsync(new Movify.ValidationTokenRequest
         {
             Token = token
         });

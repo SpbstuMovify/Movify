@@ -5,7 +5,6 @@ using Amazon.S3.Model;
 using MediaService.Dtos;
 using MediaService.Dtos.S3;
 using MediaService.Utils.Exceptions;
-using MediaService.Models;
 
 namespace MediaService.Repositories;
 
@@ -95,14 +94,8 @@ public class BucketRepository(ILogger<BucketRepository> logger, IAmazonS3 s3Clie
         }
     }
 
-    public async Task<S3ObjectDto> UploadFileAsync(IFormFile file, string bucketName, string key)
+    public async Task<S3ObjectDto> UploadFileAsync(UploadedFile file, string bucketName, string key)
     {
-        if (file.Length == 0)
-        {
-            logger.LogWarning("File is empty and cannot be uploaded");
-            throw new ArgumentException("File is required and cannot be empty.", nameof(file));
-        }
-
         if (!await DoesBucketExist(bucketName))
         {
             logger.LogWarning($"Bucket '{bucketName}' does not exist");
@@ -113,7 +106,7 @@ public class BucketRepository(ILogger<BucketRepository> logger, IAmazonS3 s3Clie
         {
             BucketName = bucketName,
             Key = key,
-            InputStream = file.OpenReadStream(),
+            InputStream = file.Content,
             ContentType = file.ContentType
         };
 

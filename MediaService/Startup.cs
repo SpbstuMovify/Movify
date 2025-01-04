@@ -4,7 +4,6 @@ using MediaService.Services;
 using MediaService.Utils;
 using MediaService.Utils.FileProcessing;
 using MediaService.Utils.Middleware;
-using Movify;
 
 namespace MediaService;
 public class Startup(IConfiguration configuration)
@@ -22,7 +21,7 @@ public class Startup(IConfiguration configuration)
         services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
         services.AddAWSService<IAmazonS3>();
 
-        services.AddGrpcClient<ContentService.ContentServiceClient>(o =>
+        services.AddGrpcClient<Movify.ContentService.ContentServiceClient>(o =>
         {
             var address = Configuration["GrpcClientSettings:ContentServiceAddress"];
             if (string.IsNullOrEmpty(address))
