@@ -53,6 +53,21 @@ services:
     networks:
       - app
 
+  api-gateway:
+    container_name: api-gateway
+    build:
+      context: ./Gateway
+      dockerfile: Dockerfile
+    depends_on:
+      - content-service
+      - auth-service
+      - media-service
+    ports:
+      - 8090:8090
+    networks:
+      - app
+    
+
 volumes:
   db:
     driver: local
