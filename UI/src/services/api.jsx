@@ -94,9 +94,23 @@ export const getFilmById = async (id) => {
   }
 };
 
-export const getFilmPage = async (pageSize, pageNumber) => {
+export const searchFilms = async (pageSize, pageNumber, year=null, genre=null, title=null, age_restriction=null) => {
   try {
-    const response = await api.get(`/contents?page_size=${pageSize}&page_Number=${pageNumber}`, {});
+    const requestBody = JSON.stringify({
+      "title": title,
+      "year": year,
+      "genre": genre,
+      "age_restriction": age_restriction,
+      "page_size": pageSize,
+      "page_number": pageNumber,
+    }, (key, value) => {
+      return value === null || value === "" ? undefined : value;
+  });
+    const response = await api.post(`http://localhost:8085/v1/contents/search`, requestBody, {
+      headers: {
+        'Content-Type': "application/json",
+      },
+    });
     return response.data;
   } catch (error) {
     throw error;
@@ -120,3 +134,33 @@ export const createFilm = async (title, quality, genre, category,
     throw error;
   }
 }
+
+export const getPersonalList = async (userId) => {
+ try {
+   const response = await api.get(`/users/personal-list/${userId}`);
+   return response.data;
+ } catch (error) {
+   throw error;
+ }
+}
+
+export const addToPersonalList = async (userId, contentId) => {
+  try {
+    const response = await api.post(`/users/personal-list`, {
+      "user_id": userId,
+      "content_id": contentId
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+ }
+
+ export const removeFromPersonalList = async (userId, contentId) => {
+  try {
+    const response = await api.delete(`/users/personal-list/${userId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+ }
