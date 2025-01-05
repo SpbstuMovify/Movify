@@ -1,6 +1,7 @@
 package com.polytech.contentservice.conroller;
 
 import com.polytech.contentservice.dto.content.ContentDto;
+import com.polytech.contentservice.dto.personallist.PersonalListDeletionDto;
 import com.polytech.contentservice.dto.personallist.PersonalListDto;
 import com.polytech.contentservice.dto.user.detailed.UserDto;
 import com.polytech.contentservice.dto.user.login.UserLoginDto;
@@ -8,6 +9,7 @@ import com.polytech.contentservice.dto.user.login.UserLoginResponseDto;
 import com.polytech.contentservice.dto.user.register.UserRegisterDto;
 import com.polytech.contentservice.dto.user.register.UserRegistrationResponseDto;
 import com.polytech.contentservice.dto.user.search.UserSearchDto;
+import com.polytech.contentservice.exception.UnauthorisedException;
 import com.polytech.contentservice.mapper.UserMapper;
 import com.polytech.contentservice.service.auth.AuthService;
 import com.polytech.contentservice.service.personallist.PersonalListService;
@@ -62,7 +64,9 @@ public class UserController {
   public void deleteUserById(
       @Parameter(description = "Пользовательский ИД, по которому будем искать информацию", example = "f7d1b2c1-cedb-4099-99d8-e4ec9302dcde")
       @PathVariable("user-id")
-      UUID userId) {
+      UUID userId,
+      @RequestHeader("Authorization") String token) {
+    checkIsTokenValid(token);
     userService.deleteById(userId);
   }
 
@@ -82,17 +86,21 @@ public class UserController {
       summary = "Сохранения понравившегося фильма или сериала",
       description = "Позволяет добавить понравившийся фильм"
   )
-  public PersonalListDto addToPersonalList(@RequestBody PersonalListDto personalListDto) {
+  public PersonalListDto addToPersonalList(@RequestBody PersonalListDto personalListDto,
+                                           @RequestHeader("Authorization") String token) {
+    checkIsTokenValid(token);
     return personalListService.addFavoriteMovie(personalListDto);
   }
 
-  @DeleteMapping("/personal-list/{personal-list-id}")
+  @DeleteMapping("/personal-list")
   @Operation(
       summary = "Удалить понравившегося фильма или сериала",
       description = "Позволяет удалить понравившийся фильм"
   )
-  public void deleteFromPersonalList(@PathVariable(name = "personal-list-id") UUID personalListId) {
-    personalListService.removeFavoriteMovie(personalListId);
+  public void deleteFromPersonalList(@RequestBody PersonalListDeletionDto dto,
+                                     @RequestHeader("Authorization") String token) {
+    checkIsTokenValid(token);
+    personalListService.removeFavoriteMovie(dto);
   }
 
   @GetMapping("/personal-list/{user-id}")
@@ -100,7 +108,9 @@ public class UserController {
       summary = "Получение понравившихся фильмов или сериала",
       description = "Позволяет получить понравившиеся фильм"
   )
-  public List<ContentDto> getAllPersonalList(@PathVariable(name = "user-id") UUID userId) {
+  public List<ContentDto> getAllPersonalList(@PathVariable(name = "user-id") UUID userId,
+                                             @RequestHeader("Authorization") String token) {
+    checkIsTokenValid(token);
     return personalListService.getFavoriteMoviesByUser(userId);
   }
 
@@ -118,7 +128,9 @@ public class UserController {
       summary = "Восстановление пароля пользователя",
       description = "Позволяет восстановить пароль пользователя в системе"
   )
-  public UserRegistrationResponseDto resetPassword(@Valid @RequestBody UserRegisterDto userDto) {
+  public UserRegistrationResponseDto resetPassword(@Valid @RequestBody UserRegisterDto userDto,
+                                                   @RequestHeader("Authorization") String token) {
+    checkIsTokenValid(token);
     return authService.resetUserPassword(userDto);
   }
 
@@ -140,8 +152,32 @@ public class UserController {
       summary = "Выдача прав администратора",
       description = "Позволяет выдать пользователю права администратора"
   )
-  public UserDto grantToAdmin(@PathVariable("user-id") UUID userId) {
+  public UserDto grantToAdmin(@PathVariable("user-id") UUID userId,
+                              @RequestHeader("Authorization") String token) {
+    checkIsTokenValid(token);
     return userService.grantToAdmin(userId);
+  }
+
+  @PutMapping("/{user-id}")
+  @Operation(
+      summary = "Редактирование пользовательской информации",
+      description = "Позволяет изменять информацию о заданном пользователе"
+  )
+  public void updateUserInfo(
+      @Parameter(description = "Пользовательский ID для обновления информации", example = "f7d1b2c1-cedb-4099-99d8-e4ec9302dcde")
+      @PathVariable("user-id") UUID userId,
+      @Parameter(description = "Сущность для обновления пользовательской информации, которая передаётся в теле запроса")
+      @RequestBody UserDto userDto) {
+    userService.updateUserInformation(userId, userDto);
+  }
+
+  private void checkIsTokenValid(String token) {
+    UserDto userDto = UserDto.builder()
+        .token(token)
+        .build();
+    if (!authService.isTokenValid(userDto)) {
+      throw new UnauthorisedException("Token is not valid");
+    }
   }
 
   private UserDto createUserDtoWithPassword(UserLoginDto userDto, UserDto user) {
@@ -156,18 +192,5 @@ public class UserController {
         .passwordSalt(user.passwordSalt())
         .password(userDto.password())
         .build();
-  }
-
-  @PutMapping("/{user-id}")
-  @Operation(
-      summary = "Редактирование пользовательской информации",
-      description = "Позволяет изменять информацию о заданном пользователе"
-  )
-  public void updateUserInfo(
-      @Parameter(description = "Пользовательский ID для обновления информации", example = "f7d1b2c1-cedb-4099-99d8-e4ec9302dcde")
-      @PathVariable("user-id") UUID userId,
-      @Parameter(description = "Сущность для обновления пользовательской информации, которая передаётся в теле запроса")
-      @RequestBody UserDto userDto) {
-    userService.updateUserInformation(userId, userDto);
   }
 }
