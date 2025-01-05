@@ -1,12 +1,8 @@
 using Amazon.S3;
-using MediaService.Grpc;
-using MediaService.Repositories;
-using MediaService.Services;
-using MediaService.Utils;
-using MediaService.Utils.FileProcessing;
-using MediaService.Utils.Middleware;
+using ChunkerService.Repositories;
 
-namespace MediaService;
+namespace ChunkerService;
+
 public class Startup(IConfiguration configuration)
 {
     private IConfiguration Configuration { get; } = configuration;
@@ -15,6 +11,8 @@ public class Startup(IConfiguration configuration)
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddGrpc();
+
+        services.AddScoped<IChunkerRepository, ChunkerRepository>();
 
         services.AddLogging(loggingBuilder =>
         {
@@ -40,8 +38,6 @@ public class Startup(IConfiguration configuration)
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapControllers();
-            endpoints.MapGrpcService<MediaGrpcServer>();
             logger.LogInformation("Endpoints mapped");
         });
     }

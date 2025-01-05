@@ -1,4 +1,4 @@
-using MediaService;
+using ChunkerService;
 
 var builder = Host.CreateDefaultBuilder(args)
     .ConfigureAppConfiguration((hostingContext, config) =>
