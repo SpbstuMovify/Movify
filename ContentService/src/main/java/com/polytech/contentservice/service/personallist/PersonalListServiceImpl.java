@@ -1,6 +1,7 @@
 package com.polytech.contentservice.service.personallist;
 
 import com.polytech.contentservice.dto.content.ContentDto;
+import com.polytech.contentservice.dto.personallist.PersonalListDeletionDto;
 import com.polytech.contentservice.dto.personallist.PersonalListDto;
 import com.polytech.contentservice.entity.Content;
 import com.polytech.contentservice.entity.PersonalList;
@@ -51,10 +52,10 @@ public class PersonalListServiceImpl implements PersonalListService {
 
   @Override
   @Transactional
-  public void removeFavoriteMovie(UUID personalListId) {
-    personalListRepository.findById(personalListId)
+  public void removeFavoriteMovie(PersonalListDeletionDto dto) {
+    personalListRepository.findByUserIdAndContentId(dto.userId(), dto.contentId())
         .orElseThrow(() -> new NotFoundException("Personal list content does not found"));
-    personalListRepository.deleteById(personalListId);
+    personalListRepository.deleteByUserIdAndContentId(dto.userId(), dto.contentId());
   }
 
   @Override

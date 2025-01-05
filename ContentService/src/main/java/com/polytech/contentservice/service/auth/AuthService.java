@@ -41,5 +41,5 @@ public interface AuthService {
    * @param userDto информация о пользователе для валидации
    * @return данные из токена
    */
-  ValidationTokenResponse getTokenData(UserDto userDto);
+  boolean isTokenValid(UserDto userDto);
 }

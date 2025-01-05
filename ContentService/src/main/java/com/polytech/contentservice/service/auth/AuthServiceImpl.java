@@ -57,8 +57,9 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
-  public ValidationTokenResponse getTokenData(UserDto userDto) {
-    return authGrpcClient.sendTokenValidationRequest(userDto);
+  public boolean isTokenValid(UserDto userDto) {
+    ValidationTokenResponse response = authGrpcClient.sendTokenValidationRequest(userDto);
+    return true;
   }
 
   private UserRegisterDto convertToUserDto(RegisterUserResponse response,
