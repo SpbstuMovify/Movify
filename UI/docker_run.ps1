@@ -1,1 +1,1 @@
-docker run -it -p 5173:5173 -v "$(pwd):/app" -v /app/node_modules -e CHOKIDAR_USEPOLLING=true client-dev
+docker run -it --network movify_app -p 5173:5173 -v "$(pwd):/app" -v /app/node_modules -e CHOKIDAR_USEPOLLING=true client-dev 

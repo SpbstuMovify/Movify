@@ -26,11 +26,10 @@
 .homeScreenBody {
     color: #fff;
     z-index: 2;
-    padding: 20px;
     text-align: center;
     position: relative;
     display: flex;
-    height: 100%;
+    height: 88vh;
     justify-content: center;
     align-items: center;
 }
@@ -40,6 +39,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    text-shadow: 2px 2px black;
 }
 
 .home-label-container > h1 {

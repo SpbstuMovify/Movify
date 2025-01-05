@@ -3,10 +3,12 @@ import './SignInScreen.css'
 import { useForm } from "react-hook-form"
 import {login as loginUser} from "../services/api" 
 import {Link, useNavigate} from "react-router-dom";
+import { useAuth } from '../contexts/AuthContext';
 
 function Login() {
     const { register, handleSubmit, formState: {errors, isSubmitting, isSubmitSuccessful}, setError } = useForm();
     const navigate = useNavigate();
+    const { setUserData } = useAuth();
 
     const handleLogin = async (data) => {
         try {
@@ -14,6 +16,7 @@ function Login() {
             const ipData = await ipResponse.json();
             const userData = await loginUser(data.login, data.password, ipData.ip);
             localStorage.setItem('userData', JSON.stringify(userData));
+            setUserData(userData)
             navigate('/films');
             } catch (error) {
                 switch (error.response?.status) {

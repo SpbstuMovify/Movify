@@ -2,8 +2,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './Navigation.css'
+import { useAuth } from '../contexts/AuthContext';
 
 const Navigation = () => {
+    const { userData } = useAuth();
     return <div className="nav nav-black">
         <div className="nav-contents">
             <Link className='nav-logo-link' to="/">
@@ -17,12 +19,16 @@ const Navigation = () => {
                 <Link className="nav-text-links" to="/films">
                     Films
                 </Link>
-                <Link className="nav-text-links" to="/favorites">
+                { userData && <Link className="nav-text-links" to="/favorites">
                     Favorites
-                </Link>
-                <Link className="nav-text-links" to="/login">
-                    Sign in
-                </Link>
+                </Link> }
+                { userData ?
+                    <Link className="nav-text-links" to="/profile">
+                        {userData.login}
+                    </Link>
+                    : <Link className="nav-text-links" to="/login">
+                        Sign in
+                    </Link> }
             </div>
         </div>
     </div>
