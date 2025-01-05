@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option csharp_namespace = "Movify";
+
+package media;
+import "google/protobuf/empty.proto";
+
+service MediaService {
+  rpc ProcessVideoCallback (ProcessVideoCallbackRequest) returns (google.protobuf.Empty);
+}
+
+message ProcessVideoCallbackRequest {
+  string bucketName = 1;
+  string key = 2;
+  string baseUrl = 3;
+  string error = 4;
+}
