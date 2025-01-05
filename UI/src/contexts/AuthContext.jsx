@@ -35,7 +35,7 @@ export const AuthProvider = () => {
   };
 
   const clearUserData = () => {
-    setUserData({});
+    setUserData(null);
     localStorage.removeItem("userData");
   };
 

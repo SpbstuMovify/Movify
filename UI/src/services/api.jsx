@@ -135,20 +135,28 @@ export const createFilm = async (title, quality, genre, category,
   }
 }
 
-export const getPersonalList = async (userId) => {
+export const getPersonalList = async (userId, jwtToken) => {
  try {
-   const response = await api.get(`/users/personal-list/${userId}`);
+   const response = await api.get(`/users/personal-list/${userId}`, {
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`
+    },
+  });
    return response.data;
  } catch (error) {
    throw error;
  }
 }
 
-export const addToPersonalList = async (userId, contentId) => {
+export const addToPersonalList = async (userId, contentId, jwtToken) => {
   try {
     const response = await api.post(`/users/personal-list`, {
       "user_id": userId,
       "content_id": contentId
+    }, {
+      headers: {
+        "Authorization": `Bearer ${jwtToken}`
+      },
     });
     return response.data;
   } catch (error) {
@@ -158,7 +166,42 @@ export const addToPersonalList = async (userId, contentId) => {
 
  export const removeFromPersonalList = async (userId, contentId) => {
   try {
-    const response = await api.delete(`/users/personal-list/${userId}`);
+    const response = await api.delete(`/users/personal-list/${userId}`, {
+      headers: {
+        "Authorization": `Bearer ${jwtToken}`
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+ }
+
+ export const changePassword = async (password, login, email, role, jwtToken) => {
+  try {
+    const response = await api.post(`/users/password-recovery`, {
+      "password": password,
+      "email": email,
+      "login": login,
+      "role": role,
+    }, {
+      headers: {
+        "Authorization": `Bearer ${jwtToken}`
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+ }
+
+ export const deleteUser = async (userId, jwtToken) => {
+  try {
+    const response = await api.delete(`/users/${userId}`, {
+      headers: {
+        "Authorization": `Bearer ${jwtToken}`
+      },
+    });
     return response.data;
   } catch (error) {
     throw error;

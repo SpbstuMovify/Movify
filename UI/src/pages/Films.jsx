@@ -117,7 +117,7 @@ function Films(){
     const handleAddToPersonalList = async (event, contentId) => {
         event.stopPropagation();
         try {
-            const response = await addToPersonalList(userData.user_id, contentId);
+            const response = await addToPersonalList(userData.user_id, contentId, userData.token);
             setPersonalList([...personalList, {id: response.content_id}])
         }
         catch (error)
