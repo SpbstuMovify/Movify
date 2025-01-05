@@ -6,10 +6,15 @@ const AuthContext = createContext();
 
 export const AuthProvider = () => {
 
+  const [userData, setUserData] = useState();
+
   const checkUserData = () => {
-    const userData = localStorage.getItem("userData");
+    if (!userData)
+    {
+      setUserData(JSON.parse(localStorage.getItem("userData")));
+    }
     if (userData) {
-        const token = JSON.parse(userData).token;
+        const token = userData.token;
         if (token) {
         try {
             const decodedToken = jwtDecode(token);
@@ -17,15 +22,20 @@ export const AuthProvider = () => {
             if (decodedToken.exp <= currentTime) {
                 clearUserData();
             }
+            else {
+              setUserData(userData);
+            }
         } catch (error) {
             console.error("Error decoding token:", error);
             clearUserData();
         }
         }
     }
+    console.log("UserData checked!")
   };
 
   const clearUserData = () => {
+    setUserData({});
     localStorage.removeItem("userData");
   };
 
@@ -34,7 +44,7 @@ export const AuthProvider = () => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ checkUserData, clearUserData}}>
+    <AuthContext.Provider value={{ checkUserData, clearUserData, setUserData, userData}}>
       <Outlet />
     </AuthContext.Provider>
   );

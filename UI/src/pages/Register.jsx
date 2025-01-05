@@ -5,8 +5,10 @@ import {Link, useNavigate} from "react-router-dom";
 import {register as registerUser} from "../services/api";
 import { useForm, Controller } from "react-hook-form";
 import DropdownMultiSelect from '../components/DropdownMultiSelect';
+import { useAuth } from '../contexts/AuthContext';
 
 const Register = () => {
+    const { setUserData } = useAuth();
     const navigate = useNavigate();
     const { register, control, handleSubmit, formState: {errors, isSubmitting, isSubmitSuccessful}, 
     getValues, setError, clearErrors } = useForm();
@@ -18,6 +20,7 @@ const Register = () => {
         try {
             const userData = await registerUser(data.email, data.password, data.login, data.firstName, data.lastName);
             localStorage.setItem('userData', JSON.stringify(userData));
+            setUserData(userData);
             navigate('/films');
         } catch (error) {
             switch (error.response?.status) {

@@ -2,8 +2,10 @@
 import {React} from 'react';
 import './Home.css'
 import Navigation from '../components/Navigation';
+import { useNavigate } from 'react-router-dom';
 
 function Home() {
+    const navigate = useNavigate();
     return <div className="homeScreen">
         <Navigation />
         <div className="homeScreenGradient" />
@@ -13,7 +15,7 @@ function Home() {
                 <h2>Watch anywhere. Cancel at any time.</h2>
                 <h3>Ready to watch?</h3>
                 <div className="homeScreenInput">
-                    <button className="homeScreenGetStarted">
+                    <button className="homeScreenGetStarted" onClick={()=>{navigate('/films')}}>
                         Get Started
                     </button>
                 </div>
