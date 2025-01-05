@@ -1,0 +1,242 @@
+.profile-body {
+    background-color: rgb(45, 45, 45);
+    min-height: 88vh;
+    overflow-x: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 30px;
+    padding-right: 30px;
+    color: white;
+}
+
+.profile-wrapper {
+    text-align: center;
+    border: 1px black solid;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    height: 75vh;
+    padding: 30px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+}
+
+.profile-wrapper h1 {
+    margin: 0;
+    font-size: 10vmin;
+    margin-bottom: 2vh;
+}
+
+.profile-wrapper h3 {
+    margin: 0;
+    margin-bottom: 2vmin;
+    font-size: 4vmin;
+    font-weight: normal;
+}
+
+.profile-wrapper input {
+    width: 23vw;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background-color: #444;
+    margin-bottom: 15px;
+    color: #ffffff;
+    font-size: 14px;
+}
+
+.profile-wrapper input:focus {
+    border-color: #a96758;
+    outline: none;
+    box-shadow: 0 0 7px #a96758;
+}
+
+.profile-wrapper input::placeholder {
+    color: #888888;
+}
+
+.profile-wrapper input:hover {
+    border-color: #777;
+}
+
+.profile-wrapper form button {
+    border: 1px solid #555;
+    border-radius: 4px;
+    background-color: #444;
+    color: #ffffff;
+    width: 60%;
+    padding: 5px;
+}
+
+.profile-wrapper form button:hover {
+    border-color: #909090;
+    background-color: #656565;
+    cursor: pointer;
+}
+
+.quit-button {
+    border: 1px solid #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    color: #ffffff;
+    box-sizing: border-box;
+    height: 40px;
+    white-space: nowrap;
+    padding: 10px;
+    min-width: 100px;
+}
+
+.quit-button:hover {
+    border-color: #909090;
+    background-color: #643b3b;
+    cursor: pointer;
+}
+
+.delete-button {
+    background-color: #443030;
+}
+
+.exit-button {
+    background-color: #444444;
+}
+
+.delete-button:hover {
+    background-color: #643b3b;
+}
+
+.exit-button:hover {
+    background-color: #656565;
+}
+
+.response-message {
+    color: green;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 15px;
+    font-size: 2.5vmin;
+}
+
+.error-message {
+    color: red;
+}
+
+.error-message-small {
+    margin-top:0%;
+    margin-bottom: 15px;
+    font-size: 2.5vmin;
+}
+
+.loading-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+.confirmation-window {
+    position: fixed;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    margin-top: auto;
+    margin-bottom: auto;
+    top: 0;
+    bottom: 0;
+    text-align: center;
+    width: 50%;
+    height: 30%;
+    z-index: 10;
+    border: 3px solid rgb(255, 255, 255);
+    background-color: rgb(33, 33, 33);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#confirmation-header {
+    margin-top: 20px;
+    margin-left: auto;
+    left:0;
+    right:0;
+    margin-right: auto;
+    font-size: 3.5vmin;
+}
+
+.confirmation-window > .button-wrapper {
+    display: flex;
+    justify-content: end;
+}
+
+.button-wrapper > button {
+    background-color: transparent;
+    border: none;
+    color: rgb(255, 255, 255);
+    font-size: 30px;
+    font-weight: bold;
+    height: 30px;
+    margin-top: 10px;
+    margin-right: 10px;
+    z-index: 11;
+}
+
+.button-wrapper > button:hover {
+    color: rgb(175, 42, 42);
+    cursor: pointer;
+}
+
+.confirmation-wrapper {
+    min-height: 20%;
+    display: flex;
+    width: 100%;
+    margin-bottom: 20px;
+    justify-content: space-around;
+}
+
+.black-background {
+    position: fixed;
+    z-index: 9;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.485);
+}
+
+.confirmation-wrapper button {
+    border: 1px solid #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-size: 3vmin;
+    color: #ffffff;
+    box-sizing: border-box;
+    height: 40px;
+    white-space: nowrap;
+    padding: 10px;
+    min-width: 20%;
+}
+
+.no-button {
+    background-color: #444444;
+}
+
+.confirm-button {
+    background-color: #443030;
+}
+
+.no-button:hover {
+    border-color: #909090;
+    background-color: #656565;
+    cursor: pointer;
+}
+
+.confirm-button:hover {
+    border-color: #909090;
+    background-color: #643b3b;
+    cursor: pointer;
+}
