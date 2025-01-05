@@ -1,4 +1,5 @@
 using Amazon.S3;
+using ChunkerService.Grpc;
 using ChunkerService.Repositories;
 using ChunkerService.Services;
 using ChunkerService.Utils.FileProcessing;
@@ -57,6 +58,7 @@ public class Startup(IConfiguration configuration)
 
         app.UseEndpoints(endpoints =>
         {
+            endpoints.MapGrpcService<ChunkerGrpcServer>();
             logger.LogInformation("Endpoints mapped");
         });
     }
