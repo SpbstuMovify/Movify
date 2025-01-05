@@ -1,5 +1,7 @@
 using Amazon.S3;
 using ChunkerService.Repositories;
+using ChunkerService.Services;
+using ChunkerService.Utils.FileProcessing;
 
 namespace ChunkerService;
 
@@ -12,7 +14,24 @@ public class Startup(IConfiguration configuration)
     {
         services.AddGrpc();
 
+        services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
+        services.AddAWSService<IAmazonS3>();
+
+        services.AddGrpcClient<Movify.MediaService.MediaServiceClient>(o =>
+        {
+            var address = Configuration["GrpcClientSettings:MediaServiceAddress"];
+            if (string.IsNullOrEmpty(address))
+            {
+                throw new InvalidOperationException("MediaServiceAddress is not configured.");
+            }
+            o.Address = new Uri(address);
+        });
+
         services.AddScoped<IChunkerRepository, ChunkerRepository>();
+        services.AddScoped<IChunkerService, Services.ChunkerService>();
+
+        services.AddSingleton<IFileProcessingQueue, FileProcessingQueue>();
+        services.AddHostedService<FileProcessingService>();
 
         services.AddLogging(loggingBuilder =>
         {
