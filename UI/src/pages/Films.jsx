@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Navigation from "../components/Navigation";
 import './Films.css'
-import { searchFilms, getPersonalList, addToPersonalList } from "../services/api";
+import { searchFilms, getPersonalList, addToPersonalList, removeFromPersonalList } from "../services/api";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../contexts/AuthContext";
@@ -53,7 +53,7 @@ function Films(){
     }
     const getUserPersonalList = async () => {
         try {
-            const personalListResponse = await getPersonalList(userData.user_id);
+            const personalListResponse = await getPersonalList(userData.user_id, userData.token);
             setPersonalList(personalListResponse);
         }
         catch (error) {
@@ -128,14 +128,21 @@ function Films(){
 
     const handleRemoveFromPersonalList = async (event, contentId) => {
         event.stopPropagation();
-        console.log("Film removed from personal list"); // Replace later
+        try {
+            const response = await removeFromPersonalList(userData.user_id, contentId, userData.token);
+            setPersonalList(personalList.filter((item)=>item.id !== contentId));
+        }
+        catch (error)
+        {
+            console.error(error.message);
+        }
     }
 
     return <>
         <Navigation/>
         <div className="films-body">
             <div className="film-list">
-                <h1>Watch all movies and series you want!</h1>
+                <h1 style={{textAlign: "center"}}>Watch all movies and series you want!</h1>
                 <form onSubmit={handleSubmit(handleSearch)} className="search-bar-wrapper">
                     <input {...register("title")} className="search-bar" type="text" placeholder="Search..." />
                     <button className="image-button" type="submit">

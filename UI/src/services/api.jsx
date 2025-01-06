@@ -139,7 +139,7 @@ export const getPersonalList = async (userId, jwtToken) => {
  try {
    const response = await api.get(`/users/personal-list/${userId}`, {
     headers: {
-      "Authorization": `Bearer ${jwtToken}`
+      "Authorization": `${jwtToken}`
     },
   });
    return response.data;
@@ -155,7 +155,7 @@ export const addToPersonalList = async (userId, contentId, jwtToken) => {
       "content_id": contentId
     }, {
       headers: {
-        "Authorization": `Bearer ${jwtToken}`
+        "Authorization": `${jwtToken}`
       },
     });
     return response.data;
@@ -164,11 +164,15 @@ export const addToPersonalList = async (userId, contentId, jwtToken) => {
   }
  }
 
- export const removeFromPersonalList = async (userId, contentId) => {
+ export const removeFromPersonalList = async (userId, contentId, jwtToken) => {
   try {
-    const response = await api.delete(`/users/personal-list/${userId}`, {
+    const response = await api.delete(`/users/personal-list`, {
+      data: {
+        "user_id": userId,
+        "content_id": contentId
+      },
       headers: {
-        "Authorization": `Bearer ${jwtToken}`
+        "Authorization": `${jwtToken}`
       },
     });
     return response.data;
@@ -186,7 +190,7 @@ export const addToPersonalList = async (userId, contentId, jwtToken) => {
       "role": role,
     }, {
       headers: {
-        "Authorization": `Bearer ${jwtToken}`
+        "Authorization": `${jwtToken}`
       },
     });
     return response.data;
@@ -199,7 +203,7 @@ export const addToPersonalList = async (userId, contentId, jwtToken) => {
   try {
     const response = await api.delete(`/users/${userId}`, {
       headers: {
-        "Authorization": `Bearer ${jwtToken}`
+        "Authorization": `${jwtToken}`
       },
     });
     return response.data;
