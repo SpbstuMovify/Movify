@@ -1,5 +1,6 @@
 using Amazon.S3;
 using ChunkerService.Grpc;
+using ChunkerService.Hls;
 using ChunkerService.Repositories;
 using ChunkerService.Services;
 using ChunkerService.Utils.FileProcessing;
@@ -31,6 +32,7 @@ public class Startup(IConfiguration configuration)
         services.AddScoped<IChunkerRepository, ChunkerRepository>();
         services.AddScoped<IChunkerService, Services.ChunkerService>();
 
+        services.AddSingleton<IHlsCreator, HlsCreator>();
         services.AddSingleton<IFileProcessingQueue, FileProcessingQueue>();
         services.AddHostedService<FileProcessingService>();
 
