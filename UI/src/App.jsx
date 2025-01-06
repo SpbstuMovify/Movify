@@ -6,6 +6,7 @@ import Register from './pages/Register.jsx';
 import { createBrowserRouter, RouterProvider, } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext.jsx';
 import Films from './pages/Films.jsx';
+import FavoriteFilms from './pages/FavoriteFilms.jsx'; 
 import Profile from './pages/Profile.jsx';
 import './App.css'
 import ProtectedRoute from './components/ProtectedRoute.jsx';
@@ -20,7 +21,8 @@ const router = createBrowserRouter([
       { path: "/films", element: <Films /> },
       { element: <ProtectedRoute/>,
         children: [
-          {path: "/profile", element: <Profile />}
+          {path: "/profile", element: <Profile />},
+          {path: "/favorites", element: <FavoriteFilms />}
         ] 
       },
     ]
