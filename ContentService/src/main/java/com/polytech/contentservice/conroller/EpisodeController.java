@@ -1,8 +1,12 @@
 package com.polytech.contentservice.conroller;
 
+import com.polytech.contentservice.common.Role;
 import com.polytech.contentservice.dto.episode.EpisodeDto;
+import com.polytech.contentservice.dto.user.detailed.UserDto;
+import com.polytech.contentservice.service.auth.AuthService;
 import com.polytech.contentservice.service.content.ContentService;
 import com.polytech.contentservice.service.episode.EpisodeService;
+import com.polytech.contentservice.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class EpisodeController {
   private final EpisodeService episodeService;
   private final ContentService contentService;
+  private final AuthService authService;
 
   @GetMapping("/{episode-id}")
   @Operation(
@@ -50,7 +56,9 @@ public class EpisodeController {
   public void deleteEpisodeById(
       @Parameter(description = "ID эпизода", example = "d27ca94d-4206-45fe-b8c4-486403544d64")
       @PathVariable("episode-id")
-      UUID episodeId) {
+      UUID episodeId,
+      @RequestHeader("Authorization") String token) {
+    authService.checkTokenIsValid(token, Role.ADMIN);
     episodeService.deleteEpisodeById(episodeId);
   }
 
@@ -64,7 +72,9 @@ public class EpisodeController {
       UUID episodeId,
       @RequestBody
       @Parameter(description = "Тело запроса для обновления существующего эпизода")
-      EpisodeDto episodeDto) {
+      EpisodeDto episodeDto,
+      @RequestHeader("Authorization") String token) {
+    authService.checkTokenIsValid(token, Role.ADMIN);
     episodeService.updateEpisodeInfo(episodeId, episodeDto);
   }
 
@@ -75,7 +85,9 @@ public class EpisodeController {
   public EpisodeDto createEpisodeForContent(
       @Parameter(description = "Тело запроса для создания нового эпизода")
       @RequestBody
-      EpisodeDto episodeDto) {
+      EpisodeDto episodeDto,
+      @RequestHeader("Authorization") String token) {
+    authService.checkTokenIsValid(token, Role.ADMIN);
     return episodeService.createNewEpisode(episodeDto.contentId(), episodeDto);
   }
 

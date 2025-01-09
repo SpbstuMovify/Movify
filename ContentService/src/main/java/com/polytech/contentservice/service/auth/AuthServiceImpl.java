@@ -3,10 +3,12 @@ package com.polytech.contentservice.service.auth;
 import auth.LoginUserResponse;
 import auth.RegisterUserResponse;
 import auth.ValidationTokenResponse;
+import com.polytech.contentservice.common.Role;
 import com.polytech.contentservice.dto.user.detailed.UserDto;
 import com.polytech.contentservice.dto.user.login.UserLoginResponseDto;
 import com.polytech.contentservice.dto.user.register.UserRegisterDto;
 import com.polytech.contentservice.dto.user.register.UserRegistrationResponseDto;
+import com.polytech.contentservice.exception.UnauthorisedException;
 import com.polytech.contentservice.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -57,9 +59,20 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
-  public boolean isTokenValid(UserDto userDto) {
+  public void checkTokenIsValid(String token, Role role) {
+    UserDto userDto = UserDto.builder()
+        .token(token)
+        .role(role)
+        .build();
     ValidationTokenResponse response = authGrpcClient.sendTokenValidationRequest(userDto);
-    return true;
+    Role actualRole = Role.valueOf(response.getRole());
+    if (actualRole == Role.ADMIN) {
+      return;
+    }
+    if (actualRole == Role.USER && userDto.role().equals(Role.USER)) {
+      return;
+    }
+    throw new UnauthorisedException("Permission denied");
   }
 
   private UserRegisterDto convertToUserDto(RegisterUserResponse response,
