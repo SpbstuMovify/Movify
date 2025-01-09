@@ -1,7 +1,10 @@
 package com.polytech.contentservice.conroller;
 
+import com.polytech.contentservice.common.Role;
 import com.polytech.contentservice.dto.content.ContentDto;
 import com.polytech.contentservice.dto.content.ContentSearchDto;
+import com.polytech.contentservice.dto.user.detailed.UserDto;
+import com.polytech.contentservice.service.auth.AuthService;
 import com.polytech.contentservice.service.content.ContentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
     description = "Контроллер для манипулирования основаными данными, связанными с фильмами и сериалами")
 public class ContentController {
   private final ContentService contentService;
+  private final AuthService authService;
 
   @GetMapping
   @Operation(
@@ -74,7 +79,9 @@ public class ContentController {
       UUID contentId,
       @Parameter(description = "Сущность для манипулирования информацией по фильмам и сериалам")
       @RequestBody
-      ContentDto contentDto) {
+      ContentDto contentDto,
+      @RequestHeader("Authorization") String token) {
+    authService.checkTokenIsValid(token, Role.ADMIN);
     contentService.updateContent(contentId, contentDto);
   }
 
@@ -86,7 +93,9 @@ public class ContentController {
   public ContentDto createContent(
       @Parameter(description = "Сущность для манипулирования информацией по фильмам и сериалам")
       @RequestBody
-      ContentDto contentDto) {
+      ContentDto contentDto,
+      @RequestHeader("Authorization") String token) {
+    authService.checkTokenIsValid(token, Role.ADMIN);
     return contentService.createContent(contentDto);
   }
 }

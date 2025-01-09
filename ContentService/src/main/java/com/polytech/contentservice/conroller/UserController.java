@@ -1,5 +1,6 @@
 package com.polytech.contentservice.conroller;
 
+import com.polytech.contentservice.common.Role;
 import com.polytech.contentservice.dto.content.ContentDto;
 import com.polytech.contentservice.dto.personallist.PersonalListDeletionDto;
 import com.polytech.contentservice.dto.personallist.PersonalListDto;
@@ -9,7 +10,6 @@ import com.polytech.contentservice.dto.user.login.UserLoginResponseDto;
 import com.polytech.contentservice.dto.user.register.UserRegisterDto;
 import com.polytech.contentservice.dto.user.register.UserRegistrationResponseDto;
 import com.polytech.contentservice.dto.user.search.UserSearchDto;
-import com.polytech.contentservice.exception.UnauthorisedException;
 import com.polytech.contentservice.mapper.UserMapper;
 import com.polytech.contentservice.service.auth.AuthService;
 import com.polytech.contentservice.service.personallist.PersonalListService;
@@ -52,7 +52,9 @@ public class UserController {
   public UserDto getUserById(
       @Parameter(description = "Пользовательский ИД, по которому будем искать информацию", example = "f7d1b2c1-cedb-4099-99d8-e4ec9302dcde")
       @PathVariable("user-id")
-      UUID userId) {
+      UUID userId,
+      @RequestHeader("Authorization") String token) {
+    authService.checkTokenIsValid(token, Role.USER);
     return userService.getUserById(userId);
   }
 
@@ -66,7 +68,7 @@ public class UserController {
       @PathVariable("user-id")
       UUID userId,
       @RequestHeader("Authorization") String token) {
-    checkIsTokenValid(token);
+    authService.checkTokenIsValid(token, Role.USER);
     userService.deleteById(userId);
   }
 
@@ -77,7 +79,9 @@ public class UserController {
   )
   public UserDto findUser(
       @Parameter(description = "Пользовательские данные, по которым будем искать информацию")
-      @Valid @RequestBody UserSearchDto userDto) {
+      @Valid @RequestBody UserSearchDto userDto,
+      @RequestHeader("Authorization") String token) {
+    authService.checkTokenIsValid(token, Role.USER);
     return userService.getUserInformation(userDto);
   }
 
@@ -88,7 +92,7 @@ public class UserController {
   )
   public PersonalListDto addToPersonalList(@RequestBody PersonalListDto personalListDto,
                                            @RequestHeader("Authorization") String token) {
-    checkIsTokenValid(token);
+    authService.checkTokenIsValid(token, Role.USER);
     return personalListService.addFavoriteMovie(personalListDto);
   }
 
@@ -99,7 +103,7 @@ public class UserController {
   )
   public void deleteFromPersonalList(@RequestBody PersonalListDeletionDto dto,
                                      @RequestHeader("Authorization") String token) {
-    checkIsTokenValid(token);
+    authService.checkTokenIsValid(token, Role.USER);
     personalListService.removeFavoriteMovie(dto);
   }
 
@@ -110,7 +114,7 @@ public class UserController {
   )
   public List<ContentDto> getAllPersonalList(@PathVariable(name = "user-id") UUID userId,
                                              @RequestHeader("Authorization") String token) {
-    checkIsTokenValid(token);
+    authService.checkTokenIsValid(token, Role.USER);
     return personalListService.getFavoriteMoviesByUser(userId);
   }
 
@@ -130,7 +134,7 @@ public class UserController {
   )
   public UserRegistrationResponseDto resetPassword(@Valid @RequestBody UserRegisterDto userDto,
                                                    @RequestHeader("Authorization") String token) {
-    checkIsTokenValid(token);
+    authService.checkTokenIsValid(token, Role.USER);
     return authService.resetUserPassword(userDto);
   }
 
@@ -154,7 +158,7 @@ public class UserController {
   )
   public UserDto grantToAdmin(@PathVariable("user-id") UUID userId,
                               @RequestHeader("Authorization") String token) {
-    checkIsTokenValid(token);
+    authService.checkTokenIsValid(token, Role.ADMIN);
     return userService.grantToAdmin(userId);
   }
 
@@ -167,17 +171,10 @@ public class UserController {
       @Parameter(description = "Пользовательский ID для обновления информации", example = "f7d1b2c1-cedb-4099-99d8-e4ec9302dcde")
       @PathVariable("user-id") UUID userId,
       @Parameter(description = "Сущность для обновления пользовательской информации, которая передаётся в теле запроса")
-      @RequestBody UserDto userDto) {
+      @RequestBody UserDto userDto,
+      @RequestHeader("Authorization") String token) {
+    authService.checkTokenIsValid(token, Role.USER);
     userService.updateUserInformation(userId, userDto);
-  }
-
-  private void checkIsTokenValid(String token) {
-    UserDto userDto = UserDto.builder()
-        .token(token)
-        .build();
-    if (!authService.isTokenValid(userDto)) {
-      throw new UnauthorisedException("Token is not valid");
-    }
   }
 
   private UserDto createUserDtoWithPassword(UserLoginDto userDto, UserDto user) {

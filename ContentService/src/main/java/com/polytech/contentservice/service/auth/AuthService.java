@@ -1,6 +1,6 @@
 package com.polytech.contentservice.service.auth;
 
-import auth.ValidationTokenResponse;
+import com.polytech.contentservice.common.Role;
 import com.polytech.contentservice.dto.user.detailed.UserDto;
 import com.polytech.contentservice.dto.user.login.UserLoginResponseDto;
 import com.polytech.contentservice.dto.user.register.UserRegisterDto;
@@ -36,10 +36,9 @@ public interface AuthService {
   UserLoginResponseDto login(UserDto userDto, String ip);
 
   /**
-   * Метод по получению данных из токена и его проверке.
+   * Метод по проверке токена.
    *
    * @param userDto информация о пользователе для валидации
-   * @return данные из токена
    */
-  boolean isTokenValid(UserDto userDto);
+  void checkTokenIsValid(String token, Role role);
 }
