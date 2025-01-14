@@ -8,7 +8,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 function Films(){
     const {register, handleSubmit, formState: {errors}, setValue, setError} = useForm();
-    const {userData} = useAuth();
+    const {userData, clearUserData} = useAuth();
     const navigate = useNavigate();
     const [films, setFilms] = useState();
     const [pageSize, setPageSize] = useState(5);
@@ -22,6 +22,7 @@ function Films(){
     const location = useLocation();
     const [queryParams, setQueryParams] = useState(new URLSearchParams(location.search));
 
+    const [hoveredId, setHoveredId] = useState(null);
 
     const mappingJSON = {
         "age_restriction": {
@@ -42,7 +43,7 @@ function Films(){
             film.category = spacedString.charAt(0).toUpperCase() + spacedString.slice(1).toLowerCase();
             film.publisher = film.publisher.replace(/_/g, " ");
         });
-        setMaxPageNumber(filmsResponse.totalPages-1);
+        setMaxPageNumber(filmsResponse.totalPages == 0 ? filmsResponse.totalPages : filmsResponse.totalPages-1);
         setFilms(filmsResponse.content);
     }
 
@@ -57,7 +58,14 @@ function Films(){
             setPersonalList(personalListResponse);
         }
         catch (error) {
-            console.error(error.message);
+            switch (error.response?.status) {
+                case 401:
+                    clearUserData();
+                    break;
+
+                default:
+                    console.error(error.message);
+            }
         }
     }
 
@@ -106,6 +114,7 @@ function Films(){
             }));
             const newParams = new URLSearchParams(paramsJSON);
             setQueryParams(newParams);
+            setPageNumber(0);
             navigate(`/films?${newParams.toString()}`);
         }
         catch(error) {
@@ -153,8 +162,11 @@ function Films(){
                 </form>
                 <div className="film-container">
                 {films && films.map((film) => (
-                    <div key={film.id} className="film-element" onClick={()=>navigate(`/films/${film.id}`)}>
-                        <img className="film-logo" src={film.thumbnail ? film.thumbnail : "/images/no_image.jpg"} />
+                    <div key={film.id} className={film.id == hoveredId ? "film-element film-element-hover" : "film-element"}
+                        onMouseEnter={()=>{setHoveredId(film.id)}}
+                        onMouseLeave={()=>{setHoveredId(null)}}
+                        onClick={()=>navigate(`/films/${film.id}`)}>
+                        <img className="film-logo" src={film.thumbnail ? `http://localhost:8090${film.thumbnail}` : "/images/no_image.jpg"} />
                         <div className="film-info">
                             <div className="film-element-header">
                                 <h2 className="film-title">{film.title}</h2>
@@ -163,10 +175,14 @@ function Films(){
                                     {userData ? 
                                     personalList && personalList.some(obj => obj.id === film.id) ?
                                     <button className="image-button" style={{border: "none"}} 
+                                        onMouseEnter={()=>{setHoveredId(null)}}
+                                        onMouseLeave={()=>{setHoveredId(film.id)}}
                                         onClick={(e)=>handleRemoveFromPersonalList(e, film.id)}>
                                         <img className="image-heart" src="/images/heart.png"/>
                                     </button> : 
-                                    <button className="image-button" style={{border: "none"}} 
+                                    <button className="image-button" style={{border: "none"}}
+                                        onMouseEnter={()=>{setHoveredId(null)}}
+                                        onMouseLeave={()=>{setHoveredId(film.id)}}
                                         onClick={(e)=>handleAddToPersonalList(e, film.id)}>
                                         <img className="image-hollow-heart" src="/images/hollow_heart.png" />
                                     </button>

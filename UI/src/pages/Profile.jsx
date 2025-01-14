@@ -18,7 +18,7 @@ function Profile() {
 
     useEffect(()=>{
         const fetchUserInfo = async () => {
-            setUserInfo(await getUserById(userData.user_id));
+            setUserInfo(await getUserById(userData.user_id, userData.token));
         }
         if (userData) {
             fetchUserInfo();
@@ -62,6 +62,14 @@ function Profile() {
         }
         catch (error)
         {
+            switch (error.response?.status) {
+                case 401:
+                    clearUserData();
+                    break;
+
+                default:
+                    console.error(error.message);
+            }
             setErrorMessage("There was an error deleting the account!");
         }
     }
