@@ -49,11 +49,15 @@ export const login = async (username, password, ip) => {
   }
 };
 
-export const getUserById = async (id) => {
+export const getUserById = async (id, jwtToken) => {
   try {
     const response = await api.post('/users/info', { 
       "user_id": id,
       "search_type": "ID"
+    }, {
+      headers: {
+        "Authorization": `${jwtToken}`
+      },
     });
     return response.data;
   } catch (error) {
@@ -87,7 +91,7 @@ export const getUserByEmail = async (email) => {
 
 export const getFilmById = async (id) => {
   try {
-    const response = await api.get(`/contents/${id}`, {});
+    const response = await api.get(`/contents/${id}`);
     return response.data;
   } catch (error) {
     throw error;
@@ -206,6 +210,15 @@ export const addToPersonalList = async (userId, contentId, jwtToken) => {
         "Authorization": `${jwtToken}`
       },
     });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+ }
+
+ export const getEpisodes = async (contentId) => {
+  try {
+    const response = await api.get(`/episodes?content_id=${contentId}`);
     return response.data;
   } catch (error) {
     throw error;

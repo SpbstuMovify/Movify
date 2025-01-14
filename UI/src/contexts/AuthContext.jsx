@@ -9,12 +9,14 @@ export const AuthProvider = () => {
   const [userData, setUserData] = useState();
 
   const checkUserData = () => {
-    if (!userData)
+    let localUserData = userData;
+    if (!localUserData)
     {
-      setUserData(JSON.parse(localStorage.getItem("userData")));
+      localUserData = JSON.parse(localStorage.getItem("userData")) 
+      setUserData(localUserData);
     }
-    if (userData) {
-        const token = userData.token;
+    if (localUserData) {
+        const token = localUserData.token;
         if (token) {
         try {
             const decodedToken = jwtDecode(token);
@@ -23,7 +25,7 @@ export const AuthProvider = () => {
                 clearUserData();
             }
             else {
-              setUserData(userData);
+              setUserData(localUserData);
             }
         } catch (error) {
             console.error("Error decoding token:", error);
@@ -31,7 +33,6 @@ export const AuthProvider = () => {
         }
         }
     }
-    console.log("UserData checked!")
   };
 
   const clearUserData = () => {

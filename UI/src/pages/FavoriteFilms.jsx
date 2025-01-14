@@ -10,6 +10,8 @@ function FavoriteFilms(){
     const navigate = useNavigate();
     const [favoriteFilms, setFavoriteFilms] = useState(null);
 
+    const [hoveredId, setHoveredId] = useState(null);
+
     const mappingJSON = {
         "age_restriction": {
             "EIGHTEEN_PLUS": "18+",
@@ -38,7 +40,15 @@ function FavoriteFilms(){
             processFilms(filmsResponse);
         }
         catch (error) {
-            console.error(error.message);
+            switch (error.response?.status) {
+                case 401:
+                    clearUserData();
+                    navigate('/login');
+                    break;
+
+                default:
+                    console.error(error.message);
+            }
         }
     }
 
@@ -79,8 +89,11 @@ function FavoriteFilms(){
                 <h1 style={{textAlign: "center"}}>Your favorite films and series</h1>
                 <div className="film-container">
                 {favoriteFilms && favoriteFilms.length !== 0 ? favoriteFilms.map((film) => (
-                    <div key={film.id} className="film-element" onClick={()=>navigate(`/films/${film.id}`)}>
-                        <img className="film-logo" src={film.thumbnail ? film.thumbnail : "/images/no_image.jpg"} />
+                    <div key={film.id} className={film.id == hoveredId ? "film-element film-element-hover" : "film-element"}       
+                        onMouseEnter={()=>{setHoveredId(film.id)}}
+                        onMouseLeave={()=>{setHoveredId(null)}}
+                        onClick={()=>navigate(`/films/${film.id}`)}>
+                        <img className="film-logo" src={film.thumbnail ? `http://localhost:8090${film.thumbnail}` : "/images/no_image.jpg"} />
                         <div className="film-info">
                             <div className="film-element-header">
                                 <h2 className="film-title">{film.title}</h2>
@@ -89,10 +102,14 @@ function FavoriteFilms(){
                                     {userData ? 
                                     favoriteFilms && favoriteFilms.some(obj => obj.id === film.id) ?
                                     <button className="image-button" style={{border: "none"}} 
+                                        onMouseEnter={()=>{setHoveredId(null)}}
+                                        onMouseLeave={()=>{setHoveredId(film.id)}}
                                         onClick={(e)=>handleRemoveFromPersonalList(e, film.id)}>
                                         <img className="image-heart" src="/images/heart.png"/>
                                     </button> : 
-                                    <button className="image-button" style={{border: "none"}} 
+                                    <button className="image-button" style={{border: "none"}}  
+                                        onMouseEnter={()=>{setHoveredId(null)}}
+                                        onMouseLeave={()=>{setHoveredId(film.id)}}
                                         onClick={(e)=>handleAddToPersonalList(e, film.id)}>
                                         <img className="image-hollow-heart" src="/images/hollow_heart.png" />
                                     </button>
