@@ -1,6 +1,9 @@
-FROM openjdk:21-jdk-slim
+FROM openjdk:21-jdk-slim AS builder
 WORKDIR /opt/app
 COPY . .
-EXPOSE 8085
-EXPOSE 9095
-ENTRYPOINT ["sh", "-c", "./gradlew clean build && java -jar build/libs/ContentService-0.0.1-SNAPSHOT.jar"]
+RUN ./gradlew clean build --no-daemon
+FROM openjdk:21-jdk-slim
+WORKDIR /opt/app
+COPY --from=builder /opt/app/build/libs/ContentService-0.0.1-SNAPSHOT.jar app.jar
+EXPOSE 8085 9095
+ENTRYPOINT ["java", "-jar", "app.jar"]
