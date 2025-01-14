@@ -86,7 +86,7 @@ public class ContentServiceImpl implements ContentService {
     BooleanBuilder booleanBuilder = new BooleanBuilder();
 
     if (StringUtils.isNoneEmpty(contentSearchDto.title())) {
-      booleanBuilder.and(content.title.equalsIgnoreCase(contentSearchDto.title()));
+      booleanBuilder.and(content.title.containsIgnoreCase(contentSearchDto.title()));
     }
     if (contentSearchDto.genre() != null) {
       booleanBuilder.and(content.genre.eq(contentSearchDto.genre()));
