@@ -22,4 +22,7 @@ public interface IHlsCreator
         string additionalFfmpegArgs = "",
         CancellationToken cancellationToken = default
     );
+
+    CancellationToken CreateToken(Guid guid);
+    void CancelToken(Guid guid);
 }

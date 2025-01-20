@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Text;
 
@@ -5,6 +6,8 @@ namespace ChunkerService.Hls;
 
 public class HlsCreator(ILogger<HlsCreator> logger) : IHlsCreator
 {
+    private readonly ConcurrentDictionary<Guid, CancellationTokenSource> _cancellationTokens = new();
+
     /// <summary>
     /// Создаёт HLS-потоки разных качеств и мастер-файл.
     /// </summary>
@@ -63,6 +66,7 @@ public class HlsCreator(ILogger<HlsCreator> logger) : IHlsCreator
             //   -f hls                 — формат вывода (HLS).
             //   {variant.Name}.m3u8    — конечный плейлист.
             string arguments =
+                $"-loglevel info " +
                 $"-i \"{inputFile}\" " +
                 $"-vf scale={variant.Width}:{variant.Height} " +
                 $"-c:v h264 -b:v {variant.VideoBitrate} -preset veryfast " +
@@ -113,7 +117,14 @@ public class HlsCreator(ILogger<HlsCreator> logger) : IHlsCreator
             sb.AppendLine(playlists[i]);
         }
 
-        await File.WriteAllTextAsync(masterFilePath, sb.ToString(), cancellationToken);
+        try
+        {
+            await File.WriteAllTextAsync(masterFilePath, sb.ToString(), cancellationToken);
+        }
+        catch (TaskCanceledException)
+        {
+            logger.LogInformation("Create master m3u8 forcibly terminated due to cancellation");
+        }
     }
 
     /// <summary>
@@ -146,7 +157,7 @@ public class HlsCreator(ILogger<HlsCreator> logger) : IHlsCreator
             {
                 if (!string.IsNullOrEmpty(e.Data))
                 {
-                    logger.LogInformation($"[ffmpeg error] {e.Data}");
+                    logger.LogInformation($"[ffmpeg output] {e.Data}");
                 }
             };
 
@@ -163,9 +174,25 @@ public class HlsCreator(ILogger<HlsCreator> logger) : IHlsCreator
                 if (!process.HasExited)
                 {
                     process.Kill();
+                    await process.WaitForExitAsync();
                     logger.LogInformation("FFmpeg process forcibly terminated due to cancellation");
                 }
             }
+        }
+    }
+
+    public CancellationToken CreateToken(Guid guid)
+    {
+        _cancellationTokens[guid] = new CancellationTokenSource();
+        return _cancellationTokens[guid].Token;
+    }
+
+    public void CancelToken(Guid guid)
+    {
+        if (_cancellationTokens.TryRemove(guid, out var cts))
+        {
+            logger.LogInformation("_cancellationTokens");
+            cts?.Cancel();
         }
     }
 }
