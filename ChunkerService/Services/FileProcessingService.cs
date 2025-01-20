@@ -1,5 +1,6 @@
 using ChunkerService.Dtos.Chunker;
 using ChunkerService.Grpc;
+using ChunkerService.Hls;
 using ChunkerService.Repositories;
 using ChunkerService.Utils.FileProcessing;
 
@@ -7,6 +8,7 @@ namespace ChunkerService.Services;
 
 public class FileProcessingService(
     IFileProcessingQueue fileProcessingQueue,
+    IHlsCreator hlsCreator,
     IServiceScopeFactory serviceScopeFactory,
     ILogger<FileProcessingService> logger
 ) : BackgroundService
@@ -24,7 +26,7 @@ public class FileProcessingService(
                 {
                     using (var scope = serviceScopeFactory.CreateScope())
                     {
-                        await ProcessFileAsync(scope, task);
+                        await ProcessFileAsync(scope, task, stoppingToken);
                     }
                 }
             }
@@ -35,7 +37,7 @@ public class FileProcessingService(
         }
     }
 
-    private async Task ProcessFileAsync(IServiceScope scope, FileProcessingTask task)
+    private async Task ProcessFileAsync(IServiceScope scope, FileProcessingTask task, CancellationToken stoppingToken)
     {
         logger.LogInformation($"Processing file: {task.Key} in {task.BucketName}");
 
@@ -46,31 +48,79 @@ public class FileProcessingService(
         var key = task.Key;
         var baseUrl = task.BaseUrl;
         (var prefix, var fileName) = SplitPath(key);
-        var fileExtension = GetFileExtension(fileName);
+
+        var tokenGuid = Guid.NewGuid();
+        logger.LogInformation($"Cancellation token created for HlsCreator with guid[{tokenGuid}]");
+
+        var token = hlsCreator.CreateToken(tokenGuid);
+
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken, token);
+        var linkedToken = linkedCts.Token;
+
+        var path = Path.Combine(".tmp", tokenGuid.ToString());
+        if (!Directory.Exists(path))
+        {
+            Directory.CreateDirectory(path);
+        }
 
         try
         {
             var fileToProccess = await chunkerRepository.DownloadFileAsync(bucketName, key);
 
-            var newFileName = $"NewFile.{fileExtension}";
-            var newKey = $"{prefix}/{newFileName}";
+            string fileToProcessPath = Path.Combine(path, fileToProccess.FileName);
 
-            var newFileInfo = await chunkerRepository.UploadFileAsync(new UploadedFile
+            using (FileStream fileStream = new FileStream(fileToProcessPath, FileMode.Create, FileAccess.Write, FileShare.None))
             {
-                Content = fileToProccess.Content,
-                ContentType = fileToProccess.ContentType,
-                FileName = newFileName
-            }, bucketName, newKey);
+                await fileToProccess.Content.CopyToAsync(fileStream);
+            }
+
+            string hlsStreamPath = Path.Combine(path, "hls");
+
+            await CreateHlsStream(hlsStreamPath, fileToProcessPath, linkedToken);
+            hlsCreator.CancelToken(tokenGuid);
+
+            foreach (string filePath in Directory.GetFiles(hlsStreamPath))
+            {
+                using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.None))
+                {
+                    var newFileName = Path.GetFileName(filePath);
+                    var newKey = $"{prefix}/hls/{newFileName}";
+
+                    string contentType = "application/octet-stream";
+                    if (newFileName.EndsWith(".m3u8", StringComparison.OrdinalIgnoreCase))
+                    {
+                        contentType = "application/vnd.apple.mpegurl";
+                    }
+                    else if (newFileName.EndsWith(".ts", StringComparison.OrdinalIgnoreCase))
+                    {
+                        contentType = "video/mp2t";
+                    }
+
+                    await chunkerRepository.UploadFileAsync(new UploadedFile
+                    {
+                        Content = fileStream,
+                        ContentType = contentType,
+                        FileName = Path.GetFileName(filePath)
+                    }, bucketName, newKey);
+                }
+            }
+
+            Directory.Delete(path, true);
+
+            var masterKey = $"{prefix}/hls/master.m3u8";
 
             await mediaGrpcClient.ProcessVideoCallback(new ProcessVideoDtoCallbackDto
             {
                 BucketName = bucketName,
-                Key = newKey,
+                Key = masterKey,
                 BaseUrl = baseUrl
             });
         }
         catch (Exception ex)
         {
+            hlsCreator.CancelToken(tokenGuid);
+            Directory.Delete(path, true);
+
             await mediaGrpcClient.ProcessVideoCallback(new ProcessVideoDtoCallbackDto
             {
                 BucketName = bucketName,
@@ -79,6 +129,18 @@ public class FileProcessingService(
             });
             throw;
         }
+    }
+
+    private async Task CreateHlsStream(string hlsStreamPath, string filePath, CancellationToken stoppingToken)
+    {
+        var variants = new List<HlsVariant>
+        {
+            new HlsVariant { Name = "360p", Width = 640,  Height = 360,  VideoBitrate = 800_000 },
+            new HlsVariant { Name = "720p", Width = 1280, Height = 720,  VideoBitrate = 1_400_000 },
+            new HlsVariant { Name = "1080p",Width = 1920, Height = 1080, VideoBitrate = 2_800_000 }
+        };
+
+        await hlsCreator.CreateHlsMasterPlaylistAsync("ffmpeg", filePath, hlsStreamPath, variants, cancellationToken: stoppingToken);
     }
 
     private static (string, string) SplitPath(string input)
@@ -93,16 +155,5 @@ public class FileProcessingService(
         string part2 = input.Substring(lastIndex + 1);
 
         return (part1, part2);
-    }
-
-    private static string GetFileExtension(string fileName)
-    {
-        if (string.IsNullOrEmpty(fileName) || !fileName.Contains("."))
-        {
-            return string.Empty;
-        }
-
-        int lastIndex = fileName.LastIndexOf('.');
-        return fileName.Substring(lastIndex + 1);
     }
 }

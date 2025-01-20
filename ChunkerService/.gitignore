@@ -23,6 +23,9 @@ nupkg/
 # AWS cred
 .aws/
 
+# tmp
+.tmp/
+
 # User-specific files
 *.suo
 *.user
