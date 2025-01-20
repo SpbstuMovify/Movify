@@ -3,6 +3,7 @@ using MediaService.Dtos.Bucket;
 using MediaService.Dtos.FileInfo;
 using MediaService.Repositories;
 using MediaService.Services;
+using MediaService.Utils.Exceptions;
 using MediaService.Utils.FileProcessing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -58,6 +59,8 @@ public class BucketController(IBucketService bucketService) : ControllerBase
 
     [HttpPost("{bucket-name}/files")]
     [Authorize(Roles = "ADMIN")]
+    [RequestSizeLimit(long.MaxValue)]
+    [DisableRequestSizeLimit]
     public async Task<IActionResult> CreateFile(
         [FromForm] IFormFile file,
         [FromRoute(Name = "bucket-name")] string bucketName,
@@ -66,11 +69,27 @@ public class BucketController(IBucketService bucketService) : ControllerBase
         [FromQuery(Name = "destination")] FileDestination? destination
     )
     {
-        var content = new MemoryStream();
-        await file.CopyToAsync(content);
-        var result = bucketService.CreateFile(new UploadedFile
+        if (file == null || file.Length == 0)
         {
-            Content = content,
+            throw new InternalServerException("File is not selected or empty");
+        }
+
+        var uploadPath = Path.Combine(".tmp", Guid.NewGuid().ToString());
+        if (!Directory.Exists(uploadPath))
+        {
+            Directory.CreateDirectory(uploadPath);
+        }
+
+        var filePath = Path.Combine(uploadPath, file.FileName);
+
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        var result = bucketService.CreateFile(new UploadedFileInfoDto
+        {
+            ContentPath = filePath,
             ContentType = file.ContentType,
             FileName = file.FileName
         }, new CreateFileInfoDto
@@ -81,6 +100,7 @@ public class BucketController(IBucketService bucketService) : ControllerBase
             Destination = destination ?? FileDestination.Internal,
             BaseUrl = $"{Request.Path.Value}"
         });
+
         return Ok(result);
     }
 
@@ -96,6 +116,8 @@ public class BucketController(IBucketService bucketService) : ControllerBase
 
     [HttpPut("{bucket-name}/files/{*key}")]
     [Authorize(Roles = "ADMIN")]
+    [RequestSizeLimit(long.MaxValue)]
+    [DisableRequestSizeLimit]
     public async Task<IActionResult> UpdateFile(
         [FromForm] IFormFile file,
         [FromRoute(Name = "bucket-name")] string bucketName,
@@ -104,11 +126,27 @@ public class BucketController(IBucketService bucketService) : ControllerBase
         [FromQuery(Name = "destination")] FileDestination? destination
     )
     {
-        var content = new MemoryStream();
-        await file.CopyToAsync(content);
-        var result = bucketService.UpdateFile(new UploadedFile
+        if (file == null || file.Length == 0)
         {
-            Content = content,
+            throw new InternalServerException("File is not selected or empty");
+        }
+
+        var uploadPath = Path.Combine(".tmp", Guid.NewGuid().ToString());
+        if (!Directory.Exists(uploadPath))
+        {
+            Directory.CreateDirectory(uploadPath);
+        }
+
+        var filePath = Path.Combine(uploadPath, file.FileName);
+
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        var result = bucketService.UpdateFile(new UploadedFileInfoDto
+        {
+            ContentPath = filePath,
             ContentType = file.ContentType,
             FileName = file.FileName
         }, new UpdateFileInfoDto
@@ -119,6 +157,7 @@ public class BucketController(IBucketService bucketService) : ControllerBase
             Destination = destination ?? FileDestination.Internal,
             BaseUrl = $"{Request.Scheme}://{Request.Host}"
         });
+
         return Ok(result);
     }
 

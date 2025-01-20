@@ -1,5 +1,10 @@
 using MediaService;
 
+if (!Directory.Exists(".tmp"))
+{
+    Directory.CreateDirectory(".tmp");
+}
+
 var builder = Host.CreateDefaultBuilder(args)
     .ConfigureAppConfiguration((hostingContext, config) =>
     {

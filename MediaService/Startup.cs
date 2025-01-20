@@ -5,6 +5,7 @@ using MediaService.Services;
 using MediaService.Utils;
 using MediaService.Utils.FileProcessing;
 using MediaService.Utils.Middleware;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace MediaService;
 public class Startup(IConfiguration configuration)
@@ -14,6 +15,11 @@ public class Startup(IConfiguration configuration)
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
+        services.Configure<FormOptions>(options =>
+        {
+            options.MultipartBodyLengthLimit = 10L * 1024 * 1024 * 1024;
+        });
+
         services.AddControllers();
         services.AddGrpc();
 
