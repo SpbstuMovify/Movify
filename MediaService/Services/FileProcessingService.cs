@@ -1,3 +1,4 @@
+using MediaService.Dtos.Chunker;
 using MediaService.Dtos.Content;
 using MediaService.Grpc;
 using MediaService.Repositories;
@@ -127,6 +128,7 @@ public class FileProcessingService(
         var key = task.Key;
         var episodeId = ParseSegment(task.Key, 1);
         var url = $"{task.BaseUrl}/{task.Key}";
+        var IsVideoProcNecessary = task.IsVideoProcNecessary;
 
         await contentGrpcClient.SetEpisodeVideoUrlDto(new EpisodeVideoUrlDto
         {
@@ -154,6 +156,18 @@ public class FileProcessingService(
                 Url = url,
                 Status = FileStatus.Uploaded
             });
+
+            if (IsVideoProcNecessary)
+            {
+                var chunkerGrpcClient = scope.ServiceProvider.GetRequiredService<IChunckerGrpcClient>();
+
+                await chunkerGrpcClient.ProcessVideo(new ProcessVideoDto
+                {
+                    BucketName = bucketName,
+                    Key = key,
+                    BaseUrl = task.BaseUrl
+                });
+            }
         }
         catch (Exception)
         {

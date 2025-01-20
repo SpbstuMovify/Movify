@@ -12,7 +12,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Protobuf Include="Protos\chunker.proto" GrpcServices="Client" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Protobuf Include="Protos\content.proto" GrpcServices="Client" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="Protos\media.proto" GrpcServices="Server" />
   </ItemGroup>
 
   <ItemGroup>

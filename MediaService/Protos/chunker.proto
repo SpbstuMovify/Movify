@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option csharp_namespace = "Movify";
+
+package chunker;
+import "google/protobuf/empty.proto";
+
+service ChunkerService {
+  rpc ProcessVideo (ProcessVideoRequest) returns (google.protobuf.Empty);
+  rpc CancelVideoProcessing (CancelVideoProcessingRequest) returns (google.protobuf.Empty);
+}
+
+message ProcessVideoRequest {
+  string bucketName = 1;
+  string key = 2;
+  string baseUrl = 3;
+}
+
+message CancelVideoProcessingRequest {
+  string tokenGuid = 1;
+}

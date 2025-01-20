@@ -50,6 +50,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8078:8078"
+      - "8077:8077"
     networks:
       - app
 
@@ -59,7 +60,7 @@ services:
       context: ./ChunkerService
       dockerfile: Dockerfile
     ports:
-      - "8077:8077"
+      - "8076:8076"
     networks:
       - app
 
