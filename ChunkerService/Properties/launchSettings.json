@@ -1,6 +1,6 @@
 ﻿{
   "profiles": {
-    "MediaService": {
+    "ChunkerService": {
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

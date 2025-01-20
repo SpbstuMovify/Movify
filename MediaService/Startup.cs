@@ -24,9 +24,19 @@ public class Startup(IConfiguration configuration)
         services.AddGrpc();
 
         services.AddJwtAuthentication(Configuration);
-        
+
         services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
         services.AddAWSService<IAmazonS3>();
+
+        services.AddGrpcClient<Movify.ChunkerService.ChunkerServiceClient>(o =>
+        {
+            var address = Configuration["GrpcClientSettings:ChunkerServiceAddress"];
+            if (string.IsNullOrEmpty(address))
+            {
+                throw new InvalidOperationException("ChunkerServiceAddress is not configured.");
+            }
+            o.Address = new Uri(address);
+        });
 
         services.AddGrpcClient<Movify.ContentService.ContentServiceClient>(o =>
         {
@@ -38,7 +48,10 @@ public class Startup(IConfiguration configuration)
             o.Address = new Uri(address);
         });
 
+        services.AddScoped<IChunckerGrpcClient, ChunckerGrpcClient>();
         services.AddScoped<IContentGrpcClient, ContentGrpcClient>();
+
+        services.AddScoped<IChunkerCallbackService, ChunkerCallbackService>();
 
         services.AddScoped<IBucketRepository, BucketRepository>();
         services.AddScoped<IBucketService, BucketService>();
@@ -86,6 +99,8 @@ public class Startup(IConfiguration configuration)
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
+            endpoints.MapGrpcService<MediaGrpcServer>();
+            logger.LogInformation("Endpoints mapped");
         });
     }
 }

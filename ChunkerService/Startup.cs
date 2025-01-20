@@ -29,6 +29,8 @@ public class Startup(IConfiguration configuration)
             o.Address = new Uri(address);
         });
 
+        services.AddScoped<IMediaGrpcClient, MediaGrpcClient>();
+
         services.AddScoped<IChunkerRepository, ChunkerRepository>();
         services.AddScoped<IChunkerService, Services.ChunkerService>();
 

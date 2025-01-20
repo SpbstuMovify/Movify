@@ -20,8 +20,8 @@ RUN mkdir -p /root/.aws
 COPY .aws/config /root/.aws
 COPY .aws/credentials /root/.aws
 WORKDIR /app
-ENV ASPNETCORE_URLS=http://+:8078
 EXPOSE 8078
+EXPOSE 8077
 EXPOSE 443
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "MediaService.dll"]
