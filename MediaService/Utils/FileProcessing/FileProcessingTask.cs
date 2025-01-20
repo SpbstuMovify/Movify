@@ -1,10 +1,10 @@
-using MediaService.Repositories;
+using MediaService.Dtos.FileInfo;
 
 namespace MediaService.Utils.FileProcessing;
 
 public record FileProcessingTask
 (
-    UploadedFile File,
+    UploadedFileInfoDto File,
     string BucketName,
     string Key,
     bool IsVideoProcNecessary, 

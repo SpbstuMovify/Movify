@@ -80,7 +80,7 @@ public class BucketService(IBucketRepository bucketRepository, IFileProcessingQu
         }
     }
 
-    public FileInfoDto CreateFile(UploadedFile file, CreateFileInfoDto createFileInfoDto)
+    public FileInfoDto CreateFile(UploadedFileInfoDto file, CreateFileInfoDto createFileInfoDto)
     {
         var bucketName = createFileInfoDto.BucketName;
         var prefix = createFileInfoDto.Prefix;
@@ -115,7 +115,7 @@ public class BucketService(IBucketRepository bucketRepository, IFileProcessingQu
         }
     }
 
-    public FileInfoDto UpdateFile(UploadedFile file, UpdateFileInfoDto updateFileInfoDto)
+    public FileInfoDto UpdateFile(UploadedFileInfoDto file, UpdateFileInfoDto updateFileInfoDto)
     {
         var bucketName = updateFileInfoDto.BucketName;
         var key = updateFileInfoDto.Key;

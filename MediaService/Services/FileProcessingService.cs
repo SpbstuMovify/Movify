@@ -45,20 +45,26 @@ public class FileProcessingService(
             {
                 case FileDestination.Internal:
                     await ProcessInternalFileAsync(scope, task);
-                    return;
+                    break;
                 case FileDestination.ContentImageUrl:
                     await ProcessContentImageAsync(scope, task);
-                    return;
+                    break;
                 case FileDestination.EpisodeVideoUrl:
                     await ProcessEpisodeVideoAsync(scope, task);
-                    return;
+                    break;
                 default:
-                    return;
+                    break;
             }
         }
         catch (Exception ex)
         {
             logger.LogError(ex, $"Failed to process file: {task.Key}");
+        }
+
+        var fileDirectory = Path.GetDirectoryName(task.File.ContentPath);
+        if (fileDirectory != null)
+        {
+            Directory.Delete(fileDirectory, true);
         }
     }
 
@@ -70,8 +76,16 @@ public class FileProcessingService(
         var bucketName = task.BucketName;
         var key = task.Key;
 
-        var data = await bucketRepository.UploadFileAsync(file, bucketName, key);
-        logger.LogInformation($"File uploaded: {data.PresignedUrl}");
+        using (FileStream fileStream = new FileStream(file.ContentPath, FileMode.Open, FileAccess.Read, FileShare.None))
+        {
+            var data = await bucketRepository.UploadFileAsync(new UploadedFile
+            {
+                Content = fileStream,
+                ContentType = file.ContentType,
+                FileName = file.FileName
+            }, bucketName, key);
+            logger.LogInformation($"File uploaded: {data.PresignedUrl}");
+        }
     }
 
     private async Task ProcessContentImageAsync(IServiceScope scope, FileProcessingTask task)
@@ -85,8 +99,16 @@ public class FileProcessingService(
         var contentId = ParseSegment(task.Key, 0);
         var url = $"{task.BaseUrl}/{task.Key}";
 
-        var data = await bucketRepository.UploadFileAsync(file, bucketName, key);
-        logger.LogInformation($"File uploaded: {data.PresignedUrl}");
+        using (FileStream fileStream = new FileStream(file.ContentPath, FileMode.Open, FileAccess.Read, FileShare.None))
+        {
+            var data = await bucketRepository.UploadFileAsync(new UploadedFile
+            {
+                Content = fileStream,
+                ContentType = file.ContentType,
+                FileName = file.FileName
+            }, bucketName, key);
+            logger.LogInformation($"File uploaded: {data.PresignedUrl}");
+        }
 
         await contentGrpcClient.SetContentImageUrl(new ContentImageUrlDto
         {
@@ -115,8 +137,16 @@ public class FileProcessingService(
 
         try
         {
-            var data = await bucketRepository.UploadFileAsync(file, bucketName, key);
-            logger.LogInformation($"File uploaded: {data.PresignedUrl}");
+            using (FileStream fileStream = new FileStream(file.ContentPath, FileMode.Open, FileAccess.Read, FileShare.None))
+            {
+                var data = await bucketRepository.UploadFileAsync(new UploadedFile
+                {
+                    Content = fileStream,
+                    ContentType = file.ContentType,
+                    FileName = file.FileName
+                }, bucketName, key);
+                logger.LogInformation($"File uploaded: {data.PresignedUrl}");
+            }
 
             await contentGrpcClient.SetEpisodeVideoUrlDto(new EpisodeVideoUrlDto
             {

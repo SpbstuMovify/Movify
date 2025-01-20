@@ -10,8 +10,8 @@ public interface IBucketService
     Task<BucketDto> CreateBucketAsync(CreateBucketDto createBucketDto);
     Task DeleteBucketAsync(DeleteBucketDto deleteBucketDto);
     Task<IList<FileInfoDto>> GetFilesAsync(GetFilesInfoDto getFilesInfoDto);
-    FileInfoDto CreateFile(UploadedFile file, CreateFileInfoDto createFileInfoDto);
+    FileInfoDto CreateFile(UploadedFileInfoDto file, CreateFileInfoDto createFileInfoDto);
     Task<DownloadedFile> GetFileAsync(GetFileInfoDto getFileInfoDto);
-    FileInfoDto UpdateFile(UploadedFile file, UpdateFileInfoDto updateFileInfoDto);
+    FileInfoDto UpdateFile(UploadedFileInfoDto file, UpdateFileInfoDto updateFileInfoDto);
     Task DeleteFileAsync(DeleteFileInfoDto deleteFileInfoDto);
 }
