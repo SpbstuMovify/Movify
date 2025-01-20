@@ -23,6 +23,7 @@ function Films(){
     const [queryParams, setQueryParams] = useState(new URLSearchParams(location.search));
 
     const [hoveredId, setHoveredId] = useState(null);
+    const [isFavoritesUpdating, setIsFavoritesUpdating] = useState(false);
 
     const mappingJSON = {
         "age_restriction": {
@@ -126,24 +127,49 @@ function Films(){
     const handleAddToPersonalList = async (event, contentId) => {
         event.stopPropagation();
         try {
-            const response = await addToPersonalList(userData.user_id, contentId, userData.token);
-            setPersonalList([...personalList, {id: response.content_id}])
+            if (!isFavoritesUpdating)
+            {
+                setIsFavoritesUpdating(true);
+                const response = await addToPersonalList(userData.user_id, contentId, userData.token);
+                setPersonalList([...personalList, {id: response.content_id}]);
+                setIsFavoritesUpdating(false);
+            }
         }
         catch (error)
         {
-            console.error(error.message);
+            switch (error.response?.status) {
+                case 401:
+                    clearUserData();
+                    break;
+
+                default:
+                    console.error(error.message);
+            }
         }
     }
+    
 
     const handleRemoveFromPersonalList = async (event, contentId) => {
         event.stopPropagation();
         try {
-            const response = await removeFromPersonalList(userData.user_id, contentId, userData.token);
-            setPersonalList(personalList.filter((item)=>item.id !== contentId));
+            if (!isFavoritesUpdating)
+            {
+                setIsFavoritesUpdating(true);
+                const response = await removeFromPersonalList(userData.user_id, contentId, userData.token);
+                setPersonalList(personalList.filter((item)=>item.id !== contentId));
+                setIsFavoritesUpdating(false);
+            }
         }
         catch (error)
         {
-            console.error(error.message);
+            switch (error.response?.status) {
+                case 401:
+                    clearUserData();
+                    break;
+
+                default:
+                    console.error(error.message);
+            }
         }
     }
 
