@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8085/v1', // Replace with your backend URL
+  baseURL: 'http://localhost:8090/v1',
 });
 
 export const register = async (email, password, login, firstName, lastName) => {
@@ -110,7 +110,7 @@ export const searchFilms = async (pageSize, pageNumber, year=null, genre=null, t
     }, (key, value) => {
       return value === null || value === "" ? undefined : value;
   });
-    const response = await api.post(`http://localhost:8085/v1/contents/search`, requestBody, {
+    const response = await api.post(`/contents/search`, requestBody, {
       headers: {
         'Content-Type': "application/json",
       },
@@ -219,6 +219,36 @@ export const addToPersonalList = async (userId, contentId, jwtToken) => {
  export const getEpisodes = async (contentId) => {
   try {
     const response = await api.get(`/episodes?content_id=${contentId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+ }
+
+ export const updateFilm = async (contentId, updateFields, jwtToken) => {
+  try {
+    const response = await api.put(`/contents/${contentId}`, updateFields, {
+      headers: {
+        "Authorization": `${jwtToken}`
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+ }
+
+ export const uploadImage = async (contentId, file, jwtToken) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await api.post(`/buckets/movify-videos/files?prefix=${contentId}%2F&process=false&destination=ContentImageUrl`,
+      formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        "Authorization": `Bearer ${jwtToken}`
+      },
+    });
     return response.data;
   } catch (error) {
     throw error;

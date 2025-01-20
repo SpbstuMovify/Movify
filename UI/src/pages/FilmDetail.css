@@ -1,0 +1,161 @@
+.detail-body {
+    background-color: rgb(45, 45, 45);
+    min-height: 88vh;
+    overflow-x: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 30px;
+    padding-right: 30px;
+    color: white;
+}
+
+.detail-wrapper {
+    border: 1px black solid;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    min-height: 75vh;
+    padding: 30px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-direction: column;
+}
+
+.film-detail-logo-uploadable, .film-detail-logo {
+    max-width: 27vw;
+    object-fit: contain;
+    border-radius: 15%;
+}
+
+
+.film-detail-logo-uploadable:hover {
+    filter: brightness(0.8);
+}
+
+.film-detail-logo-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: fit-content;
+    margin-right: 15px;
+}
+
+.favorites-button {
+    background-color: rgb(121, 121, 121);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 10px;
+    min-width: 95%;
+    white-space: nowrap;
+    color: white;
+    text-shadow: 
+    -1px -1px 0 rgb(65, 65, 65), /* Top-left */
+    1px -1px 0 rgb(65, 65, 65),  /* Top-right */
+    -1px 1px 0 rgb(65, 65, 65),  /* Bottom-left */
+    1px 1px 0 rgb(65, 65, 65);   /* Bottom-right */
+    height: 35px;
+    padding-left: 10px;
+    padding-right: 10px;
+    filter: brightness(0.7);
+    margin-top: 15px;
+    font-size: min(2vh, 2vw);
+    border: none;
+}
+
+.favorites-button:hover {
+    filter: brightness(0.9);
+
+}
+
+.favorites-button img {
+    margin-left: 10px;
+    object-fit: contain;
+    width: 3vh;
+    height: 3vh;
+}
+
+.favorites-button:hover .image-heart {
+    content: url('/images/trash.png');
+}
+
+.favorites-button:hover .image-hollow-heart {
+    content: url('/images/heart.png');
+}
+
+.film-detail-header {
+    display: flex;
+    justify-content: flex-start;
+    padding-bottom: 15px;
+    border-bottom: 1px solid black;
+}
+
+.edit-image-button {
+    background-color: transparent;
+    cursor: pointer;
+    border-radius: 50%;
+    height: 100%;
+    filter: brightness(0.7);
+    padding: 0;
+}
+
+.edit-image-button:hover{
+    filter: brightness(0.9);
+}
+
+.edit-image-button img {
+    object-fit: contain;
+    width: 3vh;
+    height: 3vh;
+}
+
+.film-detail-info {
+    margin-left: 15px;
+}
+
+.film-detail-title {
+    margin-top: 0;
+}
+
+.episode-select {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background-color: #444;
+    color: #ffffff;
+    font-size: 14px;
+}
+
+.episode-select:focus {
+    border-color: #a96758;
+    outline: none;
+    box-shadow: 0 0 4px #a96758;
+}
+
+.player-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.player-placeholder {
+    width: 44.4vw;
+    height: 25vw;
+    border: 4px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 3vw;
+    text-align: center;
+    margin-top: 10px;
+    padding: 2vw;
+    box-sizing: border-box;
+}
