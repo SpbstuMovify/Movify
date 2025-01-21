@@ -53,6 +53,19 @@ public class AuthAttemptsServiceImpl implements AuthAttemptsService {
     return false;
   }
 
+  @Override
+  public boolean isLoginBlocked(String ip) {
+    Optional<AuthAttempts> optionalAuthAttempts = authAttemptsRepository.findByIp(ip);
+    if (optionalAuthAttempts.isEmpty()) {
+      return false;
+    }
+
+    AuthAttempts authAttempts = optionalAuthAttempts.get();
+    int authAttemptsLeft = authAttempts.getAttemptsLeft();
+    LocalDateTime nextAttemptsTime = authAttempts.getNextAttemptsTime();
+    return (authAttemptsLeft == 0 && nextAttemptsTime.isAfter(LocalDateTime.now()));
+  }
+
   private AuthAttempts createDefaultAuthAttemptsEntity(String ip) {
     return AuthAttempts.builder()
         .ip(ip)

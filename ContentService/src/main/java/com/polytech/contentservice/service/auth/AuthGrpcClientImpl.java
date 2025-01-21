@@ -35,6 +35,9 @@ public class AuthGrpcClientImpl implements AuthGrpcClient {
   @Override
   public LoginUserResponse sendLoginRequest(UserDto userDto, String ip) {
     try {
+      if (authAttemptsService.isLoginBlocked(ip)) {
+        throw new Exception("Login blocked");
+      }
       return stub.loginUser(LoginUserRequest.newBuilder()
           .setEmail(userDto.email())
           .setPasswordHash(userDto.passwordHash())

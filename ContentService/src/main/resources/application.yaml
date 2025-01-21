@@ -38,5 +38,5 @@ content:
         port: 8079
 
 auth:
-  ban-time-in-seconds: 5
+  ban-time-in-seconds: 30
   default-attempts-amount: 3
