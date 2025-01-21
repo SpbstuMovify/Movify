@@ -34,10 +34,10 @@
     color: red;
 }
 
-.error-message-small {
+.error-message-small-auth {
     margin-top:0%;
     margin-bottom: 15px;
-    font-size: small;
+    font-size: 1.7vh;
 }
 
 .loading-wrapper {
@@ -104,12 +104,12 @@ input[type="checkbox"]:checked {
     overflow-y: scroll;
 }
 
-.terms-window > .button-wrapper {
+.terms-window > .button-wrapper-auth {
     display: flex;
     justify-content: end;
 }
 
-.button-wrapper > button {
+.button-wrapper-auth > button {
     background-color: transparent;
     border: none;
     color: black;
@@ -120,7 +120,7 @@ input[type="checkbox"]:checked {
     z-index: 11;
 }
 
-.button-wrapper > button:hover {
+.button-wrapper-auth > button:hover {
     color: red;
     cursor: pointer;
 }

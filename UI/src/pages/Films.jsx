@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import Navigation from "../components/Navigation";
 import './Films.css'
-import { searchFilms, getPersonalList, addToPersonalList, removeFromPersonalList } from "../services/api";
+import { searchFilms, getPersonalList, addToPersonalList, removeFromPersonalList, createFilm, deleteFilm } from "../services/api";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../contexts/AuthContext";
+import mappingJSON from "../configs/config";
 
 function Films(){
     const {register, handleSubmit, formState: {errors}, setValue, setError} = useForm();
@@ -17,7 +18,7 @@ function Films(){
 
     const pageSizeArray = [3, 5, 10, 20, 50];
     const [maxPageNumber, setMaxPageNumber] = useState(100);
-    const currentYear = new Date().getFullYear()
+    const currentYear = new Date().getFullYear();
 
     const location = useLocation();
     const [queryParams, setQueryParams] = useState(new URLSearchParams(location.search));
@@ -25,19 +26,9 @@ function Films(){
     const [hoveredId, setHoveredId] = useState(null);
     const [isFavoritesUpdating, setIsFavoritesUpdating] = useState(false);
 
-    const mappingJSON = {
-        "age_restriction": {
-            "EIGHTEEN_PLUS": "18+",
-            "SIXTEEN_PLUS": "16+",
-            "TWELVE_PLUS": "12+",
-            "SIX_PLUS": "6+",
-            "ZERO_PLUS": "0+"
-        }
-    }
-
     const getPages = (filmsResponse) => {
         filmsResponse.content.forEach((film)=>{
-            film.age_restriction = mappingJSON.age_restriction[film.age_restriction]
+            film.age_restriction = mappingJSON().age_restriction[film.age_restriction]
             let spacedString = film.genre.replace(/_/g, " ");
             film.genre = spacedString.charAt(0).toUpperCase() + spacedString.slice(1).toLowerCase();
             spacedString = film.category.replace(/_/g, " ");
@@ -45,6 +36,10 @@ function Films(){
             film.publisher = film.publisher.replace(/_/g, " ");
         });
         setMaxPageNumber(filmsResponse.totalPages == 0 ? filmsResponse.totalPages : filmsResponse.totalPages-1);
+        if (filmsResponse.totalPages > 0 && filmsResponse.totalPages - 1 < pageNumber)
+        {
+            setPageNumber(filmsResponse.totalPages - 1);
+        }
         setFilms(filmsResponse.content);
     }
 
@@ -173,6 +168,42 @@ function Films(){
         }
     }
 
+    const handleAddNewFilm = async () =>{
+        try {
+            await createFilm(userData.token);
+            getFilms();
+        }
+        catch(error)
+        {
+            switch (error.response?.status) {
+                case 401:
+                    clearUserData();
+                    break;
+
+                default:
+                    console.error(error.message);
+            }
+        }
+    }
+
+    const handleDeleteFilm = async (event, contentId) =>{
+        event.stopPropagation();
+        try {
+            await deleteFilm(userData.token, contentId);
+            getFilms();
+        }
+        catch(error)
+        {
+            switch (error.response?.status) {
+                case 401:
+                    clearUserData();
+                    break;
+                default:
+                    console.error(error.message);
+            }
+        }
+    }
+
     return <>
         <Navigation/>
         <div className="films-body">
@@ -218,11 +249,19 @@ function Films(){
                             <span className="film-description">{film.description}</span>
                             <div className="film-element-footer">
                                 <h3 className="film-secondary-label">Publisher: {film.publisher}, Release year: {film.year}</h3>
-                                <h3 className="film-secondary-label">{film.category}, {film.genre}</h3>
+                                <h3 className="film-secondary-label" style={{display: "flex", alignItems: "flex-end"}}>
+                                {film.category}, {film.genre}
+                                { userData && userData.role == "ADMIN" &&<button 
+                                className="film-button"
+                                style={{marginLeft: "10px", width:"fit-content"}}
+                                onMouseEnter={()=>{setHoveredId(null)}}
+                                onMouseLeave={()=>{setHoveredId(film.id)}}
+                                onClick={(e)=>handleDeleteFilm(e, film.id)}>Delete</button>}</h3>
                             </div>
                         </div>
                     </div>
                 ))}
+                {films && films.length == 0 && <h2 style={{textAlign: "center"}}>No films found...</h2>}
                 </div>
                 <div className="page-buttons">
                     <button disabled={pageNumber === 0} className="page-button" onClick={()=>handlePageBack()}>{"<"}</button>
@@ -240,46 +279,56 @@ function Films(){
                     <button disabled={pageNumber === maxPageNumber} className="page-button" onClick={()=>handlePageForward()}>{">"}</button>
                 </div>
             </div>
-            <div className="filter-list">
-                <h1 className="filter-header">Search Filters</h1>
-                <div className="filter">
-                    <label htmlFor="age-restriction">Age restriction:</label>
-                    <select {...register("ageRestriction")} id="age-restriction" className="filter-input">
-                        <option value="">Any age</option>
-                        <option value="SIX_PLUS">6+</option>
-                        <option value="TWELVE_PLUS">12+</option>
-                        <option value="SIXTEEN_PLUS">16+</option>
-                        <option value="EIGHTEEN_PLUS">18+</option>
-                    </select>
-                </div>
-                <div className="filter">
-                    <label htmlFor="genre">Genre:</label>
-                    <select {...register("genre")} id="genre" className="filter-input" >
-                        <option value="">Any genre</option>
-                        <option value="ACTION_FILM">Action film</option>
-                        <option value="COMEDY">Comedy</option>
-                        <option value="DRAMA">Drama</option>
-                    </select>
-                </div>
-                <div className="filter">
-                    <label htmlFor="year">Release year:</label> 
-                    <input {...register("year", {
-                        validate: (value) => {
-                            if (!isNaN(value) && !isNaN(parseInt(value)))
-                            {
-                                if (value > currentYear) {
-                                return `Enter a number between 1900 and ${currentYear}`;
-                                }
-                                if (value < 1900) {
+            <div style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "15px"}}>
+                <div className="filter-list">
+                    <h1 className="filter-header">Search Filters</h1>
+                    <div className="filter">
+                        <label htmlFor="age-restriction">Age restriction:</label>
+                        <select {...register("ageRestriction")} id="age-restriction" className="filter-input">
+                            <option value="">Any age</option>
+                            {mappingJSON().age_restriction_options.map((option, index) => (
+                                <option value={option.value} key={index}>
+                                {option.label}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="filter">
+                        <label htmlFor="genre">Genre:</label>
+                        <select {...register("genre")} id="genre" className="filter-input" >
+                            <option value="">Any genre</option>
+                            {mappingJSON().genre_options.map((option, index) => (
+                                <option value={option.value} key={index}>
+                                {option.label}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="filter">
+                        <label htmlFor="year">Release year:</label> 
+                        <input {...register("year", {
+                            validate: (value) => {
+                                if (!isNaN(value) && !isNaN(parseInt(value)))
+                                {
+                                    if (value > currentYear) {
                                     return `Enter a number between 1900 and ${currentYear}`;
+                                    }
+                                    if (value < 1900) {
+                                        return `Enter a number between 1900 and ${currentYear}`;
+                                    }
                                 }
+                                return true;
                             }
-                            return true;
-                        }
-                    })} id="year" type="number" className="filter-input" placeholder="Any year" min="1900" max={currentYear} />
-                    {errors.year && (<label htmlFor='year' style={{color: "#CC0000", marginTop: "15px", marginBottom: "0"}}>
-                        {errors.year.message}</label>)}
+                        })} id="year" type="number" className="filter-input" placeholder="Any year" min="1900" max={currentYear} />
+                        {errors.year && (<label htmlFor='year' style={{color: "#CC0000", marginTop: "15px", marginBottom: "0"}}>
+                            {errors.year.message}</label>)}
+                    </div>
                 </div>
+                { userData && userData.role == "ADMIN" &&
+                    <div>
+                        <button className="film-button" onClick={handleAddNewFilm}>Add new film</button>
+                    </div>
+                }
             </div>
         </div>
     </>;

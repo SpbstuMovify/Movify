@@ -17,7 +17,7 @@ const Navigation = () => {
             </Link>
             <div className="nav-container">
                 {userData && userData.role === "ADMIN" && <Link className="nav-text-links" to="/rights">
-                    Rights
+                    Grant admin
                 </Link>}
                 <Link className="nav-text-links" to="/films">
                     Films

@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { getEpisodes, getFilmById, getPersonalList, addToPersonalList, removeFromPersonalList, updateFilm, createEpisode, updateEpisode, deleteEpisode, uploadImage, uploadVideo } from '../services/api';
 import { useAuth } from "../contexts/AuthContext";
 import { useForm, Controller } from "react-hook-form";
+import mappingJSON from "../configs/config";
 
 import EditableField from "../components/EditableField";
 import UpdatableImage from "../components/UpdatableImage";
@@ -40,40 +41,6 @@ function FilmDetail() {
     const [thumbnailSource, setThumbnailSource] = useState("/images/no_image.jpg");
 
     const currentYear = new Date().getFullYear()
-    const mappingJSON = {
-        "age_restriction": {
-            "EIGHTEEN_PLUS": "18+",
-            "SIXTEEN_PLUS": "16+",
-            "TWELVE_PLUS": "12+",
-            "SIX_PLUS": "6+",
-            "ZERO_PLUS": "0+"
-        },
-        "age_restriction_options": [
-            { value: "EIGHTEEN_PLUS", label: "18+" },
-            { value: "SIXTEEN_PLUS", label: "16+" },
-            { value: "TWELVE_PLUS", label: "12+" },
-            { value: "SIX_PLUS", label: "6+" },
-            { value: "ZERO_PLUS", label: "0+" }
-        ],
-        "category_options": [
-            { value: "MOVIE", label: "Movie" },
-            { value: "ANIMATED_SERIES", label: "Animated series" },
-            { value: "SERIES", label: "Series" },
-            { value: "ANIMATED_FILM", label: "Animated film" },
-        ],
-        "genre_options": [
-            { value: "MUSICAL", label: "Musical" },
-            { value: "DRAMA", label: "Drama" },
-            { value: "THRILLER", label: "Thriller" },
-            { value: "HORROR_FILM", label: "Horror film" },
-            { value: "ACTION_FILM", label: "Action film" },
-            { value: "BLOCKBUSTER", label: "Blockbuster" },
-            { value: "COMEDY", label: "Comedy" },
-            { value: "DOCUMENTARY", label: "Documentary" },
-            { value: "CARTOON", label: "Cartoon" },
-            { value: "HISTORICAL_FILM", label: "Historical film" }
-        ]
-    }
 
     useEffect(() => {
         if (filmInfo) {
@@ -90,15 +57,13 @@ function FilmDetail() {
         response.publisher = response.publisher.replace(/_/g, " ");
         setFilmInfo(response);
         setThumbnailSource(response.thumbnail ? `http://localhost:8090${response.thumbnail}` : "/images/no_image.jpg");
-        console.log(response);
     }
-
+    const getFilmEpisodes = async () => {
+        const response = await getEpisodes(contentId);
+        setFilmEpisodes(response);
+        setSeasonArray(Array.from(new Set(response.map((episode) => episode.season_num))).sort());
+    }
     useEffect(() => {
-        const getFilmEpisodes = async () => {
-            const response = await getEpisodes(contentId);
-            setFilmEpisodes(response);
-            setSeasonArray(Array.from(new Set(response.map((episode) => episode.season_num))));
-        }
         if (contentId) {
             getFilm();
             getFilmEpisodes();
@@ -107,13 +72,27 @@ function FilmDetail() {
 
     useEffect(() => {
         if (filmEpisodes) {
-            setSeasonEpisodeArray(filmEpisodes.filter(episode => (Number(episode.season_num) === Number(selectedSeason))));
+            const episodes = filmEpisodes.filter(episode => 
+                (Number(episode.season_num) === Number(selectedSeason))).sort((a,b)=>(a.episode_num-b.episode_num));
+            setSeasonEpisodeArray(episodes);
+            if (selectedEpisode)
+            {
+                let newEpisode = episodes.find(episode=>episode.episode_num == selectedEpisode.episode_num);
+                if (!newEpisode) {
+                    newEpisode = episodes.find(episode=>episode.episode_num == selectedEpisode.episode_num-1);
+                    if (!newEpisode)
+                    {
+                        setSelectedSeason(undefined);
+                    }
+                }
+                setSelectedEpisode(newEpisode);
+            }
         }
-    }, [selectedSeason]);
+    }, [selectedSeason, filmEpisodes]);
 
     useEffect(() => {
         if (selectedEpisode) {
-            filmEpisodesForm.reset(selectedEpisode); // Устанавливаем новые значения
+            filmEpisodesForm.reset(selectedEpisode); 
         }
     }, [selectedEpisode, filmEpisodesForm]);
 
@@ -208,8 +187,6 @@ function FilmDetail() {
     }
 
     const updateField = async (field, newValue, error) => {
-        console.log(field)
-        console.log(newValue)
         if (!error) {
             let parsedValue = newValue;
             if (field == "category" || field == "genre") {
@@ -218,11 +195,11 @@ function FilmDetail() {
                     .replace(/^\w/, (c) => c.toUpperCase());;
             }
             else if (field == "age_restriction") {
-                parsedValue = mappingJSON["age_restriction"][parsedValue];
+                parsedValue = mappingJSON()["age_restriction"][parsedValue];
             }
             try {
                 setFilmInfo({ ...filmInfo, [field]: parsedValue });
-                const response = await updateFilm(filmInfo.id, { [field]: newValue }, userData.token);
+                await updateFilm(filmInfo.id, { [field]: newValue }, userData.token);
             }
             catch (error) {
                 switch (error.response?.status) {
@@ -244,7 +221,7 @@ function FilmDetail() {
         try {
 
             await uploadImage(filmInfo.id, file, userData.token);
-            await setTimeout(getFilm, 1000);
+            await setTimeout(getFilm, 2000);
         }
         catch (error) {
             switch (error.response?.status) {
@@ -262,6 +239,7 @@ function FilmDetail() {
         try {
             await uploadVideo(filmInfo.id, episodeId, file, userData.token);
             await setTimeout(getFilm, 1000);
+            getFilmEpisodes();
         }
         catch (error) {
             switch (error.response?.status) {
@@ -276,10 +254,7 @@ function FilmDetail() {
     }
 
     const updateEpisodeField = async (episodeId, field, newValue, error) => {
-        console.log(field)
-        console.log(newValue)
         if (!error) {
-            let parsedValue = newValue;
             try {
                 setFilmEpisodes((prev) =>
                     prev.map((episode) =>
@@ -295,7 +270,7 @@ function FilmDetail() {
                             : episode
                     )
                 );
-                const response = await updateEpisode(episodeId, { [field]: newValue }, userData.token);
+                await updateEpisode(episodeId, { [field]: newValue }, userData.token);
             }
             catch (error) {
                 switch (error.response?.status) {
@@ -316,7 +291,8 @@ function FilmDetail() {
     const deleteEpisodeById = async (episodeId, error) => {
         if (!error) {
             try {
-                const response = await deleteEpisode(episodeId, userData.token);
+                await deleteEpisode(episodeId, userData.token);
+                getFilmEpisodes();
             }
             catch (error) {
                 switch (error.response?.status) {
@@ -336,12 +312,11 @@ function FilmDetail() {
 
     const handleEpisodeCreate = async (data) => {
         try {
-            const response = await createEpisode(contentId, data.episode_num, data.season_num, "New Episode", "", userData.token);
-            setFilmEpisodes([...filmEpisodes, response]);
-            setSeasonArray(Array.from(new Set([...filmEpisodes, response].map(ep => ep.season_num))));
-            setShowAddEpisodeForm(false); // Закрыть форму после добавления
+            await createEpisode(contentId, data.episode_num, data.season_num, "New Episode", "", userData.token);
+            getFilmEpisodes();
+            setShowAddEpisodeForm(false); 
         } catch (error) {
-            console.error("Ошибка при добавлении эпизода:", error);
+            console.error("Error adding the episode", error);
         }
     };
 
@@ -399,7 +374,7 @@ function FilmDetail() {
                                             onChange={field.onChange}
                                             disableEditButton={!userData || !(userData.role === "ADMIN")}
                                             inputType="select"
-                                            options={mappingJSON.genre_options}
+                                            options={mappingJSON().genre_options}
                                             selectDisplayedValue={field.value}
                                         />
                                         {fieldState.error && <p style={{ color: "red" }}>{fieldState.error.message}</p>}
@@ -418,7 +393,7 @@ function FilmDetail() {
                                             onChange={field.onChange}
                                             disableEditButton={!userData || !(userData.role === "ADMIN")}
                                             inputType="select"
-                                            options={mappingJSON.category_options}
+                                            options={mappingJSON().category_options}
                                             selectDisplayedValue={field.value}
                                         />
                                         {fieldState.error && <p style={{ color: "red" }}>{fieldState.error.message}</p>}
@@ -439,8 +414,8 @@ function FilmDetail() {
                                             onChange={field.onChange}
                                             disableEditButton={!userData || !(userData.role === "ADMIN")}
                                             inputType="select"
-                                            options={mappingJSON.age_restriction_options}
-                                            selectDisplayedValue={mappingJSON["age_restriction"][field.value]}
+                                            options={mappingJSON().age_restriction_options}
+                                            selectDisplayedValue={mappingJSON()["age_restriction"][field.value]}
                                         />
                                         {fieldState.error && <p style={{ color: "red" }}>{fieldState.error.message}</p>}
                                     </>
@@ -511,6 +486,8 @@ function FilmDetail() {
                                     <div>
                                         {filmInfo.cast_members.map((member, index) => (
                                             <div key={index} style={{ marginBottom: "10px" }}>
+                                                {userData && userData.role == "ADMIN" && filmInfo.cast_members.length != 1 && <button onClick={()=>
+                                                    updateField("cast_members", filmInfo.cast_members.filter((member_old)=>member !== member_old))}>-</button>}
                                                 <Controller
                                                     name={`cast_members.${index}.employee_full_name`}
                                                     control={filmForm.control}
@@ -547,6 +524,10 @@ function FilmDetail() {
                                                         />
                                                     )}
                                                 />
+                                                {userData && userData.role == "ADMIN" && 
+                                                    filmInfo.cast_members[filmInfo.cast_members.length-1] === member && <button onClick={()=>
+                                                    updateField("cast_members", [...filmInfo.cast_members, {"employee_full_name": "Actor",
+                                                    "role_name": "Role"}])}>+</button>}
                                             </div>
                                         ))}
                                     </div>
@@ -556,14 +537,11 @@ function FilmDetail() {
                     </div>
                 }
                 <div>
-                    {/* Кнопка "Добавить эпизод" */}
                     {userData && userData.role === "ADMIN" && (
                         <button className="add-episode-button" onClick={() => setShowAddEpisodeForm(!showAddEpisodeForm)}>
                             {showAddEpisodeForm ? "Cancel" : "Add Episode"}
                         </button>
                     )}
-
-                    {/* Форма добавления эпизода */}
                     {showAddEpisodeForm && (
                         <form className="add-episode-form" onSubmit={filmEpisodesForm.handleSubmit(handleEpisodeCreate)}>
                             <div>
@@ -571,18 +549,38 @@ function FilmDetail() {
                                 <input
                                     id="season_num"
                                     type="number"
-                                    {...filmEpisodesForm.register("season_num", { required: "Season number is required" })}
+                                    {...filmEpisodesForm.register("season_num", { 
+                                        required: "Season number is required", 
+                                        max: {
+                                            value: 255,
+                                            message: "Max season number is 255"
+                                        },
+                                        min: {
+                                            value: 1,
+                                            message: "Min season number is 1"
+                                        } 
+                                })}
                                 />
-                                {filmEpisodesForm.errors && filmEpisodesForm.errors.season_num && <p style={{ color: 'red' }}>{filmEpisodesForm.errors.season_num.message}</p>}
+                                {filmEpisodesForm.formState.errors.season_num && <p style={{ color: 'red' }}>{filmEpisodesForm.formState.errors.season_num.message}</p>}
                             </div>
                             <div>
                                 <label htmlFor="episode_num">Episode Number:</label>
                                 <input
                                     id="episode_num"
                                     type="number"
-                                    {...filmEpisodesForm.register("episode_num", { required: "Episode number is required" })}
+                                    {...filmEpisodesForm.register("episode_num", { 
+                                        required: "Episode number is required", 
+                                        max: {
+                                            value: 9999,
+                                            message: "Max episode number is 9999"
+                                        },
+                                        min: {
+                                            value: 1,
+                                            message: "Min episode number is 1"
+                                        } 
+                                })}
                                 />
-                                {filmEpisodesForm.errors && filmEpisodesForm.errors.episode_num && <p style={{ color: 'red' }}>{filmEpisodesForm.errors.episode_num.message}</p>}
+                                {filmEpisodesForm.formState.errors.episode_num && <p style={{ color: 'red' }}>{filmEpisodesForm.formState.errors.episode_num.message}</p>}
                             </div>
                             <button type="submit">Add Episode</button>
                         </form>
@@ -609,7 +607,6 @@ function FilmDetail() {
                                 <option value="" disabled hidden>Select episode</option>
                                 {seasonEpisodeArray && seasonEpisodeArray.map((episode) => (
                                     <option value={episode.episode_num} key={episode.id}>{episode.episode_num}. {episode.title}</option>))}
-                                {console.log(selectedEpisode)}
                             </select>
                         }
                         {selectedEpisode ?
@@ -638,7 +635,7 @@ function FilmDetail() {
                                             onSave={(newValue) => updateEpisodeField(selectedEpisode.id, "title", newValue)}
                                             onChange={field.onChange}
                                             disableEditButton={!userData || !(userData.role === "ADMIN")}
-                                            inputType={"textarea"}
+                                            inputType={"input"}
                                         />
                                     )}
                                 />
