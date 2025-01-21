@@ -66,6 +66,15 @@ public class AuthAttemptsServiceImpl implements AuthAttemptsService {
     return (authAttemptsLeft == 0 && nextAttemptsTime.isAfter(LocalDateTime.now()));
   }
 
+  @Override
+  public void resetLoginAttemptsByIp(String ip) {
+    Optional<AuthAttempts> optionalAuthAttempts = authAttemptsRepository.findByIp(ip);
+    if (optionalAuthAttempts.isEmpty()) {
+      return;
+    }
+    authAttemptsRepository.deleteById(optionalAuthAttempts.get().getAuthAttemptsId());
+  }
+
   private AuthAttempts createDefaultAuthAttemptsEntity(String ip) {
     return AuthAttempts.builder()
         .ip(ip)

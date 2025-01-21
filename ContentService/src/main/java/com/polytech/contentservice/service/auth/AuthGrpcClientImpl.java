@@ -38,13 +38,15 @@ public class AuthGrpcClientImpl implements AuthGrpcClient {
       if (authAttemptsService.isLoginBlocked(ip)) {
         throw new Exception("Login blocked");
       }
-      return stub.loginUser(LoginUserRequest.newBuilder()
+      LoginUserResponse loginUserResponse = stub.loginUser(LoginUserRequest.newBuilder()
           .setEmail(userDto.email())
           .setPasswordHash(userDto.passwordHash())
           .setPasswordSalt(userDto.passwordSalt())
           .setPassword(userDto.password())
           .setRole(userDto.role().toString())
           .build());
+      authAttemptsService.resetLoginAttemptsByIp(ip);
+      return loginUserResponse;
     } catch (Exception e) {
       if (authAttemptsService.isMaxLoginAttemptsReached(ip)) {
         throw new LoginException("Max amount of attempts is reached");
