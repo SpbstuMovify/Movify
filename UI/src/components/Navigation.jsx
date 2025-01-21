@@ -16,19 +16,22 @@ const Navigation = () => {
                 />
             </Link>
             <div className="nav-container">
+                {userData && userData.role === "ADMIN" && <Link className="nav-text-links" to="/rights">
+                    Rights
+                </Link>}
                 <Link className="nav-text-links" to="/films">
                     Films
                 </Link>
-                { userData && <Link className="nav-text-links" to="/favorites">
+                {userData && <Link className="nav-text-links" to="/favorites">
                     Favorites
-                </Link> }
-                { userData ?
+                </Link>}
+                {userData ?
                     <Link className="nav-text-links" to="/profile">
                         {userData.login}
                     </Link>
                     : <Link className="nav-text-links" to="/login">
                         Sign in
-                    </Link> }
+                    </Link>}
             </div>
         </div>
     </div>
