@@ -125,17 +125,26 @@ export const searchFilms = async (pageSize, pageNumber, year = null, genre = nul
   }
 };
 
-export const createFilm = async (title, quality, genre, category,
-  ageRestriction, description, publisher) => { // ADD CAST MEMBERS
+export const createFilm = async (jwtToken, title="New film", quality="P1080", genre="COMEDY", category="MOVIE",
+  ageRestriction="SIX_PLUS", description="Description", publisher="Publisher", cast_members=[{
+    "employee_full_name": "Actor name",
+    "role_name": "Role"
+}], year="1900") => {
   try {
-    const response = await api.get(`/contents`, {
+    const response = await api.post(`/contents`, {
       "title": title,
       "quality": quality,
       "genre": genre,
+      "year": year,
       "category": category,
       "age_restriction": ageRestriction,
       "description": description,
-      "publisher": publisher
+      "publisher": publisher,
+      "cast_members": cast_members
+    }, {
+      headers: {
+        "Authorization": `${jwtToken}`
+      },
     });
     return response.data;
   } catch (error) {
@@ -143,7 +152,20 @@ export const createFilm = async (title, quality, genre, category,
   }
 }
 
-export const createEpisode = async (contentId, episodeNum, seasonNum, title, description, jwtToken) => { // ADD CAST MEMBERS
+export const deleteFilm = async (jwtToken, contentId) => {
+  try {
+    const response = await api.delete(`/contents/${contentId}`, {
+      headers: {
+        "Authorization": `${jwtToken}`
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const createEpisode = async (contentId, episodeNum, seasonNum, title, description, jwtToken) => {
   try {
     const response = await api.post(`/episodes`, {
       "episode_num": episodeNum,
@@ -321,7 +343,7 @@ export const deleteEpisode = async (episodeId, jwtToken) => {
   }
 }
 
-export const grandToAdmin = async (userId, jwtToken) => {
+export const grantToAdmin = async (userId, jwtToken) => {
   try {
     const response = await api.put(`/users/role/${userId}`, {}, {
       headers: {

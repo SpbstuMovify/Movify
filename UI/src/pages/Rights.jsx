@@ -1,7 +1,7 @@
 import './Profile.css';
 import Navigation from '../components/Navigation';
 import { useAuth } from '../contexts/AuthContext';
-import { getUserByLogin, grandToAdmin } from '../services/api';
+import { getUserByLogin, grantToAdmin } from '../services/api';
 import { useForm } from 'react-hook-form';
 
 function Rights() {
@@ -22,20 +22,15 @@ function Rights() {
                 setError("login", { message: 'User not found!' });
                 return;
             }
-
-            console.log('User found:', user);
-
-            await grandToAdmin(user.user_id, userData.token);
-
-            console.log('Admin rights successfully granted');
-            reset(); // Сброс формы после успешного выполнения
+            await grantToAdmin(user.user_id, userData.token);
+            reset();
         } catch (error) {
             console.error('Error granting admin rights:', error);
 
             const errorMessage =
                 error.response?.status === 500
                     ? 'Server error occurred!'
-                    : 'An error occurred while granting admin rights.';
+                    : 'User not found';
 
             setError("root", { message: errorMessage });
         }
@@ -45,7 +40,7 @@ function Rights() {
         <>
             <Navigation />
             <div className="profile-body">
-                <div className="profile-wrapper">
+                <div className="profile-wrapper" style={{alignItems: "center", justifyContent: "center"}}>
                     <div style={{ display: "flex", justifyContent: "space-around", width: "100%" }}>
                         <form
                             onSubmit={handleSubmit(handleGrantToAdmin)}

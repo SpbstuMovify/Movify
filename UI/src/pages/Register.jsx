@@ -46,12 +46,12 @@ const Register = () => {
 
     const handleOpenTerms = async () => {
         try {
-          const response = await fetch('/terms.txt');  // Fetch the file from the public folder
+          const response = await fetch('/terms.txt');
           if (!response.ok) {
             throw new Error('File not found');
           }
-          const text = await response.text(); // Read the file content as text
-          setTerms(text); // Set the file content in the state
+          const text = await response.text();
+          setTerms(text);
         } catch (error) {
           console.error('Error reading file:', error);
           setTerms('Failed to load the file.');
@@ -62,10 +62,10 @@ const Register = () => {
     return <div className="signUpScreen">
         {openedTerms ? <div className="terms-window">
             <h2 id="terms-header">Movify Terms of Service</h2>
-            <div className='button-wrapper'>
+            <div className='button-wrapper-auth'>
                 <button onClick={()=>{setOpenedTerms(false)}}>X</button>
             </div>
-            <p>{terms}</p>
+            <p style={{whiteSpace: "pre-wrap", padding: "10px"}}>{terms}</p>
         </div> : ''}
             <div className="signInNav">
                 <Link className='nav-sign-link' to="/">
@@ -99,7 +99,7 @@ const Register = () => {
                                 message: "Login must be from 6 to 32 symbols long",
                             },
                         })} placeholder="Login" type="text"/>
-                        {errors.login && (<label htmlFor='login' className="error-message error-message-small">
+                        {errors.login && (<label htmlFor='login' className="error-message error-message-small-auth">
                             {errors.login.message}</label>)}
                     </div>
 
@@ -111,7 +111,7 @@ const Register = () => {
                                 message: "Incorrect email! Example: email@email.com"
                             }
                         })} placeholder="Email" type="email" />
-                        {errors.email && (<label htmlFor='email' className="error-message error-message-small">
+                        {errors.email && (<label htmlFor='email' className="error-message error-message-small-auth">
                             {errors.email.message}</label>)}
                     </div>
 
@@ -151,7 +151,7 @@ const Register = () => {
                                 message: "Password must be from 6 to 32 symbols long",
                             },
                         })} placeholder="Enter the password" type="password" />
-                        {errors.password && (<label htmlFor='password' className="error-message error-message-small">
+                        {errors.password && (<label htmlFor='password' className="error-message error-message-small-auth">
                             {errors.password.message}</label>)}
                     </div>
 
@@ -166,7 +166,7 @@ const Register = () => {
                                 return true;
                             },
                         })} placeholder="Repeat the password" type="password" />
-                        {errors.repeatedPassword && (<label htmlFor='repeatedPassword' className="error-message error-message-small">
+                        {errors.repeatedPassword && (<label htmlFor='repeatedPassword' className="error-message error-message-small-auth">
                             {errors.repeatedPassword.message}</label>)}
                     </div>
                     

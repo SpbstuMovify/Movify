@@ -27,7 +27,7 @@ function Profile() {
 
     const handlePasswordChange = async (data) => {
         try {
-            const response = await changePassword(data.password, userData.login, userData.email, userData.role);
+            const response = await changePassword(data.password, userData.login, userData.email, userData.role, userData.token);
             setUserData({
                 "login": userData.login,
                 "email": userData.email,

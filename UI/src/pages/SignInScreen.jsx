@@ -20,7 +20,14 @@ function Login() {
             navigate('/films');
             } catch (error) {
                 switch (error.response?.status) {
-                    case 404:
+                    case 401:
+                        setError("root", {
+                            message: error.response.data.body.detail == 'Please try again' 
+                            ? 'Incorrect login or password!' : 'Max amount of attempts reached!'
+                        });
+                        break;
+
+                    case 404: 
                         setError("root", {
                             message: 'Incorrect login or password!'
                         });

@@ -7,14 +7,12 @@ const ProtectedRoute = () => {
   const { userData, checkUserData } = useAuth();
   const navigate = useNavigate();
   useEffect(() => {
-    // token verification
     checkUserData();
+    if (!userData) {
+      navigate('/login');
+      return;
+    }
   }, [userData]);
-
-  if (!userData) {
-    navigate('/login');
-    return;
-  }
 
   return <Outlet />;
 };
