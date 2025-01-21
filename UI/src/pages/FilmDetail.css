@@ -159,3 +159,58 @@
     padding: 2vw;
     box-sizing: border-box;
 }
+
+.cast-member-button {
+    border: 1px white solid;
+    background-color: #555;
+    cursor: pointer;
+    color: white;
+    border-radius: 5px;
+    filter:brightness(0.7);
+}
+
+.cast-member-button:hover {
+    filter:brightness(1.0);
+}
+
+.add-episode-input {
+    margin-left: 10px;
+}
+
+.add-episode-button {
+    border: 2px #666 solid;
+    background-color: #444;
+    color: rgb(196, 196, 196);
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.add-episode-button:hover {
+    border: 2px #777 solid;
+    background-color: #555;
+    color: white;
+}
+
+.upload-image {
+    margin-left: 10px;
+    width: 35px;
+    object-fit: contain;
+    filter: brightness(0.5);
+    cursor: pointer;
+}
+
+.episode-delete-button:hover,
+.upload-image:hover {
+    filter: brightness(1.0);
+}
+
+.episode-delete-button {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    filter: brightness(0.7);
+}
