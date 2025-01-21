@@ -17,4 +17,10 @@ public interface AuthAttemptsService {
    * @param ip - адрес пользователя
    */
   boolean isLoginBlocked(String ip);
+
+  /**
+   * Обнуляет количество попыток входа.
+   * @param ip - адрес пользователя
+   */
+  void resetLoginAttemptsByIp(String ip);
 }
