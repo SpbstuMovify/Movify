@@ -7,13 +7,13 @@ const api = axios.create({
 
 export const register = async (email, password, login, firstName, lastName) => {
   try {
-    const response = await api.post('/users/register', { 
+    const response = await api.post('/users/register', {
       "email": email,
       "login": login,
       "password": password,
       "first_name": firstName,
       "last_name": lastName,
-      "role": "USER" 
+      "role": "USER"
     });
     return response.data;
   } catch (error) {
@@ -24,14 +24,14 @@ export const register = async (email, password, login, firstName, lastName) => {
 export const login = async (username, password, ip) => {
   let requestBody = {};
   if (/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(username)) {
-    requestBody = { 
+    requestBody = {
       "email": username,
       "password": password,
       "search_type": "EMAIL"
     }
   }
   else {
-    requestBody = { 
+    requestBody = {
       "login": username,
       "password": password,
       "search_type": "LOGIN"
@@ -51,7 +51,7 @@ export const login = async (username, password, ip) => {
 
 export const getUserById = async (id, jwtToken) => {
   try {
-    const response = await api.post('/users/info', { 
+    const response = await api.post('/users/info', {
       "user_id": id,
       "search_type": "ID"
     }, {
@@ -67,7 +67,7 @@ export const getUserById = async (id, jwtToken) => {
 
 export const getUserByLogin = async (login) => {
   try {
-    const response  = await api.post('/users/info', { 
+    const response = await api.post('/users/info', {
       "login": login,
       "search_type": "LOGIN"
     });
@@ -79,7 +79,7 @@ export const getUserByLogin = async (login) => {
 
 export const getUserByEmail = async (email) => {
   try {
-    const response  = await api.post('/users/info', { 
+    const response = await api.post('/users/info', {
       "email": email,
       "search_type": "EMAIL"
     });
@@ -98,7 +98,7 @@ export const getFilmById = async (id) => {
   }
 };
 
-export const searchFilms = async (pageSize, pageNumber, year=null, genre=null, title=null, age_restriction=null) => {
+export const searchFilms = async (pageSize, pageNumber, year = null, genre = null, title = null, age_restriction = null) => {
   try {
     const requestBody = JSON.stringify({
       "title": title,
@@ -109,7 +109,7 @@ export const searchFilms = async (pageSize, pageNumber, year=null, genre=null, t
       "page_number": pageNumber,
     }, (key, value) => {
       return value === null || value === "" ? undefined : value;
-  });
+    });
     const response = await api.post(`/contents/search`, requestBody, {
       headers: {
         'Content-Type': "application/json",
@@ -122,7 +122,7 @@ export const searchFilms = async (pageSize, pageNumber, year=null, genre=null, t
 };
 
 export const createFilm = async (title, quality, genre, category,
-   ageRestriction, description, publisher) => { // ADD CAST MEMBERS
+  ageRestriction, description, publisher) => { // ADD CAST MEMBERS
   try {
     const response = await api.get(`/contents`, {
       "title": title,
@@ -139,17 +139,36 @@ export const createFilm = async (title, quality, genre, category,
   }
 }
 
+export const createEpisode = async (contentId, episodeNum, seasonNum, title, description, jwtToken) => { // ADD CAST MEMBERS
+  try {
+    const response = await api.post(`/episodes`, {
+      "episode_num": episodeNum,
+      "season_num": seasonNum,
+      "title": title,
+      "description": description,
+      "content_id": contentId
+    }, {
+      headers: {
+        "Authorization": `${jwtToken}`
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export const getPersonalList = async (userId, jwtToken) => {
- try {
-   const response = await api.get(`/users/personal-list/${userId}`, {
-    headers: {
-      "Authorization": `${jwtToken}`
-    },
-  });
-   return response.data;
- } catch (error) {
-   throw error;
- }
+  try {
+    const response = await api.get(`/users/personal-list/${userId}`, {
+      headers: {
+        "Authorization": `${jwtToken}`
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
 }
 
 export const addToPersonalList = async (userId, contentId, jwtToken) => {
@@ -166,9 +185,9 @@ export const addToPersonalList = async (userId, contentId, jwtToken) => {
   } catch (error) {
     throw error;
   }
- }
+}
 
- export const removeFromPersonalList = async (userId, contentId, jwtToken) => {
+export const removeFromPersonalList = async (userId, contentId, jwtToken) => {
   try {
     const response = await api.delete(`/users/personal-list`, {
       data: {
@@ -183,9 +202,9 @@ export const addToPersonalList = async (userId, contentId, jwtToken) => {
   } catch (error) {
     throw error;
   }
- }
+}
 
- export const changePassword = async (password, login, email, role, jwtToken) => {
+export const changePassword = async (password, login, email, role, jwtToken) => {
   try {
     const response = await api.post(`/users/password-recovery`, {
       "password": password,
@@ -201,9 +220,9 @@ export const addToPersonalList = async (userId, contentId, jwtToken) => {
   } catch (error) {
     throw error;
   }
- }
+}
 
- export const deleteUser = async (userId, jwtToken) => {
+export const deleteUser = async (userId, jwtToken) => {
   try {
     const response = await api.delete(`/users/${userId}`, {
       headers: {
@@ -214,18 +233,18 @@ export const addToPersonalList = async (userId, contentId, jwtToken) => {
   } catch (error) {
     throw error;
   }
- }
+}
 
- export const getEpisodes = async (contentId) => {
+export const getEpisodes = async (contentId) => {
   try {
     const response = await api.get(`/episodes?content_id=${contentId}`);
     return response.data;
   } catch (error) {
     throw error;
   }
- }
+}
 
- export const updateFilm = async (contentId, updateFields, jwtToken) => {
+export const updateFilm = async (contentId, updateFields, jwtToken) => {
   try {
     const response = await api.put(`/contents/${contentId}`, updateFields, {
       headers: {
@@ -236,9 +255,22 @@ export const addToPersonalList = async (userId, contentId, jwtToken) => {
   } catch (error) {
     throw error;
   }
- }
+}
 
- export const uploadImage = async (contentId, file, jwtToken) => {
+export const updateEpisode = async (episodeId, updateFields, jwtToken) => {
+  try {
+    const response = await api.put(`/episodes/${episodeId}`, updateFields, {
+      headers: {
+        "Authorization": `${jwtToken}`
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const uploadImage = async (contentId, file, jwtToken) => {
   try {
     const formData = new FormData();
     formData.append("file", file);
@@ -253,4 +285,34 @@ export const addToPersonalList = async (userId, contentId, jwtToken) => {
   } catch (error) {
     throw error;
   }
- }
+}
+
+export const uploadVideo = async (contentId, episodeId, file, jwtToken) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await api.post(`/buckets/movify-videos/files?prefix=${contentId}%2F${episodeId}%2F&process=true&destination=EpisodeVideoUrl`,
+      formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        "Authorization": `Bearer ${jwtToken}`
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const deleteEpisode = async (episodeId, jwtToken) => {
+  try {
+    const response = await api.delete(`/episodes/${episodeId}`, {
+      headers: {
+        "Authorization": `${jwtToken}`
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
