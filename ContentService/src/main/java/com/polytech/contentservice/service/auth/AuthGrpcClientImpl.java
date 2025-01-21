@@ -62,9 +62,9 @@ public class AuthGrpcClientImpl implements AuthGrpcClient {
   @Override
   public ValidationTokenResponse sendTokenValidationRequest(UserDto userDto) {
     try {
-      return ValidationTokenResponse.newBuilder()
-          .setRole("ADMIN")
-          .build();
+      return stub.validateToken(ValidationTokenRequest.newBuilder()
+          .setToken(userDto.token())
+          .build());
     } catch (Exception e) {
       throw new UnauthorisedException("Token is not valid");
     }
