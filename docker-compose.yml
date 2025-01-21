@@ -76,6 +76,18 @@ services:
       - 8090:8090
     networks:
       - app
+
+  client:
+    container_name: client
+    build:
+      context: ./UI
+      dockerfile: Dockerfile
+    depends_on:
+      - api-gateway
+    ports:
+      - 5173:5173
+    networks:
+      - app
     
 
 volumes:
