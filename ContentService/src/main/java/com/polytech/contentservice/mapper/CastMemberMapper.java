@@ -28,6 +28,9 @@ public class CastMemberMapper {
   }
 
   public Set<CastMember> patchUpdate(Set<CastMember> oldCastMember, Set<CastMember> newCastMember) {
+    if (newCastMember.isEmpty()) {
+      return oldCastMember;
+    }
     Map<UUID, CastMember> oldCastMemberMap = oldCastMember.stream().collect(Collectors.toMap(CastMember::getId, Function.identity()));
     return newCastMember.stream()
         .map(castMember -> patchUpdate(oldCastMemberMap.get(castMember.getId()), castMember))

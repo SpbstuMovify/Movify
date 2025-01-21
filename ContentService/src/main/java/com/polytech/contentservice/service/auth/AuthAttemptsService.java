@@ -11,4 +11,10 @@ public interface AuthAttemptsService {
    * @return true - лимит превышен
    */
   boolean isMaxLoginAttemptsReached(String ip);
+
+  /**
+   * Может ли пользователь совершить попытку входа.
+   * @param ip - адрес пользователя
+   */
+  boolean isLoginBlocked(String ip);
 }

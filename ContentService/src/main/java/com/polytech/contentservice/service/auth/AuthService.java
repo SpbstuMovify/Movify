@@ -38,7 +38,8 @@ public interface AuthService {
   /**
    * Метод по проверке токена.
    *
-   * @param userDto информация о пользователе для валидации
+   * @param token информация о токене
+   * @param role роль пользователя
    */
   void checkTokenIsValid(String token, Role role);
 }
