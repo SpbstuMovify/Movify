@@ -46,6 +46,13 @@ public interface ContentService {
   ContentDto findContentById(UUID id);
 
   /**
+   * Удаление контента по id.
+   *
+   * @param id ИД контента
+   */
+  void deleteById(UUID id);
+
+  /**
    * Получения всех эпизодов для заданного контента.
    *
    * @param contentId Идентификатор контента

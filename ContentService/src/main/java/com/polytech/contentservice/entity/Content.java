@@ -78,7 +78,7 @@ public class Content {
   @Column(name = "updated_date")
   private LocalDateTime updatedDate;
 
-  @OneToMany(mappedBy = "content", fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "content", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @EqualsAndHashCode.Exclude
   @ToString.Exclude
   private Set<Episode> episodes;
@@ -89,5 +89,7 @@ public class Content {
   @ToString.Exclude
   private Set<CastMember> castMembers;
   @OneToMany(mappedBy = "content", cascade = CascadeType.ALL)
+  @EqualsAndHashCode.Exclude
+  @ToString.Exclude
   private Set<PersonalList> personalList = new HashSet<>();
 }
