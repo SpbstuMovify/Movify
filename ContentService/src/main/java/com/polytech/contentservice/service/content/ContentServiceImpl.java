@@ -114,4 +114,10 @@ public class ContentServiceImpl implements ContentService {
   public ContentDto findContentById(UUID id) {
     return contentMapper.convertToContentDto(getContentById(id));
   }
+
+  @Override
+  public void deleteById(UUID id) {
+    getContentById(id);
+    contentRepository.deleteById(id);
+  }
 }

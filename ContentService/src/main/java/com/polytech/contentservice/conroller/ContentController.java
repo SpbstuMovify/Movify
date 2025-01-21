@@ -3,7 +3,6 @@ package com.polytech.contentservice.conroller;
 import com.polytech.contentservice.common.Role;
 import com.polytech.contentservice.dto.content.ContentDto;
 import com.polytech.contentservice.dto.content.ContentSearchDto;
-import com.polytech.contentservice.dto.user.detailed.UserDto;
 import com.polytech.contentservice.service.auth.AuthService;
 import com.polytech.contentservice.service.content.ContentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +13,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,6 +47,18 @@ public class ContentController {
       @RequestParam(value = "page_size")
       int pageSize) {
     return contentService.findAllContent(PageRequest.of(pageNumber, pageSize));
+  }
+
+  @DeleteMapping("/{content-id}")
+  @Operation(
+      summary = "Удаление описания фильма или сериала по ИД",
+      description = "Позволяет удалить описание фильма или сериала по ИД"
+  )
+  public void deleteContentById(
+      @PathVariable(name = "content-id") UUID contentId,
+      @RequestHeader("Authorization") String token) {
+    authService.checkTokenIsValid(token, Role.ADMIN);
+    contentService.deleteById(contentId);
   }
 
   @GetMapping("/{content-id}")
