@@ -52,6 +52,6 @@ public class Episode {
   private Integer seasonNumber;
 
   @JoinColumn(name = "content_id")
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @ManyToOne(fetch = FetchType.LAZY)
   private Content content;
 }
