@@ -3,6 +3,7 @@ package com.polytech.contentservice.mapper;
 import com.polytech.contentservice.dto.castmember.CastMemberDto;
 import com.polytech.contentservice.entity.CastMember;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -58,6 +59,9 @@ public class CastMemberMapper {
   }
 
   public Set<CastMember> convertToSetOfCastMemberEntity(Set<CastMemberDto> contents) {
+    if (contents == null ) {
+      return Collections.emptySet();
+    }
     return contents.stream()
         .map(this::convertToCastMemberEntity)
         .collect(Collectors.toSet());
