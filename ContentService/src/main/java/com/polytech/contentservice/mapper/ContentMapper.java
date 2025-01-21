@@ -77,6 +77,7 @@ public class ContentMapper {
             oldEpisodeDetail.getThumbnail())
         .updatedDate(LocalDateTime.now())
         .creationDate(oldEpisodeDetail.getCreationDate())
+        .castMembers(oldEpisodeDetail.getCastMembers())
         .build();
   }
 }
