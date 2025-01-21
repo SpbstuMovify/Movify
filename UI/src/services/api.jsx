@@ -65,11 +65,15 @@ export const getUserById = async (id, jwtToken) => {
   }
 }
 
-export const getUserByLogin = async (login) => {
+export const getUserByLogin = async (login, jwtToken) => {
   try {
     const response = await api.post('/users/info', {
       "login": login,
       "search_type": "LOGIN"
+    }, {
+      headers: {
+        "Authorization": `${jwtToken}`
+      }
     });
     return response.data;
   } catch (error) {
@@ -307,6 +311,19 @@ export const uploadVideo = async (contentId, episodeId, file, jwtToken) => {
 export const deleteEpisode = async (episodeId, jwtToken) => {
   try {
     const response = await api.delete(`/episodes/${episodeId}`, {
+      headers: {
+        "Authorization": `${jwtToken}`
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const grandToAdmin = async (userId, jwtToken) => {
+  try {
+    const response = await api.put(`/users/role/${userId}`, {}, {
       headers: {
         "Authorization": `${jwtToken}`
       },
