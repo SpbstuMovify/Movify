@@ -486,7 +486,10 @@ function FilmDetail() {
                                     <div>
                                         {filmInfo.cast_members.map((member, index) => (
                                             <div key={index} style={{ marginBottom: "10px" }}>
-                                                {userData && userData.role == "ADMIN" && filmInfo.cast_members.length != 1 && <button onClick={()=>
+                                                {userData && userData.role == "ADMIN" && filmInfo.cast_members.length != 1 && <button 
+                                                 className="cast-member-button"
+                                                 style={{marginRight: "7px"}}
+                                                 onClick={()=>
                                                     updateField("cast_members", filmInfo.cast_members.filter((member_old)=>member !== member_old))}>-</button>}
                                                 <Controller
                                                     name={`cast_members.${index}.employee_full_name`}
@@ -525,7 +528,10 @@ function FilmDetail() {
                                                     )}
                                                 />
                                                 {userData && userData.role == "ADMIN" && 
-                                                    filmInfo.cast_members[filmInfo.cast_members.length-1] === member && <button onClick={()=>
+                                                    filmInfo.cast_members[filmInfo.cast_members.length-1] === member && <button 
+                                                    style={{marginLeft: "7px"}}
+                                                    className="cast-member-button"
+                                                    onClick={()=>
                                                     updateField("cast_members", [...filmInfo.cast_members, {"employee_full_name": "Actor",
                                                     "role_name": "Role"}])}>+</button>}
                                             </div>
@@ -536,19 +542,23 @@ function FilmDetail() {
                         </div>
                     </div>
                 }
-                <div>
+                <div style={{display: "flex", width: "100%", marginTop: "15px", justifyContent: "center"}}>
                     {userData && userData.role === "ADMIN" && (
-                        <button className="add-episode-button" onClick={() => setShowAddEpisodeForm(!showAddEpisodeForm)}>
+                        <button 
+                            className="add-episode-button" 
+                            onClick={() => setShowAddEpisodeForm(!showAddEpisodeForm)}
+                            style={{marginRight:"10px", padding: "10px"}}>
                             {showAddEpisodeForm ? "Cancel" : "Add Episode"}
                         </button>
                     )}
                     {showAddEpisodeForm && (
                         <form className="add-episode-form" onSubmit={filmEpisodesForm.handleSubmit(handleEpisodeCreate)}>
-                            <div>
+                            <div style={{marginBottom: "10px"}}>
                                 <label htmlFor="season_num">Season Number:</label>
                                 <input
                                     id="season_num"
                                     type="number"
+                                    className="add-episode-input"
                                     {...filmEpisodesForm.register("season_num", { 
                                         required: "Season number is required", 
                                         max: {
@@ -561,13 +571,14 @@ function FilmDetail() {
                                         } 
                                 })}
                                 />
-                                {filmEpisodesForm.formState.errors.season_num && <p style={{ color: 'red' }}>{filmEpisodesForm.formState.errors.season_num.message}</p>}
+                                {filmEpisodesForm.formState.errors.season_num && <p style={{ color: 'red', margin: "5px 0" }}>{filmEpisodesForm.formState.errors.season_num.message}</p>}
                             </div>
-                            <div>
+                            <div style={{marginBottom: "10px"}}>
                                 <label htmlFor="episode_num">Episode Number:</label>
                                 <input
                                     id="episode_num"
                                     type="number"
+                                    className="add-episode-input"
                                     {...filmEpisodesForm.register("episode_num", { 
                                         required: "Episode number is required", 
                                         max: {
@@ -580,9 +591,9 @@ function FilmDetail() {
                                         } 
                                 })}
                                 />
-                                {filmEpisodesForm.formState.errors.episode_num && <p style={{ color: 'red' }}>{filmEpisodesForm.formState.errors.episode_num.message}</p>}
+                                {filmEpisodesForm.formState.errors.episode_num && <p style={{ color: 'red', margin: "5px 0" }}>{filmEpisodesForm.formState.errors.episode_num.message}</p>}
                             </div>
-                            <button type="submit">Add Episode</button>
+                            <button style={{width: "100%", paddingTop: "5px", paddingBottom: "5px"}} className="add-episode-button" type="submit">Add Episode</button>
                         </form>
                     )}
                 </div>
@@ -624,21 +635,23 @@ function FilmDetail() {
                     {selectedEpisode &&
                         <div style={{ marginLeft: "20px", width: "15vw" }}>
                             <>
-                                <Controller
-                                    name="title"
-                                    control={filmEpisodesForm.control}
-                                    defaultValue={selectedEpisode.title}
-                                    render={({ field }) => (
-                                        <EditableField
-                                            label=""
-                                            value={field.value}
-                                            onSave={(newValue) => updateEpisodeField(selectedEpisode.id, "title", newValue)}
-                                            onChange={field.onChange}
-                                            disableEditButton={!userData || !(userData.role === "ADMIN")}
-                                            inputType={"input"}
-                                        />
+                                <h2>
+                                    <Controller
+                                        name="title"
+                                        control={filmEpisodesForm.control}
+                                        defaultValue={selectedEpisode.title}
+                                        render={({ field }) => (
+                                            <EditableField
+                                                label=""
+                                                value={field.value}
+                                                onSave={(newValue) => updateEpisodeField(selectedEpisode.id, "title", newValue)}
+                                                onChange={field.onChange}
+                                                disableEditButton={!userData || !(userData.role === "ADMIN")}
+                                                inputType={"input"}
+                                            />
                                     )}
-                                />
+                                    />
+                                </h2>
                                 <Controller
                                     name="description"
                                     control={filmEpisodesForm.control}
@@ -656,8 +669,14 @@ function FilmDetail() {
                                 />
                                 {userData && userData.role === "ADMIN" && (
                                     <div style={{ marginTop: "15px" }}>
-                                        <h4>Upload Video:</h4>
+                                        <h4>Upload Video:
+                                            <label htmlFor="episode-upload">
+                                                <img className="upload-image" src="/images/upload.png" />
+                                            </label>
+                                        </h4>
                                         <input
+                                            style={{display: "none"}}
+                                            id="episode-upload"
                                             type="file"
                                             accept="video/*"
                                             onChange={(e) => handleVideoUpload(selectedEpisode.id, e.target.files[0])}
@@ -666,15 +685,7 @@ function FilmDetail() {
                                 )}
                                 {userData && userData.role === "ADMIN" && (
                                     <button
-                                        style={{
-                                            marginTop: "15px",
-                                            padding: "10px",
-                                            backgroundColor: "red",
-                                            color: "white",
-                                            border: "none",
-                                            borderRadius: "5px",
-                                            cursor: "pointer",
-                                        }}
+                                        className="episode-delete-button"
                                         onClick={() => deleteEpisodeById(selectedEpisode.id)}
                                     >
                                         Delete
