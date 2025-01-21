@@ -17,6 +17,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class CastMemberMapper {
   public CastMember patchUpdate(CastMember oldCastMember, CastMember newCastMember) {
+    if (oldCastMember == null) {
+      return newCastMember;
+    }
     return CastMember.builder()
         .id(oldCastMember.getId())
         .content(oldCastMember.getContent())
