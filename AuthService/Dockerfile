@@ -5,11 +5,11 @@ WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["AuthService.csproj", "microservices/AuthService/"]
-RUN dotnet restore "microservices/AuthService/AuthService.csproj"
+COPY src/AuthService/AuthService.csproj AuthService/
+RUN dotnet restore "AuthService/AuthService.csproj"
 
-WORKDIR "/src/microservices/AuthService"
-COPY . .
+WORKDIR /src/AuthService
+COPY src/AuthService/ .
 RUN dotnet build "AuthService.csproj" -c Release -o /app/build
 
 FROM build AS publish
@@ -17,8 +17,6 @@ RUN dotnet publish "AuthService.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
-ENV ASPNETCORE_URLS=http://+:8079
 EXPOSE 8079
-EXPOSE 443
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "AuthService.dll"]
