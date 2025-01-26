@@ -1,8 +1,7 @@
-using Grpc.Core;
-
-using AuthService.Utils;
 using AuthService.Grpc;
 using AuthService.Dtos;
+using AuthService.Utils.Jwt;
+using AuthService.Utils.Encryption;
 
 namespace AuthService.Services;
 

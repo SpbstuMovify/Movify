@@ -1,25 +1,43 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.5.002.0
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChunkerService", "ChunkerService.csproj", "{610127D2-35CB-4824-82B8-9C01C6272600}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9441FBAE-20ED-4212-A4AA-D37028301145}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChunkerService", "src\ChunkerService\ChunkerService.csproj", "{01C2E012-C3A8-4F44-8F1C-EE4EB6654629}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{98D997E7-E31C-4E81-AB1E-FA4A48441D40}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChunkerService.Tests", "tests\ChunkerService.Tests\ChunkerService.Tests.csproj", "{CD20BF9D-DFDA-4967-B207-8CD206E25369}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChunkerService.IntegrationTests", "tests\ChunkerService.IntegrationTests\ChunkerService.IntegrationTests.csproj", "{24BB41B6-523C-4697-9D72-1959DB3966C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{610127D2-35CB-4824-82B8-9C01C6272600}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{610127D2-35CB-4824-82B8-9C01C6272600}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{610127D2-35CB-4824-82B8-9C01C6272600}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{610127D2-35CB-4824-82B8-9C01C6272600}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {B3485B05-1E3F-473A-9987-9E16A369793A}
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{01C2E012-C3A8-4F44-8F1C-EE4EB6654629}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01C2E012-C3A8-4F44-8F1C-EE4EB6654629}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01C2E012-C3A8-4F44-8F1C-EE4EB6654629}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01C2E012-C3A8-4F44-8F1C-EE4EB6654629}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD20BF9D-DFDA-4967-B207-8CD206E25369}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD20BF9D-DFDA-4967-B207-8CD206E25369}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD20BF9D-DFDA-4967-B207-8CD206E25369}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD20BF9D-DFDA-4967-B207-8CD206E25369}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24BB41B6-523C-4697-9D72-1959DB3966C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24BB41B6-523C-4697-9D72-1959DB3966C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24BB41B6-523C-4697-9D72-1959DB3966C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24BB41B6-523C-4697-9D72-1959DB3966C0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{01C2E012-C3A8-4F44-8F1C-EE4EB6654629} = {9441FBAE-20ED-4212-A4AA-D37028301145}
+		{CD20BF9D-DFDA-4967-B207-8CD206E25369} = {98D997E7-E31C-4E81-AB1E-FA4A48441D40}
+		{24BB41B6-523C-4697-9D72-1959DB3966C0} = {98D997E7-E31C-4E81-AB1E-FA4A48441D40}
 	EndGlobalSection
 EndGlobal

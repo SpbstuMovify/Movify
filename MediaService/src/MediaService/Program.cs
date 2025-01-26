@@ -50,6 +50,7 @@ builder.Logging.AddDebug();
 var app = builder.Build();
 
 var logger = app.Logger;
+
 logger.LogInformation("Starting application configuration");
 
 if (app.Environment.IsDevelopment())
