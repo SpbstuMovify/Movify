@@ -1,5 +1,4 @@
 using AuthService.Dtos;
-using AuthService.Utils;
 
 namespace AuthService.Services;
 
