@@ -16,6 +16,22 @@ services:
     networks:
       - app
 
+  movify-s3:
+    image: minio/minio:latest
+    container_name: movify-s3
+    ports:
+      - "9000:9000"
+      - "9090:9090"
+    environment:
+      MINIO_ROOT_USER: "admin"
+      MINIO_ROOT_PASSWORD: "admin_password"
+    volumes:
+      - s3_data:/data
+      - s3_config:/root/.minio
+    command: server /data --console-address ":9090"
+    networks:
+      - app
+
   content-service:
     image: content-service:latest
     build:
@@ -48,6 +64,8 @@ services:
     build:
       context: ./MediaService
       dockerfile: Dockerfile
+    depends_on:
+      - movify-s3
     ports:
       - "8078:8078"
       - "8077:8077"
@@ -59,6 +77,8 @@ services:
     build:
       context: ./ChunkerService
       dockerfile: Dockerfile
+    depends_on:
+      - movify-s3
     ports:
       - "8076:8076"
     networks:
@@ -92,6 +112,10 @@ services:
 
 volumes:
   db:
+    driver: local
+  s3_data:
+    driver: local
+  s3_config:
     driver: local
 
 networks:
