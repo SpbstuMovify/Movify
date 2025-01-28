@@ -1,4 +1,5 @@
 using AuthService.Grpc;
+using AuthService.Grpc.Interceptors;
 using AuthService.Services;
 using AuthService.Utils.Configuration;
 using AuthService.Utils.Encryption;
@@ -6,17 +7,36 @@ using AuthService.Utils.Encryption;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration
-    .SetBasePath(builder.Environment.ContentRootPath)
-    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
-    .AddEnvironmentVariables();
+       .SetBasePath(builder.Environment.ContentRootPath)
+       .AddJsonFile(
+           "appsettings.json",
+           optional: true,
+           reloadOnChange: true
+       )
+       .AddJsonFile(
+           $"appsettings.{builder.Environment.EnvironmentName}.json",
+           optional: true,
+           reloadOnChange: true
+       )
+       .AddEnvironmentVariables();
 
 if (builder.Environment.IsDevelopment())
 {
-    builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
+    builder.Configuration.AddJsonFile(
+        "appsettings.Local.json",
+        optional: true,
+        reloadOnChange: true
+    );
 }
 
-builder.Services.AddGrpc();
+builder.Services.AddGrpc(
+    o =>
+    {
+        o.Interceptors.Add<ValidationInterceptor>();
+        o.Interceptors.Add<ErrorHandlerInterceptor>();
+    }
+);
+
 builder.Services.AddGrpcClient(builder.Configuration);
 
 builder.Services.AddJwt(builder.Configuration);
@@ -44,4 +64,3 @@ app.MapGrpcService<AuthGrpcServer>();
 logger.LogInformation("Endpoints mapped");
 
 app.Run();
-

@@ -2,5 +2,5 @@ namespace AuthService.Dtos;
 
 public class ValidateTokenRequestDto
 {
-    public string Token { get; set; } = null!;
+    public required string Token { get; init; }
 }
