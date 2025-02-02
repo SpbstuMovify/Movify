@@ -9,7 +9,7 @@ import Register from './pages/Register.jsx';
 import Films from './pages/Films.jsx';
 import FavoriteFilms from './pages/FavoriteFilms.jsx';
 import Profile from './pages/Profile.jsx';
-import ProtectedRoute from './components/ProtectedRoute.jsx';
+import ProtectedRoute from './components/general/ProtectedRoute.jsx';
 import FilmDetail from './pages/FilmDetail.jsx';
 import Rights from './pages/Rights.jsx';
 

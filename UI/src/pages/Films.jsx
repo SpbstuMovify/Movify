@@ -1,337 +1,174 @@
-import { useEffect, useState } from "react";
-import Navigation from "../components/Navigation";
-import './Films.css'
-import { searchFilms, getPersonalList, addToPersonalList, removeFromPersonalList, createFilm, deleteFilm } from "../services/api";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import Navigation from "../components/general/Navigation";
+import FilmList from "../components/flim_components/FilmList";
+import SearchForm from "../components/flim_components/SearchForm";
+import FilterPanel from "../components/flim_components/FilterPanel";
+import Pagination from "../components/flim_components/Pagination";
+import { useFilms } from "../hooks/useFilms";
 import { useAuth } from "../contexts/AuthContext";
-import mappingJSON from "../configs/config";
+import { addToPersonalList, removeFromPersonalList, createFilm, deleteFilm, getPersonalList } from "../services/api";
 
-function Films(){
-    const {register, handleSubmit, formState: {errors}, setValue, setError} = useForm();
-    const {userData, clearUserData} = useAuth();
-    const navigate = useNavigate();
-    const [films, setFilms] = useState();
-    const [pageSize, setPageSize] = useState(5);
-    const [pageNumber, setPageNumber] = useState(0);
-    const [personalList, setPersonalList] = useState(null);
+function Films() {
+  const pageSizeOptions = [3, 5, 10, 20, 50];
+  const { register, handleSubmit, formState: { errors }, setValue, setError } = useForm();
+  const { userData, clearUserData } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [queryParams, setQueryParams] = useState(new URLSearchParams(location.search));
+  const [hoveredId, setHoveredId] = useState(null);
+  const [personalList, setPersonalList] = useState(null);
+  const [isFavoritesUpdating, setIsFavoritesUpdating] = useState(false);
 
-    const pageSizeArray = [3, 5, 10, 20, 50];
-    const [maxPageNumber, setMaxPageNumber] = useState(100);
-    const currentYear = new Date().getFullYear();
+  const { films, pageSize, setPageSize, pageNumber, setPageNumber, maxPageNumber, refetchFilms } = useFilms(queryParams);
 
-    const location = useLocation();
-    const [queryParams, setQueryParams] = useState(new URLSearchParams(location.search));
-
-    const [hoveredId, setHoveredId] = useState(null);
-    const [isFavoritesUpdating, setIsFavoritesUpdating] = useState(false);
-
-    const getPages = (filmsResponse) => {
-        filmsResponse.content.forEach((film)=>{
-            film.age_restriction = mappingJSON().age_restriction[film.age_restriction]
-            let spacedString = film.genre.replace(/_/g, " ");
-            film.genre = spacedString.charAt(0).toUpperCase() + spacedString.slice(1).toLowerCase();
-            spacedString = film.category.replace(/_/g, " ");
-            film.category = spacedString.charAt(0).toUpperCase() + spacedString.slice(1).toLowerCase();
-            film.publisher = film.publisher.replace(/_/g, " ");
-        });
-        setMaxPageNumber(filmsResponse.totalPages == 0 ? filmsResponse.totalPages : filmsResponse.totalPages-1);
-        if (filmsResponse.totalPages > 0 && filmsResponse.totalPages - 1 < pageNumber)
-        {
-            setPageNumber(filmsResponse.totalPages - 1);
-        }
-        setFilms(filmsResponse.content);
+  const getUserPersonalList = async () => {
+    try {
+      const personalListResponse = await getPersonalList(userData.user_id, userData.token);
+      setPersonalList(personalListResponse);
+    } catch (error) {
+      if (error.response?.status === 401) {
+        clearUserData();
+      } else {
+        console.error(error.message);
+      }
     }
+  };
 
-    const getFilms = async () => {
-        const filmsResponse = await searchFilms(pageSize, pageNumber, queryParams.get("year"), queryParams.get("genre"), 
-        queryParams.get("title"), queryParams.get("age_restriction"), );
-        getPages(filmsResponse);
+  useEffect(() => {
+    if (userData) {
+      getUserPersonalList();
     }
-    const getUserPersonalList = async () => {
-        try {
-            const personalListResponse = await getPersonalList(userData.user_id, userData.token);
-            setPersonalList(personalListResponse);
-        }
-        catch (error) {
-            switch (error.response?.status) {
-                case 401:
-                    clearUserData();
-                    break;
+  }, [userData]);
 
-                default:
-                    console.error(error.message);
-            }
-        }
+  useEffect(() => {
+    setValue("title", queryParams.get("title") || "");
+    setValue("ageRestriction", queryParams.get("age_restriction") || "");
+    setValue("genre", queryParams.get("genre") || "");
+    setValue("year", queryParams.get("year") || "");
+  }, [queryParams, setValue]);
+
+  const handleSearch = async (data) => {
+    try {
+      const paramsJSON = {
+        title: data.title || undefined,
+        year: data.year || undefined,
+        genre: data.genre || undefined,
+        age_restriction: data.ageRestriction || undefined
+      };
+      const newParams = new URLSearchParams(paramsJSON);
+      setQueryParams(newParams);
+      setPageNumber(0);
+      navigate(`/films?${newParams.toString()}`);
+    } catch (error) {
+      setError("root", "Server error has occurred...");
+      console.error(error.message);
     }
+  };
 
-    useEffect( () => {
-        getFilms();
-    },[pageNumber, pageSize]);
-
-    useEffect(()=> {
-        if (userData) {
-            getUserPersonalList();
-        }
-    }, [userData])
-
-    useEffect(() => {
-        setValue("title", queryParams.get("title") || "");
-        setValue("ageRestriction", queryParams.get("age_restriction") || "");
-        setValue("genre", queryParams.get("genre") || "");
-        setValue("year", queryParams.get("year") || "");
-      }, [queryParams, setValue]);
-
-    const handlePageBack = () => {
-        if (pageNumber > 0)
-        {
-            setPageNumber(pageNumber-1);
-        }
+  const handleAddToPersonalList = async (contentId) => {
+    try {
+      if (!isFavoritesUpdating) {
+        setIsFavoritesUpdating(true);
+        const response = await addToPersonalList(userData.user_id, contentId, userData.token);
+        setPersonalList([...personalList, { id: response.content_id }]);
+        setIsFavoritesUpdating(false);
+      }
+    } catch (error) {
+      if (error.response?.status === 401) {
+        clearUserData();
+      } else {
+        console.error(error.message);
+      }
     }
+  };
 
-    const handlePageForward = () => {
-        if (pageNumber < maxPageNumber)
-        {
-            setPageNumber(pageNumber+1);
-        }
+  const handleRemoveFromPersonalList = async (contentId) => {
+    try {
+      if (!isFavoritesUpdating) {
+        setIsFavoritesUpdating(true);
+        await removeFromPersonalList(userData.user_id, contentId, userData.token);
+        setPersonalList(personalList.filter(item => item.id !== contentId));
+        setIsFavoritesUpdating(false);
+      }
+    } catch (error) {
+      if (error.response?.status === 401) {
+        clearUserData();
+      } else {
+        console.error(error.message);
+      }
     }
+  };
 
-    const handleSearch = async (data) => {
-        try {
-            const response = await searchFilms(pageSize, pageNumber, data.year, data.genre, data.title, data.ageRestriction);
-            getPages(response);
-            const paramsJSON = JSON.parse(JSON.stringify({
-                "title": data.title,
-                "year": data.year,
-                "genre": data.genre,
-                "age_restriction": data.ageRestriction
-            }, (key, value) => {
-                return value === null || value === "" ? undefined : value;
-            }));
-            const newParams = new URLSearchParams(paramsJSON);
-            setQueryParams(newParams);
-            setPageNumber(0);
-            navigate(`/films?${newParams.toString()}`);
-        }
-        catch(error) {
-            setError("root", "Server error has occured...");
-            console.error(error.message);
-        }
+  const handleAddNewFilm = async () => {
+    try {
+      await createFilm(userData.token);
+      refetchFilms();
+    } catch (error) {
+      if (error.response?.status === 401) {
+        clearUserData();
+      } else {
+        console.error(error.message);
+      }
     }
+  };
 
-    const handleAddToPersonalList = async (event, contentId) => {
-        event.stopPropagation();
-        try {
-            if (!isFavoritesUpdating)
-            {
-                setIsFavoritesUpdating(true);
-                const response = await addToPersonalList(userData.user_id, contentId, userData.token);
-                setPersonalList([...personalList, {id: response.content_id}]);
-                setIsFavoritesUpdating(false);
-            }
-        }
-        catch (error)
-        {
-            switch (error.response?.status) {
-                case 401:
-                    clearUserData();
-                    break;
-
-                default:
-                    console.error(error.message);
-            }
-        }
+  const handleDeleteFilm = async (contentId) => {
+    try {
+      await deleteFilm(userData.token, contentId);
+      refetchFilms();
+    } catch (error) {
+      if (error.response?.status === 401) {
+        clearUserData();
+      } else {
+        console.error(error.message);
+      }
     }
-    
+  };
 
-    const handleRemoveFromPersonalList = async (event, contentId) => {
-        event.stopPropagation();
-        try {
-            if (!isFavoritesUpdating)
-            {
-                setIsFavoritesUpdating(true);
-                const response = await removeFromPersonalList(userData.user_id, contentId, userData.token);
-                setPersonalList(personalList.filter((item)=>item.id !== contentId));
-                setIsFavoritesUpdating(false);
-            }
-        }
-        catch (error)
-        {
-            switch (error.response?.status) {
-                case 401:
-                    clearUserData();
-                    break;
-
-                default:
-                    console.error(error.message);
-            }
-        }
-    }
-
-    const handleAddNewFilm = async () =>{
-        try {
-            await createFilm(userData.token);
-            getFilms();
-        }
-        catch(error)
-        {
-            switch (error.response?.status) {
-                case 401:
-                    clearUserData();
-                    break;
-
-                default:
-                    console.error(error.message);
-            }
-        }
-    }
-
-    const handleDeleteFilm = async (event, contentId) =>{
-        event.stopPropagation();
-        try {
-            await deleteFilm(userData.token, contentId);
-            getFilms();
-        }
-        catch(error)
-        {
-            switch (error.response?.status) {
-                case 401:
-                    clearUserData();
-                    break;
-                default:
-                    console.error(error.message);
-            }
-        }
-    }
-
-    return <>
-        <Navigation/>
-        <div className="films-body">
-            <div className="film-list">
-                <h1 style={{textAlign: "center"}}>Watch all movies and series you want!</h1>
-                <form onSubmit={handleSubmit(handleSearch)} className="search-bar-wrapper">
-                    <input {...register("title")} className="search-bar" type="text" placeholder="Search..." />
-                    <button className="image-button" type="submit">
-                        <img src="/images/search_button.png"/>
-                    </button>
-                    {errors.root && (<label style={{color: "#CC0000", marginTop: "15px", marginBottom: "0"}}>
-                        {errors.root.message}</label>)}
-                </form>
-                <div className="film-container">
-                {films && films.map((film) => (
-                    <div key={film.id} className={film.id == hoveredId ? "film-element film-element-hover" : "film-element"}
-                        onMouseEnter={()=>{setHoveredId(film.id)}}
-                        onMouseLeave={()=>{setHoveredId(null)}}
-                        onClick={()=>navigate(`/films/${film.id}`)}>
-                        <img className="film-logo" src={film.thumbnail ? `http://localhost:8090${film.thumbnail}` : "/images/no_image.jpg"} />
-                        <div className="film-info">
-                            <div className="film-element-header">
-                                <h2 className="film-title">{film.title}</h2>
-                                <div style={{display: "flex", gap: "10px"}}>
-                                    <h2 className="age-restriction">{film.age_restriction}</h2>
-                                    {userData ? 
-                                    personalList && personalList.some(obj => obj.id === film.id) ?
-                                    <button className="image-button" style={{border: "none"}} 
-                                        onMouseEnter={()=>{setHoveredId(null)}}
-                                        onMouseLeave={()=>{setHoveredId(film.id)}}
-                                        onClick={(e)=>handleRemoveFromPersonalList(e, film.id)}>
-                                        <img className="image-heart" src="/images/heart.png"/>
-                                    </button> : 
-                                    <button className="image-button" style={{border: "none"}}
-                                        onMouseEnter={()=>{setHoveredId(null)}}
-                                        onMouseLeave={()=>{setHoveredId(film.id)}}
-                                        onClick={(e)=>handleAddToPersonalList(e, film.id)}>
-                                        <img className="image-hollow-heart" src="/images/hollow_heart.png" />
-                                    </button>
-                                    : ""}
-                                </div>
-                            </div>
-                            <span className="film-description">{film.description}</span>
-                            <div className="film-element-footer">
-                                <h3 className="film-secondary-label">Publisher: {film.publisher}, Release year: {film.year}</h3>
-                                <h3 className="film-secondary-label" style={{display: "flex", alignItems: "flex-end"}}>
-                                {film.category}, {film.genre}
-                                { userData && userData.role == "ADMIN" &&<button 
-                                className="film-button"
-                                style={{marginLeft: "10px", width:"fit-content"}}
-                                onMouseEnter={()=>{setHoveredId(null)}}
-                                onMouseLeave={()=>{setHoveredId(film.id)}}
-                                onClick={(e)=>handleDeleteFilm(e, film.id)}>Delete</button>}</h3>
-                            </div>
-                        </div>
-                    </div>
-                ))}
-                {films && films.length == 0 && <h2 style={{textAlign: "center"}}>No films found...</h2>}
-                </div>
-                <div className="page-buttons">
-                    <button disabled={pageNumber === 0} className="page-button" onClick={()=>handlePageBack()}>{"<"}</button>
-                    <div>
-                        <button style={{marginRight: "15px"}} disabled={pageNumber === 0} className="page-button" onClick={()=>setPageNumber(0)}>{"<<"}</button>
-                        <span>Page: {pageNumber+1} / {maxPageNumber+1}&nbsp;&nbsp;&nbsp;
-                            Films on page: <select defaultValue={pageSize} className="page-size-dropdown" onChange={(e)=>{setPageSize(e.target.value)}}>
-                            {pageSizeArray.map((size)=>{
-                                return <option key={size}>{size}</option>;
-                                })}
-                        </select>
-                        </span>
-                        <button style={{marginLeft: "15px"}} disabled={pageNumber === maxPageNumber} className="page-button" onClick={()=>setPageNumber(maxPageNumber)}>{">>"}</button>
-                    </div>
-                    <button disabled={pageNumber === maxPageNumber} className="page-button" onClick={()=>handlePageForward()}>{">"}</button>
-                </div>
-            </div>
-            <div style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "15px"}}>
-                <div className="filter-list">
-                    <h1 className="filter-header">Search Filters</h1>
-                    <div className="filter">
-                        <label htmlFor="age-restriction">Age restriction:</label>
-                        <select {...register("ageRestriction")} id="age-restriction" className="filter-input">
-                            <option value="">Any age</option>
-                            {mappingJSON().age_restriction_options.map((option, index) => (
-                                <option value={option.value} key={index}>
-                                {option.label}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className="filter">
-                        <label htmlFor="genre">Genre:</label>
-                        <select {...register("genre")} id="genre" className="filter-input" >
-                            <option value="">Any genre</option>
-                            {mappingJSON().genre_options.map((option, index) => (
-                                <option value={option.value} key={index}>
-                                {option.label}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className="filter">
-                        <label htmlFor="year">Release year:</label> 
-                        <input {...register("year", {
-                            validate: (value) => {
-                                if (!isNaN(value) && !isNaN(parseInt(value)))
-                                {
-                                    if (value > currentYear) {
-                                    return `Enter a number between 1900 and ${currentYear}`;
-                                    }
-                                    if (value < 1900) {
-                                        return `Enter a number between 1900 and ${currentYear}`;
-                                    }
-                                }
-                                return true;
-                            }
-                        })} id="year" type="number" className="filter-input" placeholder="Any year" min="1900" max={currentYear} />
-                        {errors.year && (<label htmlFor='year' style={{color: "#CC0000", marginTop: "15px", marginBottom: "0"}}>
-                            {errors.year.message}</label>)}
-                    </div>
-                </div>
-                { userData && userData.role == "ADMIN" &&
-                    <div>
-                        <button className="film-button" onClick={handleAddNewFilm}>Add new film</button>
-                    </div>
-                }
-            </div>
+  return (
+    <>
+      <Navigation />
+      <div className="films-body">
+        <div className="film-list">
+          <h1 style={{ textAlign: "center" }}>Watch all movies and series you want!</h1>
+          <SearchForm register={register} handleSubmit={handleSubmit} onSubmit={handleSearch} errors={errors} />
+          <FilmList
+            films={films}
+            hoveredId={hoveredId}
+            onCardMouseEnter={setHoveredId}
+            onCardMouseLeave={() => setHoveredId(null)}
+            onCardClick={(id) => navigate(`/films/${id}`)}
+            onAddFavorite={handleAddToPersonalList}
+            onRemoveFavorite={handleRemoveFromPersonalList}
+            onDeleteFilm={handleDeleteFilm}
+            userData={userData}
+            personalList={personalList}
+          />
+          <Pagination
+            pageNumber={pageNumber}
+            maxPageNumber={maxPageNumber}
+            onPageBack={() => pageNumber > 0 && setPageNumber(pageNumber - 1)}
+            onPageForward={() => pageNumber < maxPageNumber && setPageNumber(pageNumber + 1)}
+            onJumpFirst={() => setPageNumber(0)}
+            onJumpLast={() => setPageNumber(maxPageNumber)}
+            pageSize={pageSize}
+            onPageSizeChange={(e) => setPageSize(e.target.value)}
+            pageSizeOptions={pageSizeOptions}
+          />
         </div>
-    </>;
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "15px" }}>
+          <FilterPanel register={register} errors={errors} currentYear={new Date().getFullYear()} />
+          {userData && userData.role === "ADMIN" && (
+            <div>
+              <button className="film-button" onClick={handleAddNewFilm}>Add new film</button>
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  );
 }
 
 export default Films;

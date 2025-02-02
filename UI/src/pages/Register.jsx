@@ -4,7 +4,7 @@ import './Register.css'
 import {Link, useNavigate} from "react-router-dom";
 import {register as registerUser} from "../services/api";
 import { useForm, Controller } from "react-hook-form";
-import DropdownMultiSelect from '../components/DropdownMultiSelect';
+import DropdownMultiSelect from '../components/general/DropdownMultiSelect';
 import { useAuth } from '../contexts/AuthContext';
 
 const Register = () => {
