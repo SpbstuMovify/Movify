@@ -96,7 +96,7 @@ function Profile() {
         errorMessage={errorMessage}
       />
       <Navigation />
-      <div className="profile-body">
+      <div className="profile-body" role="profile-body">
         {userInfo && (
           <div className="profile-wrapper">
             <h1>{userInfo.login}</h1>

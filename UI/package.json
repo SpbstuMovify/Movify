@@ -11,6 +11,8 @@
     "start": "craco start",
     "start:polling": "CHOKIDAR_USEPOLLING=true react-scripts start",
     "test": "craco test",
+    "clear_jest_cache": "craco test --clearCache",
+    "show_jest_config": "craco test --verbose --showConfig",
     "coverage": "craco test --coverage --watchAll"
   },
   "dependencies": {
