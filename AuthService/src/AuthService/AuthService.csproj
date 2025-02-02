@@ -6,20 +6,21 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>d69d7446-cb2f-43c5-9146-c4cec66d74c8</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <AssemblyName>AuthService</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include=".dockerignore" Link=".dockerignore">
-      <DependentUpon>$(DockerDefaultDockerfile)</DependentUpon>
-    </None>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>AuthService.IntegrationTests</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\auth.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos\auth.proto" Link="Protos\auth.proto"/>
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\content.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos\content.proto" GrpcServices="Client" Link="Protos\content.proto"/>
   </ItemGroup>
 
   <ItemGroup>
