@@ -1,5 +1,5 @@
 import './Profile.css';
-import Navigation from '../components/Navigation';
+import Navigation from '../components/general/Navigation';
 import { useAuth } from '../contexts/AuthContext';
 import { getUserByLogin, grantToAdmin } from '../services/api';
 import { useForm } from 'react-hook-form';
