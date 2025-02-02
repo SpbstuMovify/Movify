@@ -2,6 +2,6 @@ namespace AuthService.Utils.Jwt;
 
 public class UserClaimsData
 {
-    public string Email { get; set; } = null!;
-    public string Role { get; set; } = null!;
+    public required string Email { get; init; }
+    public required string Role { get; init; }
 }
