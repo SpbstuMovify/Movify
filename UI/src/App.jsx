@@ -27,6 +27,11 @@ const router = createBrowserRouter([
         children: [
           { path: "/profile", element: <Profile /> },
           { path: "/favorites", element: <FavoriteFilms /> },
+        ]
+      },
+      {
+        element: <ProtectedRoute checkAdmin={true}/>,
+        children: [
           { path: "/rights", element: <Rights /> }
         ]
       },
