@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.polytech.contentservice.common.AgeRestriction;
 import com.polytech.contentservice.common.Genre;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 
 /**
  * Сущность для фильтрации контента.
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * @param pageSize Параметр количества отображаемых фильмов и сериалов на странице
  * @param pageNumber Параметр номера страницы
  */
+@Builder
 @Schema(description = "Сущность для фильтрации контента")
 public record ContentSearchDto(
     @Schema(description = "Название фильма", example = "Первому игроку приготовиться")
