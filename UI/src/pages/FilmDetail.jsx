@@ -282,7 +282,7 @@ function FilmDetail() {
   return (
     <>
       <Navigation />
-      <div className="detail-body">
+      <div className="detail-body" role="detail-body">
         <div className="detail-wrapper">
           <div className="film-detail-header">
             <FilmDetailHeader
