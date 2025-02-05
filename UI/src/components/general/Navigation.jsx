@@ -12,7 +12,7 @@ const Navigation = () => {
                 <img
                     className="nav-logo"
                     src="../images/movify_logo_red.png"
-                    alt=""
+                    data-testid="nav-logo"
                 />
             </Link>
             <div className="nav-container">
@@ -26,7 +26,7 @@ const Navigation = () => {
                     Favorites
                 </Link>}
                 {userData ?
-                    <Link className="nav-text-links" to="/profile">
+                    <Link className="nav-text-links" to="/profile" data-testid="profile-link">
                         {userData.login}
                     </Link>
                     : <Link className="nav-text-links" to="/login">

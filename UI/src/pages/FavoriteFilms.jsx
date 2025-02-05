@@ -20,7 +20,7 @@ function FavoriteFilms() {
       film.category = spacedString.charAt(0).toUpperCase() + spacedString.slice(1).toLowerCase();
       return {
         ...film,
-        age_restriction: mappingJSON.age_restriction[film.age_restriction],
+        age_restriction: mappingJSON().age_restriction[film.age_restriction],
         publisher: film.publisher.replace(/_/g, " ")
       };
     });
