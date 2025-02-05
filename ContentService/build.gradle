@@ -80,10 +80,26 @@ jacoco {
 }
 
 jacocoTestReport {
+    dependsOn test
     reports {
         xml.required = false
         csv.required = false
         html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    "com/polytech/contentservice/repository/ContentRepository*",
+                    "com/polytech/contentservice/entity/QUser*",
+                    "com/polytech/contentservice/entity/QEpisode*",
+                    "com/polytech/contentservice/entity/QAuthAttempts*",
+                    "com/polytech/contentservice/entity/QCastMember*",
+                    "com/polytech/contentservice/entity/QContent*",
+                    "com/polytech/contentservice/entity/QPersonalList*",
+                    "com/polytech/contentservice/dto/castmember/CastMemberDto*"
+            ])
+        }))
     }
 }
 check.dependsOn jacocoTestReport
