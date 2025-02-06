@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { screen } from "@testing-library/react"
 import '@testing-library/jest-dom'
 import * as AuthContext from '@contexts/AuthContext';
 import Navigation from "./Navigation";

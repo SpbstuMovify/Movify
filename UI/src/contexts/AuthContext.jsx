@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 
 const AuthContext = createContext();
 
-export const AuthProvider = () => {
+export const AuthProvider = ({useChildren = false, children}) => {
 
   const [userData, setUserData] = useState();
 
@@ -18,19 +18,21 @@ export const AuthProvider = () => {
     if (localUserData) {
         const token = localUserData.token;
         if (token) {
-        try {
-            const decodedToken = jwtDecode(token);
-            const currentTime = Date.now() / 1000;
-            if (decodedToken.exp <= currentTime) {
-                clearUserData();
-            }
-            else {
-              setUserData(localUserData);
-            }
-        } catch (error) {
-            console.error("Error decoding token:", error);
-            clearUserData();
+          try {
+              const decodedToken = jwtDecode(token);
+              const currentTime = Date.now() / 1000;
+              if (decodedToken.exp <= currentTime) {
+                  clearUserData();
+              }
+              else {
+                setUserData(localUserData);
+              }
+          } catch (error) {
+              clearUserData();
+          }
         }
+        else {
+          clearUserData();
         }
     }
   };
@@ -46,7 +48,7 @@ export const AuthProvider = () => {
 
   return (
     <AuthContext.Provider value={{ checkUserData, clearUserData, setUserData, userData}}>
-      <Outlet />
+      {useChildren ? children : <Outlet />}
     </AuthContext.Provider>
   );
 };
