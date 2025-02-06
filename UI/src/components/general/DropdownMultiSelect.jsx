@@ -9,7 +9,6 @@ const DropdownMultiSelect = ({ name, options, onChange, placeholder="Select opti
     setIsOpen(!isOpen);
   };
 
-  // Handle selection changes
   const handleOptionChange = (event) => {
     const value = event.target.value;
     const updatedOptions = selectedOptions.includes(value)
@@ -17,10 +16,9 @@ const DropdownMultiSelect = ({ name, options, onChange, placeholder="Select opti
       : [...selectedOptions, value];
 
     setSelectedOptions(updatedOptions);
-    onChange(updatedOptions); // Pass changes to the parent component (form)
+    onChange(updatedOptions);
   };
 
-  // Close dropdown if clicked outside
   const handleOutsideClick = (event) => {
     if (!event.target.closest(".dropdown")) {
       setIsOpen(false);
