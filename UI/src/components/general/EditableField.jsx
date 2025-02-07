@@ -53,7 +53,7 @@ const EditableField = ({ label,
       case "select":
         return <select
           value={value}
-          onChange={(e) => onChange(e.target.value)} // Notify parent onChange
+          onChange={(e) => onChange(e.target.value)}
           style={{ marginLeft: "10px" }}
         >
           {options.map((option, index) => (
@@ -64,7 +64,7 @@ const EditableField = ({ label,
         </select>
 
     }
-    return "";
+    throw new Error("Invalid input type");
   }
 
   const elements = (
