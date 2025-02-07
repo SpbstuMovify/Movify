@@ -51,6 +51,7 @@ const UpdatableImage = ({ src, onImageUpload, className }) => {
                 )}
             </label>
             <input
+                data-testid="image-upload"
                 id="image-upload"
                 type="file"
                 accept="image/*"
