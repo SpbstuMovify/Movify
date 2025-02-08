@@ -9,9 +9,9 @@ import com.polytech.contentservice.dto.user.detailed.UserDto;
 import com.polytech.contentservice.service.content.ContentService;
 import com.polytech.contentservice.service.episode.EpisodeService;
 import com.polytech.contentservice.service.user.UserService;
-import content.ContentServiceGrpc;
-import content.UserRoleRequest;
-import content.UserRoleResponse;
+import com.content.ContentServiceGrpc;
+import com.content.UserRoleRequest;
+import com.content.UserRoleResponse;
 import io.grpc.protobuf.StatusProto;
 import io.grpc.stub.StreamObserver;
 import java.util.Optional;
@@ -47,7 +47,7 @@ public class ContentGrpcController extends ContentServiceGrpc.ContentServiceImpl
   }
 
   @Override
-  public void setContentImageUrl(content.SetContentImageUrlRequest request,
+  public void setContentImageUrl(com.content.SetContentImageUrlRequest request,
                                  io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
     contentService.updateContent(UUID.fromString(request.getContentId()),
         ContentDto.builder()
@@ -58,7 +58,7 @@ public class ContentGrpcController extends ContentServiceGrpc.ContentServiceImpl
   }
 
   @Override
-  public void setEpisodeVideoUrl(content.SetEpisodeVideoUrlRequest request,
+  public void setEpisodeVideoUrl(com.content.SetEpisodeVideoUrlRequest request,
                                  io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
     episodeService.updateEpisodeInfo(UUID.fromString(request.getEpisodeId()),
         EpisodeDto.builder()

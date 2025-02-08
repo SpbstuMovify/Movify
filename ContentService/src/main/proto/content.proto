@@ -3,7 +3,7 @@ syntax = "proto3";
 option java_multiple_files = true;
 option csharp_namespace = "Movify";
 
-package content;
+package com.content;
 import "google/protobuf/empty.proto";
 
 service ContentService {

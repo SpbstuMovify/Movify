@@ -18,16 +18,7 @@ public class UserMapper {
         .build();
   }
 
-  public UserSearchDto toFindUserDto(UserDto userDto) {
-    return UserSearchDto.builder()
-        .searchType(userDto.searchType())
-        .email(userDto.email())
-        .login(userDto.login())
-        .userId(userDto.userId())
-        .build();
-  }
-
-  public User convertToUserDto(UserRegisterDto user) {
+  public User convertToUserEntity(UserRegisterDto user) {
     return User.builder()
         .firstName(user.firstName())
         .lastName(user.lastName())
@@ -54,7 +45,7 @@ public class UserMapper {
         .build();
   }
 
-  public User convertToUserDto(UserDto user) {
+  public User convertToUserEntity(UserDto user) {
     return User.builder()
         .firstName(user.firstName())
         .lastName(user.lastName())

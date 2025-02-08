@@ -75,14 +75,14 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void updateUserInformation(UUID userId, UserDto userDto) {
-    User user = userMapper.convertToUserDto(userDto);
+    User user = userMapper.convertToUserEntity(userDto);
     user.setId(userId);
     userRepository.save(user);
   }
 
   @Override
   public UserDto saveUserInformation(UserRegisterDto userDto) {
-    User userToSave = userMapper.convertToUserDto(userDto);
+    User userToSave = userMapper.convertToUserEntity(userDto);
     User user = userRepository.save(userToSave);
     return userMapper.convertToUserDto(user);
   }

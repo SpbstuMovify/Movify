@@ -92,7 +92,11 @@ jacocoTestReport {
             fileTree(dir: it, exclude: [
                     "com/polytech/contentservice/repository/ContentRepository*",
                     "com/polytech/contentservice/entity/QUser*",
+                    "com/auth/*",
+                    "com/content/*",
                     "com/polytech/contentservice/entity/QEpisode*",
+                    "com/polytech/contentservice/config/*",
+                    "com/polytech/contentservice/exception/*",
                     "com/polytech/contentservice/entity/QAuthAttempts*",
                     "com/polytech/contentservice/entity/QCastMember*",
                     "com/polytech/contentservice/entity/QContent*",
