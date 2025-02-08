@@ -1,8 +1,8 @@
 package com.polytech.contentservice.service.auth;
 
-import auth.LoginUserResponse;
-import auth.RegisterUserResponse;
-import auth.ValidationTokenResponse;
+import com.auth.LoginUserResponse;
+import com.auth.RegisterUserResponse;
+import com.auth.ValidationTokenResponse;
 import com.polytech.contentservice.dto.user.detailed.UserDto;
 import com.polytech.contentservice.dto.user.register.UserRegisterDto;
 import java.util.Optional;

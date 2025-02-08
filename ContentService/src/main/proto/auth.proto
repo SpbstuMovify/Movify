@@ -3,7 +3,7 @@ syntax = "proto3";
 option java_multiple_files = true;
 option csharp_namespace = "Movify";
  
-package auth;
+package com.auth;
 
 service AuthService {
     rpc ValidateToken(ValidationTokenRequest) returns (ValidationTokenResponse);

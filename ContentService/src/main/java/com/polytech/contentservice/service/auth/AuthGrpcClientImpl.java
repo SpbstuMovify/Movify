@@ -1,12 +1,12 @@
 package com.polytech.contentservice.service.auth;
 
-import auth.AuthServiceGrpc;
-import auth.LoginUserRequest;
-import auth.LoginUserResponse;
-import auth.RegisterUserRequest;
-import auth.RegisterUserResponse;
-import auth.ValidationTokenRequest;
-import auth.ValidationTokenResponse;
+import com.auth.AuthServiceGrpc;
+import com.auth.LoginUserRequest;
+import com.auth.LoginUserResponse;
+import com.auth.RegisterUserRequest;
+import com.auth.RegisterUserResponse;
+import com.auth.ValidationTokenRequest;
+import com.auth.ValidationTokenResponse;
 import com.polytech.contentservice.config.AuthGrpcClientProperty;
 import com.polytech.contentservice.dto.user.detailed.UserDto;
 import com.polytech.contentservice.dto.user.register.UserRegisterDto;
