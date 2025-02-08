@@ -12,6 +12,7 @@ export const useAuth = jest.fn(() => ({
     },
     checkUserData: jest.fn(),
     clearUserData: jest.fn(),
+    setUserData: jest.fn(),
 }));
 
 

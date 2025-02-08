@@ -57,7 +57,6 @@ describe('AuthContext', () => {
         <TestComponent />
       </AuthProvider>
     );
-    screen.debug();
 
     fireEvent.click(screen.getByText('Check User'));
 

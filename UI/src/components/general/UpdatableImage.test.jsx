@@ -46,7 +46,9 @@ describe("UpdatableImage Component", () => {
         const fileInput = screen.getByTestId(/image-upload/i);
         const user = userEvent.setup();
 
-        await user.click(fileInput);
+        await act(async () => { 
+            await user.click(fileInput);
+        });
         
         expect(fileInput).toBeInTheDocument();
     });
@@ -62,7 +64,7 @@ describe("UpdatableImage Component", () => {
 
         await act(async () => { 
             await userEvent.upload(fileInput, file); 
-          });
+        });
           
 
         expect(mockOnImageUpload).toHaveBeenCalledTimes(1);
@@ -78,7 +80,7 @@ describe("UpdatableImage Component", () => {
 
         await act(async () => { 
             await userEvent.upload(fileInput, file); 
-          });
+        });
           
 
         expect(await screen.findByText("Uploading...")).toBeInTheDocument();
@@ -93,7 +95,7 @@ describe("UpdatableImage Component", () => {
 
         await act(async () => { 
             await userEvent.upload(fileInput, file); 
-          });
+        });
           
 
         expect(await screen.findByText("Uploading...")).toBeInTheDocument();
