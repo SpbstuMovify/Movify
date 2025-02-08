@@ -6,20 +6,19 @@ import com.polytech.contentservice.common.UserSearchType;
 import com.polytech.contentservice.dto.user.search.UserSearchDto;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class ValidUserSearchParametersValidatorTest {
 
+  @Spy
   private ValidUserSearchParametersValidator validator;
+  @Mock
   private ConstraintValidatorContext context;
-
-  @BeforeEach
-  void setUp() {
-    validator = new ValidUserSearchParametersValidator();
-    context = Mockito.mock(ConstraintValidatorContext.class);
-  }
 
   @Test
   void testValidUserIdSearch() {

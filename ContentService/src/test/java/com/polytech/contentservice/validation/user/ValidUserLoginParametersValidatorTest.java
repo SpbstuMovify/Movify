@@ -5,22 +5,19 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.polytech.contentservice.common.UserSearchType;
 import com.polytech.contentservice.dto.user.login.UserLoginDto;
 import jakarta.validation.ConstraintValidatorContext;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class ValidUserLoginParametersValidatorTest {
 
+  @Spy
   private ValidUserLoginParametersValidator validator;
+  @Mock
   private ConstraintValidatorContext context;
-
-  @BeforeEach
-  void setUp() {
-    validator = new ValidUserLoginParametersValidator();
-    context = Mockito.mock(ConstraintValidatorContext.class);
-  }
 
   @Test
   void testValidEmailLogin() {
