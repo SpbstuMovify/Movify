@@ -6,6 +6,7 @@ import { login as mockLoginUser } from "../services/api";
 import { useAuth as mockUseAuth } from "../contexts/AuthContext";
 import { renderWithRouter } from "../configs/testConfig";
 
+jest.clearAllMocks();
 jest.mock('@services/api', () => require('../__mocks__/services/api'));
 jest.mock('@contexts/AuthContext', () => require('../__mocks__/contexts/AuthContext'));
 
@@ -16,21 +17,24 @@ jest.mock("react-router-dom", () => ({
 }));
 
 describe("Login Component", () => {
-    const originalError = console.error;
-
+    
     beforeAll(() => {
-        jest.spyOn(console, "error").mockImplementation((msg, ...args) => {
+        // Spy on console.error to suppress act() warnings
+        consoleErrorSpy = jest.spyOn(console, "error").mockImplementation((msg, ...args) => {
             if (typeof msg === "string" && msg.includes("act(...)")) {
                 return; // Suppress act() warnings
             }
-            originalError(msg, ...args); // Keep other errors
+            return console.error(msg, ...args); // Keep other errors
         });
     });
 
-    afterAll(() => {
-        console.error.mockRestore();
+    afterEach(() => {
+        jest.restoreAllMocks(); // Restore all Jest mocks
     });
 
+    afterAll(() => {
+        consoleErrorSpy.mockRestore(); // Restore the original console.error
+    });
     test("renders login form elements", () => {
         renderWithRouter(<Login />);
 
@@ -86,23 +90,17 @@ describe("Login Component", () => {
 
         renderWithRouter(<Login />);
 
-
-        const loginInput = screen.getByPlaceholderText("Login or email");
-        const passwordInput = screen.getByPlaceholderText("Enter the password");
-        const signInButton = screen.getByRole("button", { name: "Sign in" });
-
         await act(async () => {
-            await userEvent.type(loginInput, "testuser");
-            await userEvent.type(passwordInput, "password123");
-            await fireEvent.click(signInButton);
+            await userEvent.type(screen.getByPlaceholderText("Login or email"), "testuser");
+            await userEvent.type(screen.getByPlaceholderText("Enter the password"), "password123");
+            fireEvent.click(screen.getByRole("button", { name: "Sign in" })); 
         });
 
         await waitFor(() => {
             expect(mockLoginUser).toHaveBeenCalledWith("testuser", "password123", expect.any(String));
             expect(mockSetUserData).toHaveBeenCalled();
+            expect(screen.getByText("Login successful!")).toBeInTheDocument();
         });
-
-        expect(screen.getByText("Login successful!")).toBeInTheDocument();
     });
 
     test("displays error message for incorrect login (401)", async () => {

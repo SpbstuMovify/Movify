@@ -4,6 +4,7 @@ import '@testing-library/jest-dom'
 import routesConfig from "../../configs/routesConfig";
 import * as AuthContext from '@contexts/AuthContext';
 
+jest.clearAllMocks();
 jest.mock('@contexts/AuthContext', () => require('../../__mocks__/contexts/AuthContext'));
 jest.mock('@services/api', () => require('../../__mocks__/services/api'));
 

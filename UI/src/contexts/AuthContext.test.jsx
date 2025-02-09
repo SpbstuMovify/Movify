@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './AuthContext';
 import { jwtDecode } from 'jwt-decode';
 import '@testing-library/jest-dom';
 
+jest.clearAllMocks();
 jest.mock('jwt-decode');
 
 beforeEach(() => {

@@ -4,6 +4,7 @@ import * as AuthContext from '@contexts/AuthContext';
 import Navigation from "./Navigation";
 import { renderWithRouter } from '../../configs/testConfig';
 
+jest.clearAllMocks();
 jest.mock('@contexts/AuthContext', () => require('../../__mocks__/contexts/AuthContext'));
 
 describe('Navigation element', () => {

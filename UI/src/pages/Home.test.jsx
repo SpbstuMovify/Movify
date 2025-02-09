@@ -4,6 +4,7 @@ import Home from "./Home";
 import '@testing-library/jest-dom';
 import { renderWithRouter } from '../configs/testConfig';
 
+jest.clearAllMocks();
 jest.mock('@contexts/AuthContext', () => require('../__mocks__/contexts/AuthContext'));
 
 // Mock useNavigate from React Router

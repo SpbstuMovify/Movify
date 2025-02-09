@@ -3,6 +3,7 @@ import { RouterProvider, createMemoryRouter } from "react-router-dom";
 import '@testing-library/jest-dom'
 import routesConfig from "./configs/routesConfig";
 
+jest.clearAllMocks();
 jest.mock('@services/api', () => require('./__mocks__/services/api'));
 
 describe('App routing of unprotected components', () => {
