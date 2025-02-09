@@ -6,6 +6,7 @@ import { register as mockRegisterUser } from "../services/api";
 import { useAuth as mockUseAuth } from "../contexts/AuthContext";
 import { renderWithRouter } from "../configs/testConfig";
 
+jest.clearAllMocks();
 jest.mock('@services/api', () => require('../__mocks__/services/api'));
 jest.mock('@contexts/AuthContext', () => require('../__mocks__/contexts/AuthContext'));
 
