@@ -1,7 +1,6 @@
 namespace MediaService.Dtos.FileInfo;
 
-public class GetFilesInfoDto
-{
-    public string BucketName { get; set; } = null!;
-    public string Prefix { get; set; } = null!;
-}
+public record GetFilesInfoDto(
+    string BucketName,
+    string Prefix
+);

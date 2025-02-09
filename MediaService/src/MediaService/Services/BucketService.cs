@@ -1,12 +1,15 @@
 using MediaService.Dtos.Bucket;
 using MediaService.Dtos.FileInfo;
+using MediaService.FileProcessing;
 using MediaService.Repositories;
 using MediaService.Utils.Exceptions;
-using MediaService.Utils.FileProcessing;
 
 namespace MediaService.Services;
 
-public class BucketService(IBucketRepository bucketRepository, IFileProcessingQueue fileProcessingQueue) : IBucketService
+public class BucketService(
+    IBucketRepository bucketRepository,
+    IFileProcessingQueue fileProcessingQueue
+) : IBucketService
 {
     public async Task<IList<BucketDto>> GetBucketsAsync()
     {
@@ -14,94 +17,79 @@ public class BucketService(IBucketRepository bucketRepository, IFileProcessingQu
         {
             var data = await bucketRepository.GetBucketsAsync();
 
-            return data.Select(b => new BucketDto
-            {
-                Name = b.BucketName,
-            }).ToList();
+            return data.Select(b => new BucketDto(b.BucketName)).ToList();
         }
-        catch (Exception ex) when (ex is not ResourceNotFoundException)
+        catch (Exception ex) when (ex is not NotFoundException)
         {
-            throw new InternalServerException($"Failed to get buckets", ex);
+            throw new InternalServerErrorException("Failed to get buckets", ex);
         }
     }
 
-    public async Task<BucketDto> CreateBucketAsync(CreateBucketDto createBucketDto)
+    public async Task<BucketDto> CreateBucketAsync(CreateBucketDto dto)
     {
-        var bucketName = createBucketDto.Name;
-
         try
         {
-            var data = await bucketRepository.CreateBucketAsync(bucketName);
+            var data = await bucketRepository.CreateBucketAsync(dto.Name);
 
-            return new BucketDto
-            {
-                Name = data.BucketName
-            };
+            return new BucketDto(data.BucketName);
         }
-        catch (Exception ex) when (ex is not ResourceNotFoundException)
+        catch (Exception ex) when (ex is not NotFoundException)
         {
-            throw new InternalServerException($"Failed to get buckets", ex);
+            throw new InternalServerErrorException("Failed to create bucket", ex);
         }
     }
 
-    public async Task DeleteBucketAsync(DeleteBucketDto deleteBucketDto)
+    public async Task DeleteBucketAsync(DeleteBucketDto dto)
     {
-        var bucketName = deleteBucketDto.Name;
-
         try
         {
-            await bucketRepository.DeleteBucketAsync(bucketName);
+            await bucketRepository.DeleteBucketAsync(dto.Name);
         }
-        catch (Exception ex) when (ex is not ResourceNotFoundException)
+        catch (Exception ex) when (ex is not NotFoundException)
         {
-            throw new InternalServerException($"Failed to get buckets", ex);
+            throw new InternalServerErrorException("Failed to delete bucket", ex);
         }
     }
 
-    public async Task<IList<FileInfoDto>> GetFilesAsync(GetFilesInfoDto getFilesInfoDto)
+    public async Task<IList<FileInfoDto>> GetFilesAsync(GetFilesInfoDto dto)
     {
-        var bucketName = getFilesInfoDto.BucketName;
-        var prefix = getFilesInfoDto.Prefix;
-
         try
         {
-            var data = await bucketRepository.GetFilesAsync(bucketName, prefix);
+            var data = await bucketRepository.GetFilesAsync(dto.BucketName, dto.Prefix);
 
-            return data.Select(f => new FileInfoDto
-            {
-                BucketName = f.BucketName,
-                PresignedUrl = f.PresignedUrl
-
-            }).ToList();
+            return data.Select(f => new FileInfoDto(f.BucketName, f.PresignedUrl)).ToList();
         }
-        catch (Exception ex) when (ex is not ResourceNotFoundException)
+        catch (Exception ex) when (ex is not NotFoundException)
         {
-            throw new InternalServerException($"Failed to get buckets", ex);
+            throw new InternalServerErrorException("Failed to get files", ex);
         }
     }
 
-    public FileInfoDto CreateFile(UploadedFileInfoDto file, CreateFileInfoDto createFileInfoDto)
+    public FileInfoDto CreateFile(CreateFileInfoDto dto)
     {
-        var bucketName = createFileInfoDto.BucketName;
-        var prefix = createFileInfoDto.Prefix;
-        var key = string.IsNullOrEmpty(prefix) ? file.FileName : $"{prefix?.TrimEnd('/')}/{file.FileName}";
-        var isVideoProcNecessary = createFileInfoDto.IsVideoProcNecessary;
-        var destination = createFileInfoDto.Destination;
-        var baseUrl = createFileInfoDto.BaseUrl;
+        var fileName = dto.File.FileName;
+        var bucketName = dto.BucketName;
+        var prefix = dto.Prefix;
+        var key = string.IsNullOrEmpty(prefix) ? fileName : $"{prefix.TrimEnd('/')}/{fileName}";
 
-        fileProcessingQueue.Enqueue(new FileProcessingTask(file, bucketName, key, isVideoProcNecessary, destination, baseUrl));
+        fileProcessingQueue.Enqueue(
+            new FileProcessingTask(
+                dto.File,
+                bucketName,
+                key,
+                dto.IsVideoProcNecessary,
+                dto.Destination,
+                dto.BaseUrl
+            )
+        );
 
-        return new FileInfoDto
-        {
-            BucketName = bucketName,
-            PresignedUrl = "Processing..."
-        };
+        return new FileInfoDto(bucketName, "Processing...");
     }
 
-    public async Task<DownloadedFile> GetFileAsync(GetFileInfoDto getFileInfoDto)
+    public async Task<FileData> GetFileAsync(GetFileInfoDto dto)
     {
-        var bucketName = getFileInfoDto.BucketName;
-        var key = getFileInfoDto.Key;
+        var bucketName = dto.BucketName;
+        var key = dto.Key;
 
         try
         {
@@ -109,41 +97,39 @@ public class BucketService(IBucketRepository bucketRepository, IFileProcessingQu
 
             return data;
         }
-        catch (Exception ex) when (ex is not ResourceNotFoundException)
+        catch (Exception ex) when (ex is not NotFoundException)
         {
-            throw new InternalServerException($"Failed to get buckets", ex);
+            throw new InternalServerErrorException("Failed to get file", ex);
         }
     }
 
-    public FileInfoDto UpdateFile(UploadedFileInfoDto file, UpdateFileInfoDto updateFileInfoDto)
+    public FileInfoDto UpdateFile(UpdateFileInfoDto dto)
     {
-        var bucketName = updateFileInfoDto.BucketName;
-        var key = updateFileInfoDto.Key;
-        var isVideoProcNecessary = updateFileInfoDto.IsVideoProcNecessary;
-        var destination = updateFileInfoDto.Destination;
-        var baseUrl = updateFileInfoDto.BaseUrl;
+        var bucketName = dto.BucketName;
 
-        fileProcessingQueue.Enqueue(new FileProcessingTask(file, bucketName, key, isVideoProcNecessary, destination, baseUrl));
+        fileProcessingQueue.Enqueue(
+            new FileProcessingTask(
+                dto.File,
+                bucketName,
+                dto.Key,
+                dto.IsVideoProcNecessary,
+                dto.Destination,
+                dto.BaseUrl
+            )
+        );
 
-        return new FileInfoDto
-        {
-            BucketName = bucketName,
-            PresignedUrl = "Processing..."
-        };
+        return new FileInfoDto(bucketName, "Processing...");
     }
 
-    public async Task DeleteFileAsync(DeleteFileInfoDto deleteFileInfoDto)
+    public async Task DeleteFileAsync(DeleteFileInfoDto dto)
     {
-        var bucketName = deleteFileInfoDto.BucketName;
-        var key = deleteFileInfoDto.Key;
-
         try
         {
-            await bucketRepository.DeleteFileAsync(bucketName, key);
+            await bucketRepository.DeleteFileAsync(dto.BucketName, dto.Key);
         }
-        catch (Exception ex) when (ex is not ResourceNotFoundException)
+        catch (Exception ex) when (ex is not NotFoundException)
         {
-            throw new InternalServerException($"Failed to get buckets", ex);
+            throw new InternalServerErrorException("Failed to delete file", ex);
         }
     }
 }

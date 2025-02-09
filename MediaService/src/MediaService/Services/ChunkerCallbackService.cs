@@ -1,7 +1,7 @@
 using MediaService.Dtos.Chunker;
 using MediaService.Dtos.Content;
-using MediaService.Grpc;
-using MediaService.Utils.FileProcessing;
+using MediaService.FileProcessing;
+using MediaService.Grpc.Clients;
 
 namespace MediaService.Services;
 
@@ -9,38 +9,16 @@ public class ChunkerCallbackService(IContentGrpcClient contentGrpcClient) : IChu
 {
     public async Task OnSuccess(ProcessVideoDtoCallbackSuccessDto successDto)
     {
-        string episodeId = ParseSegment(successDto.Key, 1);
-        string url = $"{successDto.BaseUrl}/{successDto.Key}";
+        var episodeId = successDto.Key.Split('/', StringSplitOptions.RemoveEmptyEntries).ElementAtOrDefault(1) ?? string.Empty;
+        var url = $"{successDto.BaseUrl}/{successDto.Key}";
 
-        await contentGrpcClient.SetEpisodeVideoUrlDto(new EpisodeVideoUrlDto
-        {
-            EpisodeId = episodeId,
-            Url = url,
-            Status = FileStatus.Uploaded
-        });
+        await contentGrpcClient.SetEpisodeVideoUrl(new EpisodeVideoUrlDto(episodeId, url, FileStatus.Uploaded));
     }
 
     public async Task OnFailed(ProcessVideoDtoCallbackFailedDto failedDto)
     {
-        string episodeId = ParseSegment(failedDto.Key, 1);
+        var episodeId = failedDto.Key.Split('/', StringSplitOptions.RemoveEmptyEntries).ElementAtOrDefault(1) ?? string.Empty;
 
-        await contentGrpcClient.SetEpisodeVideoUrlDto(new EpisodeVideoUrlDto
-        {
-            EpisodeId = episodeId,
-            Url = "",
-            Status = FileStatus.Error
-        });
-    }
-
-    private static string ParseSegment(string path, int index)
-    {
-        if (string.IsNullOrEmpty(path))
-            return string.Empty;
-
-        string[] parts = path.Split('/');
-        if (index < 0 || index >= parts.Length)
-            return string.Empty;
-
-        return parts[index];
+        await contentGrpcClient.SetEpisodeVideoUrl(new EpisodeVideoUrlDto(episodeId, "", FileStatus.Error));
     }
 }

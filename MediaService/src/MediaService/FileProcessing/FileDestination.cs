@@ -1,4 +1,4 @@
-namespace MediaService.Utils.FileProcessing;
+namespace MediaService.FileProcessing;
 
 public enum FileDestination
 {

@@ -1,10 +1,11 @@
-using System.ComponentModel.DataAnnotations;
+using FluentValidation;
+
+using MediaService.Controllers.Requests;
 using MediaService.Dtos.Bucket;
 using MediaService.Dtos.FileInfo;
-using MediaService.Repositories;
+using MediaService.FileProcessing;
 using MediaService.Services;
-using MediaService.Utils.Exceptions;
-using MediaService.Utils.FileProcessing;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,20 +26,28 @@ public class BucketController(IBucketService bucketService) : ControllerBase
     [HttpPost]
     [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> Create(
-        [FromQuery(Name = "bucket-name")] string bucketName
+        [FromQuery(Name = "bucket-name")] string bucketName,
+        [FromServices] IValidator<CreateBucketRequest> validator
     )
     {
-        var result = await bucketService.CreateBucketAsync(new CreateBucketDto { Name = bucketName });
+        var request = new CreateBucketRequest(bucketName);
+        await validator.ValidateAndThrowAsync(request);
+
+        var result = await bucketService.CreateBucketAsync(new CreateBucketDto(request.BucketName));
         return Ok(result);
     }
 
     [HttpDelete("{bucket-name}")]
     [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> Delete(
-        [FromRoute(Name = "bucket-name")] string bucketName
+        [FromRoute(Name = "bucket-name")] string bucketName,
+        [FromServices] IValidator<DeleteBucketRequest> validator
     )
     {
-        await bucketService.DeleteBucketAsync(new DeleteBucketDto { Name = bucketName });
+        var request = new DeleteBucketRequest(bucketName);
+        await validator.ValidateAndThrowAsync(request);
+
+        await bucketService.DeleteBucketAsync(new DeleteBucketDto(request.BucketName));
         return NoContent();
     }
 
@@ -46,19 +55,18 @@ public class BucketController(IBucketService bucketService) : ControllerBase
     [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> GetAllFiles(
         [FromRoute(Name = "bucket-name")] string bucketName,
-        [FromQuery(Name = "prefix")] string? prefix
+        [FromQuery(Name = "prefix")] string? prefix,
+        [FromServices] IValidator<GetFilesRequest> validator
     )
     {
-        var result = await bucketService.GetFilesAsync(new GetFilesInfoDto
-        {
-            BucketName = bucketName,
-            Prefix = prefix ?? ""
-        });
+        var request = new GetFilesRequest(bucketName, prefix ?? string.Empty);
+        await validator.ValidateAndThrowAsync(request);
+
+        var result = await bucketService.GetFilesAsync(new GetFilesInfoDto(request.BucketName, request.Prefix));
         return Ok(result);
     }
 
     [HttpPost("{bucket-name}/files")]
-    [Authorize(Roles = "ADMIN")]
     [RequestSizeLimit(long.MaxValue)]
     [DisableRequestSizeLimit]
     public async Task<IActionResult> CreateFile(
@@ -66,13 +74,18 @@ public class BucketController(IBucketService bucketService) : ControllerBase
         [FromRoute(Name = "bucket-name")] string bucketName,
         [FromQuery(Name = "prefix")] string? prefix,
         [FromQuery(Name = "process")] bool? isVideoProcNecessary,
-        [FromQuery(Name = "destination")] FileDestination? destination
+        [FromQuery(Name = "destination")] FileDestination? destination,
+        [FromServices] IValidator<CreateFileRequest> validator
     )
     {
-        if (file == null || file.Length == 0)
-        {
-            throw new InternalServerException("File is not selected or empty");
-        }
+        var request = new CreateFileRequest(
+            file,
+            bucketName,
+            prefix ?? string.Empty,
+            isVideoProcNecessary ?? false,
+            destination ?? FileDestination.Internal
+        );
+        await validator.ValidateAndThrowAsync(request);
 
         var uploadPath = Path.Combine(".tmp", Guid.NewGuid().ToString());
         if (!Directory.Exists(uploadPath))
@@ -80,26 +93,27 @@ public class BucketController(IBucketService bucketService) : ControllerBase
             Directory.CreateDirectory(uploadPath);
         }
 
-        var filePath = Path.Combine(uploadPath, file.FileName);
+        var filePath = Path.Combine(uploadPath, request.File.FileName);
 
-        using (var stream = new FileStream(filePath, FileMode.Create))
+        await using (var stream = new FileStream(filePath, FileMode.Create))
         {
-            await file.CopyToAsync(stream);
+            await request.File.CopyToAsync(stream);
         }
 
-        var result = bucketService.CreateFile(new UploadedFileInfoDto
-        {
-            ContentPath = filePath,
-            ContentType = file.ContentType,
-            FileName = file.FileName
-        }, new CreateFileInfoDto
-        {
-            BucketName = bucketName,
-            Prefix = prefix ?? "",
-            IsVideoProcNecessary = isVideoProcNecessary ?? false,
-            Destination = destination ?? FileDestination.Internal,
-            BaseUrl = $"{Request.Path.Value}"
-        });
+        var result = bucketService.CreateFile(
+            new CreateFileInfoDto(
+                new UploadedFileInfoDto(
+                    filePath,
+                    request.File.ContentType,
+                    request.File.FileName
+                ),
+                request.BucketName,
+                request.Prefix,
+                request.IsVideoProcNecessary,
+                request.Destination,
+                $"{Request.Path.Value}"
+            )
+        );
 
         return Ok(result);
     }
@@ -107,10 +121,14 @@ public class BucketController(IBucketService bucketService) : ControllerBase
     [HttpGet("{bucket-name}/files/{*key}")]
     public async Task<IActionResult> GetFile(
         [FromRoute(Name = "bucket-name")] string bucketName,
-        [FromRoute(Name = "key")] string key
+        [FromRoute(Name = "key")] string key,
+        [FromServices] IValidator<GetFileRequest> validator
     )
     {
-        var result = await bucketService.GetFileAsync(new GetFileInfoDto { BucketName = bucketName, Key = key });
+        var request = new GetFileRequest(bucketName, key);
+        await validator.ValidateAndThrowAsync(request);
+
+        var result = await bucketService.GetFileAsync(new GetFileInfoDto(request.BucketName, request.Key));
         return File(result.Content, result.ContentType, result.FileName);
     }
 
@@ -123,13 +141,18 @@ public class BucketController(IBucketService bucketService) : ControllerBase
         [FromRoute(Name = "bucket-name")] string bucketName,
         [FromRoute(Name = "key")] string key,
         [FromQuery(Name = "proc-video")] bool? isVideoProcNecessary,
-        [FromQuery(Name = "destination")] FileDestination? destination
+        [FromQuery(Name = "destination")] FileDestination? destination,
+        [FromServices] IValidator<UpdateFileRequest> validator
     )
     {
-        if (file == null || file.Length == 0)
-        {
-            throw new InternalServerException("File is not selected or empty");
-        }
+        var request = new UpdateFileRequest(
+            file,
+            bucketName,
+            key,
+            isVideoProcNecessary ?? false,
+            destination ?? FileDestination.Internal
+        );
+        await validator.ValidateAndThrowAsync(request);
 
         var uploadPath = Path.Combine(".tmp", Guid.NewGuid().ToString());
         if (!Directory.Exists(uploadPath))
@@ -137,26 +160,27 @@ public class BucketController(IBucketService bucketService) : ControllerBase
             Directory.CreateDirectory(uploadPath);
         }
 
-        var filePath = Path.Combine(uploadPath, file.FileName);
+        var filePath = Path.Combine(uploadPath, request.File.FileName);
 
-        using (var stream = new FileStream(filePath, FileMode.Create))
+        await using (var stream = new FileStream(filePath, FileMode.Create))
         {
-            await file.CopyToAsync(stream);
+            await request.File.CopyToAsync(stream);
         }
 
-        var result = bucketService.UpdateFile(new UploadedFileInfoDto
-        {
-            ContentPath = filePath,
-            ContentType = file.ContentType,
-            FileName = file.FileName
-        }, new UpdateFileInfoDto
-        {
-            BucketName = bucketName,
-            Key = key,
-            IsVideoProcNecessary = isVideoProcNecessary ?? false,
-            Destination = destination ?? FileDestination.Internal,
-            BaseUrl = $"{Request.Scheme}://{Request.Host}"
-        });
+        var result = bucketService.UpdateFile(
+            new UpdateFileInfoDto(
+                new UploadedFileInfoDto(
+                    filePath,
+                    request.File.ContentType,
+                    request.File.FileName
+                ),
+                request.BucketName,
+                request.Key,
+                request.IsVideoProcNecessary,
+                request.Destination,
+                $"{Request.Path.Value}"
+            )
+        );
 
         return Ok(result);
     }
@@ -165,14 +189,14 @@ public class BucketController(IBucketService bucketService) : ControllerBase
     [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> DeleteFile(
         [FromRoute(Name = "bucket-name")] string bucketName,
-        [FromRoute(Name = "key")] string key
+        [FromRoute(Name = "key")] string key,
+        [FromServices] IValidator<DeleteFileRequest> validator
     )
     {
-        await bucketService.DeleteFileAsync(new DeleteFileInfoDto
-        {
-            BucketName = bucketName,
-            Key = key
-        });
+        var request = new DeleteFileRequest(bucketName, key);
+        await validator.ValidateAndThrowAsync(request);
+
+        await bucketService.DeleteFileAsync(new DeleteFileInfoDto(request.BucketName, request.Key));
         return NoContent();
     }
 }

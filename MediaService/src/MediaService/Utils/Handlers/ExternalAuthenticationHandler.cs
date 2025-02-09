@@ -1,31 +1,23 @@
-
-
 using System.Security.Claims;
 using System.Text.Encodings.Web;
-using MediaService.Grpc;
-using MediaService.Utils.Exceptions;
+
+using MediaService.Grpc.Clients;
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 
-namespace MediaService.Utils.Handles;
+namespace MediaService.Utils.Handlers;
 
-public class ExternalAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+public class ExternalAuthenticationHandler(
+    IAuthGrpcClient authGrpcClient,
+    IOptionsMonitor<AuthenticationSchemeOptions> options,
+    ILoggerFactory loggerFactory,
+    UrlEncoder encoder
+) : AuthenticationHandler<AuthenticationSchemeOptions>(options, loggerFactory, encoder)
 {
     public static readonly string SchemeName = "External";
 
-    private readonly IAuthGrpcClient _authGrpcClient;
-    private readonly ILogger<ExternalAuthenticationHandler> _logger;
-
-    public ExternalAuthenticationHandler(
-        IAuthGrpcClient authGrpcClient,
-        IOptionsMonitor<AuthenticationSchemeOptions> options,
-        ILoggerFactory loggerFactory,
-        UrlEncoder encoder)
-        : base(options, loggerFactory, encoder)
-    {
-        _authGrpcClient = authGrpcClient;
-        _logger = loggerFactory.CreateLogger<ExternalAuthenticationHandler>();
-    }
+    private readonly ILogger<ExternalAuthenticationHandler> _logger = loggerFactory.CreateLogger<ExternalAuthenticationHandler>();
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
@@ -55,10 +47,11 @@ public class ExternalAuthenticationHandler : AuthenticationHandler<Authenticatio
 
         try
         {
-            var claims = await _authGrpcClient.ValidateToken(token);
+            var claims = await authGrpcClient.ValidateToken(token);
 
             var identity = new ClaimsIdentity(
-                claims: [
+                claims:
+                [
                     new Claim(ClaimTypes.Email, claims.Email),
                     new Claim(ClaimTypes.Role, claims.Role)
                 ],

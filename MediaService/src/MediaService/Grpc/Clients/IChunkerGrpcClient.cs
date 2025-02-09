@@ -1,7 +1,6 @@
 using MediaService.Dtos.Chunker;
-using MediaService.Dtos.Content;
 
-namespace MediaService.Grpc;
+namespace MediaService.Grpc.Clients;
 
 public interface IChunckerGrpcClient
 {

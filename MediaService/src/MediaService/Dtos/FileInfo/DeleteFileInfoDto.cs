@@ -1,7 +1,6 @@
 namespace MediaService.Dtos.FileInfo;
 
-public class DeleteFileInfoDto
-{
-    public string BucketName { get; set; } = null!;
-    public string Key { get; set; } = null!;
-}
+public record DeleteFileInfoDto(
+    string BucketName,
+    string Key
+);

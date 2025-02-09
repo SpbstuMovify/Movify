@@ -1,12 +1,12 @@
-using MediaService.Utils.FileProcessing;
+using MediaService.FileProcessing;
 
 namespace MediaService.Dtos.FileInfo;
 
-public class UpdateFileInfoDto
-{
-    public string BucketName { get; set; } = null!;
-    public string Key { get; set; } = null!;
-    public bool IsVideoProcNecessary { get; set; }
-    public FileDestination Destination { get; set; }
-    public string BaseUrl { get; set; } = null!;
-}
+public record UpdateFileInfoDto(
+    UploadedFileInfoDto File,
+    string BucketName,
+    string Key,
+    bool IsVideoProcNecessary,
+    FileDestination Destination,
+    string BaseUrl
+);

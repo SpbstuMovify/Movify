@@ -1,13 +1,12 @@
 using MediaService.Dtos.FileInfo;
 
-namespace MediaService.Utils.FileProcessing;
+namespace MediaService.FileProcessing;
 
-public record FileProcessingTask
-(
+public record FileProcessingTask(
     UploadedFileInfoDto File,
     string BucketName,
     string Key,
-    bool IsVideoProcNecessary, 
+    bool IsVideoProcNecessary,
     FileDestination Destination,
     string BaseUrl
 );

@@ -4,12 +4,17 @@ namespace MediaService.Utils.Configuration;
 
 public class GrpcClientOptions
 {
-    [Required(ErrorMessage = "Auth Service URL is required.")]
-    public required string AuthServiceUrl { get; set; }
+    public const string SectionName = "GrpcClient";
 
-    [Required(ErrorMessage = "Chunker Service URL is required.")]
-    public required string ChunkerServiceUrl { get; set; }
+    [Required(ErrorMessage = "AuthServiceUrl is required")]
+    [Url(ErrorMessage = "AuthServiceUrl must be a valid URL")]
+    public required string AuthServiceUrl { get; init; }
 
-    [Required(ErrorMessage = "Content Service URL is required.")]
-    public required string ContentServiceUrl { get; set; }
+    [Required(ErrorMessage = "ChunkerServiceUrl is required")]
+    [Url(ErrorMessage = "ChunkerServiceUrl must be a valid URL")]
+    public required string ChunkerServiceUrl { get; init; }
+
+    [Required(ErrorMessage = "ContentServiceUrl is required")]
+    [Url(ErrorMessage = "ContentServiceUrl must be a valid URL")]
+    public required string ContentServiceUrl { get; init; }
 }
