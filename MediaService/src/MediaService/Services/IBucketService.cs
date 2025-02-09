@@ -7,11 +7,11 @@ namespace MediaService.Services;
 public interface IBucketService
 {
     Task<IList<BucketDto>> GetBucketsAsync();
-    Task<BucketDto> CreateBucketAsync(CreateBucketDto createBucketDto);
-    Task DeleteBucketAsync(DeleteBucketDto deleteBucketDto);
-    Task<IList<FileInfoDto>> GetFilesAsync(GetFilesInfoDto getFilesInfoDto);
-    FileInfoDto CreateFile(UploadedFileInfoDto file, CreateFileInfoDto createFileInfoDto);
-    Task<DownloadedFile> GetFileAsync(GetFileInfoDto getFileInfoDto);
-    FileInfoDto UpdateFile(UploadedFileInfoDto file, UpdateFileInfoDto updateFileInfoDto);
-    Task DeleteFileAsync(DeleteFileInfoDto deleteFileInfoDto);
+    Task<BucketDto> CreateBucketAsync(CreateBucketDto dto);
+    Task DeleteBucketAsync(DeleteBucketDto dto);
+    Task<IList<FileInfoDto>> GetFilesAsync(GetFilesInfoDto dto);
+    FileInfoDto CreateFile(CreateFileInfoDto dto);
+    Task<FileData> GetFileAsync(GetFileInfoDto dto);
+    FileInfoDto UpdateFile(UpdateFileInfoDto dto);
+    Task DeleteFileAsync(DeleteFileInfoDto dto);
 }

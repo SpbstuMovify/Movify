@@ -1,6 +1,6 @@
 using MediaService.Dtos.Claims;
 
-namespace MediaService.Grpc;
+namespace MediaService.Grpc.Clients;
 
 public interface IAuthGrpcClient
 {

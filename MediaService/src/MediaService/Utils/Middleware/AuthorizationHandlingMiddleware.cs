@@ -1,10 +1,15 @@
-using MediaService.Utils.Handles;
 using Microsoft.AspNetCore.Authentication;
+
 using System.Net;
+
+using MediaService.Utils.Handlers;
 
 namespace MediaService.Utils.Middleware;
 
-public class AuthorizationHandlingMiddleware(ILogger<ExceptionHandlingMiddleware> logger, RequestDelegate next)
+public class AuthorizationHandlingMiddleware(
+    ILogger<ExceptionHandlingMiddleware> logger,
+    RequestDelegate next
+)
 {
     public async Task InvokeAsync(HttpContext context)
     {
@@ -19,13 +24,13 @@ public class AuthorizationHandlingMiddleware(ILogger<ExceptionHandlingMiddleware
 
         if (context.Response.StatusCode == (int)HttpStatusCode.Unauthorized)
         {
-            string detail = errorMessage ?? "Unauthorized";
+            var detail = errorMessage ?? "Unauthorized";
             logger.LogWarning($"Unauthorized: {detail}");
             await ErrorResponseHandler.HandleErrorAsync(context, HttpStatusCode.Unauthorized, detail);
         }
         else if (context.Response.StatusCode == (int)HttpStatusCode.Forbidden)
         {
-            string detail = errorMessage ?? "Forbidden";
+            var detail = errorMessage ?? "Forbidden";
             logger.LogWarning($"Forbidden: {detail}");
             await ErrorResponseHandler.HandleErrorAsync(context, HttpStatusCode.Forbidden, detail);
         }

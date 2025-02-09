@@ -1,9 +1,9 @@
 using MediaService.Dtos.Content;
 
-namespace MediaService.Grpc;
+namespace MediaService.Grpc.Clients;
 
 public interface IContentGrpcClient
 {
     Task SetContentImageUrl(ContentImageUrlDto contentImageUrlDto);
-    Task SetEpisodeVideoUrlDto(EpisodeVideoUrlDto episodeVideoUrlDto);
+    Task SetEpisodeVideoUrl(EpisodeVideoUrlDto episodeVideoUrlDto);
 }

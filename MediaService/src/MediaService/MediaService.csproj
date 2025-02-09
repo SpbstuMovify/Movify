@@ -24,11 +24,23 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.67.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.4" />
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.301" />
     <PackageReference Include="AWSSDK.S3" Version="3.7.410.12" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Grpc\AuthGrpcClient.cs" />
+    <Compile Remove="Grpc\ContentGrpcClient.cs" />
+    <Compile Remove="Repositories\DownloadedFile.cs" />
+    <Compile Remove="Grpc\ChunkerGrpcClient.cs" />
+    <Compile Remove="Grpc\IAuthGrpcClient.cs" />
+    <Compile Remove="Utils\Exceptions\InternalServerException.cs" />
+    <Compile Remove="Utils\Exceptions\ResourceNotFoundException.cs" />
+    <Compile Remove="Utils\FileProcessing\FileStatus.cs" />
   </ItemGroup>
 
 </Project>

@@ -1,10 +1,9 @@
-using MediaService.Utils.FileProcessing;
+using MediaService.FileProcessing;
 
 namespace MediaService.Dtos.Content;
 
-public class EpisodeVideoUrlDto
-{
-    public string EpisodeId { get; set; } = null!;
-    public string Url { get; set; } = null!;
-    public FileStatus Status { get; set; }
-}
+public record EpisodeVideoUrlDto(
+    string EpisodeId,
+    string Url,
+    FileStatus Status
+);

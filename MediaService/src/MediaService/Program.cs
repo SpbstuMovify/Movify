@@ -1,9 +1,16 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
+
+using MediaService.Controllers.Requests;
+using MediaService.Controllers.Validators;
+using MediaService.FileProcessing;
+using MediaService.FileProcessing.FileProcessors;
 using MediaService.Grpc;
 using MediaService.Repositories;
 using MediaService.Services;
 using MediaService.Utils.Configuration;
-using MediaService.Utils.FileProcessing;
 using MediaService.Utils.Middleware;
+
 using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,20 +21,17 @@ if (!Directory.Exists(".tmp"))
 }
 
 builder.Configuration
-    .SetBasePath(builder.Environment.ContentRootPath)
-    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
-    .AddEnvironmentVariables();
+       .SetBasePath(builder.Environment.ContentRootPath)
+       .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+       .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+       .AddEnvironmentVariables();
 
 if (builder.Environment.IsDevelopment())
 {
     builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
 }
 
-builder.Services.Configure<FormOptions>(options =>
-{
-    options.MultipartBodyLengthLimit = 10L * 1024 * 1024 * 1024;
-});
+builder.Services.Configure<FormOptions>(options => { options.MultipartBodyLengthLimit = 10L * 1024 * 1024 * 1024; });
 
 builder.Services.AddControllers();
 builder.Services.AddGrpc();
@@ -36,9 +40,22 @@ builder.Services.AddGrpcClient(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddAws(builder.Configuration);
 
+builder.Services.AddScoped<IValidator<CreateBucketRequest>, CreateBucketRequestValidator>();
+builder.Services.AddScoped<IValidator<CreateFileRequest>, CreateFileRequestValidator>();
+builder.Services.AddScoped<IValidator<DeleteBucketRequest>, DeleteBucketRequestValidator>();
+builder.Services.AddScoped<IValidator<DeleteFileRequest>, DeleteFileRequestValidator>();
+builder.Services.AddScoped<IValidator<GetFileRequest>, GetFileRequestValidator>();
+builder.Services.AddScoped<IValidator<GetFilesRequest>, GetFilesRequestValidator>();
+builder.Services.AddScoped<IValidator<UpdateFileRequest>, UpdateFileRequestValidator>();
+
 builder.Services.AddScoped<IChunkerCallbackService, ChunkerCallbackService>();
 builder.Services.AddScoped<IBucketRepository, BucketRepository>();
 builder.Services.AddScoped<IBucketService, BucketService>();
+
+builder.Services.AddTransient<IFileProcessor, InternalFileProcessor>();
+builder.Services.AddTransient<IFileProcessor, ContentImageFileProcessor>();
+builder.Services.AddTransient<IFileProcessor, EpisodeVideoFileProcessor>();
+builder.Services.AddSingleton<IFileProcessorFactory, FileProcessorFactory>();
 
 builder.Services.AddSingleton<IFileProcessingQueue, FileProcessingQueue>();
 builder.Services.AddHostedService<FileProcessingService>();

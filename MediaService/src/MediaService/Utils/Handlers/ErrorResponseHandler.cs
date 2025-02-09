@@ -2,11 +2,15 @@ using System.Net;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
-namespace MediaService.Utils.Handles;
+namespace MediaService.Utils.Handlers;
 
-public static class ErrorResponseHandler
+public static partial class ErrorResponseHandler
 {
-    public static Task HandleErrorAsync(HttpContext context, HttpStatusCode statusCode, string detail)
+    public static Task HandleErrorAsync(
+        HttpContext context,
+        HttpStatusCode statusCode,
+        string detail
+    )
     {
         var headers = new { };
 
@@ -38,14 +42,17 @@ public static class ErrorResponseHandler
 
     private static string ToSnakeCaseUpper(HttpStatusCode statusCode)
     {
-        string original = statusCode.ToString();
-        string snakeCase = Regex.Replace(original, "([a-z])([A-Z])", "$1_$2");
+        var original = statusCode.ToString();
+        var snakeCase = HttpCodeNameRegex().Replace(original, "$1_$2");
         return snakeCase.ToUpper();
     }
 
     private static string ToTitleCaseWithSpaces(HttpStatusCode statusCode)
     {
-        string original = statusCode.ToString();
-        return Regex.Replace(original, "([a-z])([A-Z])", "$1 $2");
+        var original = statusCode.ToString();
+        return HttpCodeNameRegex().Replace(original, "$1 $2");
     }
+
+    [GeneratedRegex("([a-z])([A-Z])")]
+    private static partial Regex HttpCodeNameRegex();
 }
