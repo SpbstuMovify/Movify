@@ -26,7 +26,7 @@ public class FileProcessingServiceTest
         _queueMock = new Mock<IFileProcessingQueue>();
         _processorMock = new Mock<IFileProcessor>();
         _processorFactoryMock = new Mock<IFileProcessorFactory>();
-        
+
         var loggerMock = new Mock<ILogger<FileProcessingServiceV1>>();
         var scopeFactoryMock = new Mock<IServiceScopeFactory>();
         var scopeMock = new Mock<IServiceScope>();
@@ -93,10 +93,12 @@ public class FileProcessingServiceTest
         _processorMock.Verify(
             p => p.ProcessAsync(
                 It.Is<FileProcessorRequest>(
-                    r =>
-                        r.BucketName == "test-bucket"
-                        && r.File.FileName == "testfile.txt"
-                        && r.Key == "some/key"
+                    r => r.File.FileName == "testfile.txt"
+                         && r.File.ContentType == "text/plain"
+                         && r.BucketName == "test-bucket"
+                         && r.Key == "some/key"
+                         && r.IsVideoProcNecessary == false
+                         && r.BaseUrl == "http://example.com"
                 ),
                 It.IsAny<IServiceScope>()
             ),
@@ -166,7 +168,7 @@ public class FileProcessingServiceTest
         using var cts = new CancellationTokenSource(500);
         await _serviceUnderTest.StartAsync(cts.Token);
         await _serviceUnderTest.StopAsync(CancellationToken.None);
-        
+
         await _serviceUnderTest.StopAsync(CancellationToken.None);
 
         // Assert
