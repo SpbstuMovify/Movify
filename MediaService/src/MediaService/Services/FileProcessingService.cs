@@ -47,7 +47,7 @@ public class FileProcessingService(
                 new FileProcessorRequest(
                     new FileData(
                         stream,
-                        task.File.ContentPath,
+                        task.File.ContentType,
                         task.File.FileName
                     ),
                     task.BucketName,
