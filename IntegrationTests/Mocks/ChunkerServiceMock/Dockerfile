@@ -6,6 +6,6 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-EXPOSE 8079
+EXPOSE 8076
 
 CMD ["python", "auth_service_mock.py"]
