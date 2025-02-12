@@ -25,7 +25,6 @@ import org.springframework.data.domain.PageImpl;
 class ContentMapperTest {
   @Mock
   private CastMemberMapper castMemberMapper;
-
   @InjectMocks
   private ContentMapper contentMapper;
 
@@ -37,38 +36,10 @@ class ContentMapperTest {
   @BeforeEach
   void setUp() {
     UUID contentId = UUID.randomUUID();
-
-    castMember = CastMember.builder()
-        .id(UUID.randomUUID())
-        .fullName("John Doe")
-        .role("Actor")
-        .build();
-
-    castMemberDto = CastMemberDto.builder()
-        .id(castMember.getId())
-        .employeeFullName("John Doe")
-        .roleName("Actor")
-        .build();
-
-    content = Content.builder()
-        .id(contentId)
-        .title("Test Movie")
-        .year(2022)
-        .description("A great movie")
-        .publisher("Netflix")
-        .creationDate(LocalDateTime.now())
-        .updatedDate(LocalDateTime.now())
-        .castMembers(Set.of(castMember))
-        .build();
-
-    contentDto = ContentDto.builder()
-        .id(contentId)
-        .title("Test Movie")
-        .year(2022)
-        .description("A great movie")
-        .publisher("Netflix")
-        .castMembers(Set.of(castMemberDto))
-        .build();
+    castMember = getCastMemberEntity();
+    castMemberDto = getCastMemberDto();
+    content = getContentEntity(contentId);
+    contentDto = getContentDto(contentId);
   }
 
   @Test
@@ -123,5 +94,45 @@ class ContentMapperTest {
     assertEquals(content.getId(), result.getId());
     assertEquals("Updated Movie", result.getTitle());
     assertEquals(content.getYear(), result.getYear());
+  }
+
+  private ContentDto getContentDto(UUID contentId) {
+    return ContentDto.builder()
+        .id(contentId)
+        .title("Test Movie")
+        .year(2022)
+        .description("A great movie")
+        .publisher("Netflix")
+        .castMembers(Set.of(castMemberDto))
+        .build();
+  }
+
+  private Content getContentEntity(UUID contentId) {
+    return Content.builder()
+        .id(contentId)
+        .title("Test Movie")
+        .year(2022)
+        .description("A great movie")
+        .publisher("Netflix")
+        .creationDate(LocalDateTime.now())
+        .updatedDate(LocalDateTime.now())
+        .castMembers(Set.of(castMember))
+        .build();
+  }
+
+  private CastMemberDto getCastMemberDto() {
+    return CastMemberDto.builder()
+        .id(castMember.getId())
+        .employeeFullName("John Doe")
+        .roleName("Actor")
+        .build();
+  }
+
+  private static CastMember getCastMemberEntity() {
+    return CastMember.builder()
+        .id(UUID.randomUUID())
+        .fullName("John Doe")
+        .role("Actor")
+        .build();
   }
 }

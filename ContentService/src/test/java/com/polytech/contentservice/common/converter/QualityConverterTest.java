@@ -3,17 +3,16 @@ package com.polytech.contentservice.common.converter;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.polytech.contentservice.common.Quality;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class QualityConverterTest {
 
+  @Spy
   private QualityConverter converter;
-
-  @BeforeEach
-  void setUp() {
-    converter = new QualityConverter();
-  }
 
   @Test
   void testConvertToDatabaseColumn() {

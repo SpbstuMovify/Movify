@@ -13,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class ValidUserLoginParametersValidatorTest {
-
   @Spy
   private ValidUserLoginParametersValidator validator;
   @Mock

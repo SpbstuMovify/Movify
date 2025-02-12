@@ -29,13 +29,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class EpisodeServiceImplTest {
   @Mock
   private EpisodeRepository episodeRepository;
-
   @Mock
   private ContentRepository contentRepository;
-
   @Mock
   private EpisodeMapper episodeMapper;
-
   @InjectMocks
   private EpisodeServiceImpl episodeService;
 
@@ -49,22 +46,9 @@ class EpisodeServiceImplTest {
   void setUp() {
     contentId = UUID.randomUUID();
     episodeId = UUID.randomUUID();
-
-    content = new Content();
-    content.setId(contentId);
-    content.setTitle("Test Content");
-
-    episode = new Episode();
-    episode.setId(episodeId);
-    episode.setTitle("Test Episode");
-    episode.setContent(content);
-    episode.setStatus(EpisodeStatus.NOT_UPLOADED);
-
-    episodeDto = EpisodeDto.builder()
-        .id(episodeId)
-        .title("Test Episode")
-        .status(EpisodeStatus.NOT_UPLOADED)
-        .build();
+    content = getContentEntity();
+    episode = getEpisodeEntity();
+    episodeDto = getEpisodeDto();
   }
 
   @Test
@@ -172,5 +156,29 @@ class EpisodeServiceImplTest {
     assertEquals("Episode not found", exception.getMessage());
     verify(episodeRepository, times(1)).findById(episodeId);
     verifyNoMoreInteractions(episodeRepository);
+  }
+
+  private EpisodeDto getEpisodeDto() {
+    return EpisodeDto.builder()
+        .id(episodeId)
+        .title("Test Episode")
+        .status(EpisodeStatus.NOT_UPLOADED)
+        .build();
+  }
+
+  private Episode getEpisodeEntity() {
+    return Episode.builder()
+        .id(episodeId)
+        .title("Test Episode")
+        .content(content)
+        .status(EpisodeStatus.NOT_UPLOADED)
+        .build();
+  }
+
+  private Content getContentEntity() {
+    return Content.builder()
+        .id(contentId)
+        .title("Test Content")
+        .build();
   }
 }

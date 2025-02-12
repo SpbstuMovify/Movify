@@ -14,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class ValidUserSearchParametersValidatorTest {
-
   @Spy
   private ValidUserSearchParametersValidator validator;
   @Mock

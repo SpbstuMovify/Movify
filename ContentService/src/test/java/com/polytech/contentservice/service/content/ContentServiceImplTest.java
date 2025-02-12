@@ -32,20 +32,16 @@ import org.springframework.data.domain.Pageable;
 class ContentServiceImplTest {
   @Mock
   private ContentRepository contentRepository;
-
   @Mock
   private ContentMapper contentMapper;
-
   @Mock
   private EpisodeMapper episodeMapper;
-
   @InjectMocks
   private ContentServiceImpl contentService;
 
   private UUID contentId;
   private Content content;
   private ContentDto contentDto;
-  private Set<EpisodeDto> episodeDtos;
 
   @BeforeEach
   void setUp() {
@@ -59,11 +55,6 @@ class ContentServiceImplTest {
         .id(contentId)
         .title("Test Content")
         .build();
-
-    episodeDtos = Set.of(
-        EpisodeDto.builder().id(UUID.randomUUID()).title("Episode 1").build(),
-        EpisodeDto.builder().id(UUID.randomUUID()).title("Episode 2").build()
-    );
   }
 
   @Test
