@@ -95,6 +95,7 @@ jacocoTestReport {
                     "com/auth/*",
                     "com/content/*",
                     "com/polytech/contentservice/ContentServiceApplication*",
+                    "com/polytech/contentservice/service/auth/AuthGrpcClientImpl*",
                     "com/polytech/contentservice/entity/QEpisode*",
                     "com/polytech/contentservice/config/*",
                     "com/polytech/contentservice/common/strategy/*",
