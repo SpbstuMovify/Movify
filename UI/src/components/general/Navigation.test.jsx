@@ -16,11 +16,7 @@ describe('Navigation element', () => {
     });
     
     test('renders logo, Films and SignIn link for unathenticated user', async () => {
-        AuthContext.useAuth.mockReturnValue({
-            userData: undefined,
-            checkUserData: jest.fn(),
-            clearUserData: jest.fn(),
-        });
+        AuthContext.useAuth().userData = undefined;
         renderWithRouter(<Navigation />);
         expect(screen.getByRole("link", { name: /films/i })).toBeInTheDocument();
         expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument();
@@ -28,11 +24,7 @@ describe('Navigation element', () => {
     });
 
     test('does not render incorrect links for unathenticated user', async () => {
-        AuthContext.useAuth.mockReturnValue({
-            userData: undefined,
-            checkUserData: jest.fn(),
-            clearUserData: jest.fn(),
-        });
+        AuthContext.useAuth().userData = undefined;
         renderWithRouter(<Navigation />);
 
         expect(screen.queryByRole("link", { name: /favorites/i })).not.toBeInTheDocument();
@@ -54,17 +46,13 @@ describe('Navigation element', () => {
     });
 
     test('renders Grant Admin link for authenticated ADMIN user', async () => {
-        AuthContext.useAuth.mockReturnValue({
-            userData: {
-                login: "login",
-                email: "email@email.em",
-                user_id: "user-id",
-                role: "ADMIN",
-                token: "dummy-token"
-            },
-            checkUserData: jest.fn(),
-            clearUserData: jest.fn(),
-        });
+        AuthContext.useAuth().userData = {
+            login: "login",
+            email: "email@email.em",
+            user_id: "68b1ba18-b97c-4481-97d5-debaf9616182",
+            role: "ADMIN",
+            token: "dummy-token"
+        };
         renderWithRouter(<Navigation />);
 
         expect(screen.queryByRole("link", { name: /favorites/i })).toBeInTheDocument();

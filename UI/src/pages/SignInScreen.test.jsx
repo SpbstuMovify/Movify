@@ -85,7 +85,7 @@ describe("Login Component", () => {
 
     test("submits login form and navigates to /films on success", async () => {
         const mockSetUserData = jest.fn();
-        mockUseAuth.mockReturnValue({ setUserData: mockSetUserData });
+        mockUseAuth().setUserData = mockSetUserData;
         mockLoginUser.mockResolvedValue({ token: "fakeToken", login: "testuser" });
 
         renderWithRouter(<Login />);
