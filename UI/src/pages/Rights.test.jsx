@@ -15,7 +15,7 @@ describe("Rights Component", () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
-        mockUseAuth.mockReturnValue({ userData: mockUserData });
+        mockUseAuth().userData = mockUserData;
     });
 
     test("renders form elements correctly", () => {

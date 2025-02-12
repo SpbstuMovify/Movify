@@ -51,6 +51,7 @@ function Profile() {
         role: userData.role,
         token: response.token
       });
+      console.log(response)
     } catch (error) {
       switch (error.response?.status) {
         case 500:
@@ -78,6 +79,7 @@ function Profile() {
           console.error(error.message);
       }
       setErrorMessage("There was an error deleting the account!");
+      setLoadingDelete(false);
     }
   };
 

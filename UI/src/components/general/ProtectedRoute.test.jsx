@@ -18,11 +18,7 @@ describe('App routing of protected components', () => {
     
 
     test('redirects to /login from /profile when not authenticated', async () => {
-        AuthContext.useAuth.mockReturnValue({
-            userData: undefined,
-            checkUserData: jest.fn(),
-            clearUserData: jest.fn(),
-        });
+        AuthContext.useAuth().userData = undefined;
         const router = createMemoryRouter(routesConfig, {
             initialEntries: ["/profile"]
         })
@@ -46,11 +42,7 @@ describe('App routing of protected components', () => {
     });
 
     test('redirects to /login from /favorites when not authenticated', async () => {
-        AuthContext.useAuth.mockReturnValue({
-            userData: undefined,
-            checkUserData: jest.fn(),
-            clearUserData: jest.fn(),
-        });
+        AuthContext.useAuth().userData = undefined;
         const router = createMemoryRouter(routesConfig, {
             initialEntries: ["/favorites"]
         })
@@ -85,11 +77,7 @@ describe('App routing of protected components', () => {
     });
 
     test('redirects to /login from /rights when not authenticated', async () => {
-        AuthContext.useAuth.mockReturnValue({
-            userData: undefined,
-            checkUserData: jest.fn(),
-            clearUserData: jest.fn(),
-        });
+        AuthContext.useAuth().userData = undefined;
         const router = createMemoryRouter(routesConfig, {
             initialEntries: ["/rights"]
         })
@@ -102,17 +90,13 @@ describe('App routing of protected components', () => {
     });
 
     test('renders Rights when authenticated as admin', async () => {
-        AuthContext.useAuth.mockReturnValue({
-            userData: {
-                "login": "login",
-                "email": "email@email.em",
-                "user_id": "user-id",
-                "role": "ADMIN",
-                "token": "dummy-token"
-            },
-            checkUserData: jest.fn(),
-            clearUserData: jest.fn(),
-        });
+        AuthContext.useAuth().userData = {
+            "login": "login",
+            "email": "email@email.em",
+            "user_id": "68b1ba18-b97c-4481-97d5-debaf9616182",
+            "role": "ADMIN",
+            "token": "dummy-token"
+        };
         const router = createMemoryRouter(routesConfig, {
             initialEntries: ["/rights"]
         })

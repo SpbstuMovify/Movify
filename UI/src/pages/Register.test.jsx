@@ -31,7 +31,7 @@ describe("Register Component", () => {
             }
             originalError(msg, ...args); // Keep other errors
         });
-        mockUseAuth.mockReturnValue({ setUserData: mockSetUserData });
+        mockUseAuth().setUserData = mockSetUserData;
     });
 
     test("renders form elements", () => {
