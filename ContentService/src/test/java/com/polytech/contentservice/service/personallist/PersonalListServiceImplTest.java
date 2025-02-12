@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -64,26 +63,10 @@ class PersonalListServiceImplTest {
     userId = UUID.randomUUID();
     contentId = UUID.randomUUID();
     personalListId = UUID.randomUUID();
-
-    user = new User();
-    user.setId(userId);
-
-    content = new Content();
-    content.setId(contentId);
-
-    personalList = PersonalList.builder()
-        .id(personalListId)
-        .user(user)
-        .content(content)
-        .creationDate(LocalDateTime.now())
-        .build();
-
-    personalListDto = PersonalListDto.builder()
-        .userId(UUID.randomUUID())
-        .contentId(contentId)
-        .personalListId(personalListId)
-        .build();
-
+    user = getUserEntity();
+    content = getContentEntity();
+    personalList = getPersonalListEntity();
+    personalListDto = getPersonalListDto();
     personalListDeletionDto = new PersonalListDeletionDto(userId, contentId);
   }
 
@@ -189,5 +172,34 @@ class PersonalListServiceImplTest {
 
     assertEquals("User not found", exception.getMessage());
     verify(userRepository, times(1)).findById(userId);
+  }
+
+  private PersonalListDto getPersonalListDto() {
+    return PersonalListDto.builder()
+        .userId(UUID.randomUUID())
+        .contentId(contentId)
+        .personalListId(personalListId)
+        .build();
+  }
+
+  private PersonalList getPersonalListEntity() {
+    return PersonalList.builder()
+        .id(personalListId)
+        .user(user)
+        .content(content)
+        .creationDate(LocalDateTime.now())
+        .build();
+  }
+
+  private Content getContentEntity() {
+    return Content.builder()
+        .id(contentId)
+        .build();
+  }
+
+  private User getUserEntity() {
+    return User.builder()
+        .id(userId)
+        .build();
   }
 }

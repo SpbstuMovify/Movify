@@ -26,10 +26,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class UserServiceImplTest {
   @Mock
   private UserRepository userRepository;
-
   @Mock
   private UserMapper userMapper;
-
   @InjectMocks
   private UserServiceImpl userService;
 
@@ -41,26 +39,9 @@ class UserServiceImplTest {
   @BeforeEach
   void setUp() {
     userId = UUID.randomUUID();
-
-    user = new User();
-    user.setId(userId);
-    user.setLogin("testUser");
-    user.setEmail("test@example.com");
-    user.setRole(Role.USER);
-
-    userDto = UserDto.builder()
-        .role(Role.USER)
-        .login("testUser")
-        .email("test@example.com")
-        .build();
-
-    userRegisterDto = UserRegisterDto.builder()
-        .email("test@example.com")
-        .login("testUser")
-        .firstName("testUser")
-        .lastName("testUser")
-        .password("testUser")
-        .build();
+    user = getUserEntity();
+    userDto = getUserDto();
+    userRegisterDto = getUserRegisterDto();
   }
 
   @Test
@@ -203,5 +184,32 @@ class UserServiceImplTest {
     verify(userRepository, times(1)).findByEmail("test@example.com");
     verify(userRepository, times(1)).save(user);
     verify(userMapper, times(1)).convertToUserDto(user);
+  }
+
+  private static UserRegisterDto getUserRegisterDto() {
+    return UserRegisterDto.builder()
+        .email("test@example.com")
+        .login("testUser")
+        .firstName("testUser")
+        .lastName("testUser")
+        .password("testUser")
+        .build();
+  }
+
+  private static UserDto getUserDto() {
+    return UserDto.builder()
+        .role(Role.USER)
+        .login("testUser")
+        .email("test@example.com")
+        .build();
+  }
+
+  private User getUserEntity() {
+    return User.builder()
+        .id(userId)
+        .login("testUser")
+        .email("test@example.com")
+        .role(Role.USER)
+        .build();
   }
 }
