@@ -87,7 +87,7 @@ export const getFilmById = jest.fn(()=>Promise.resolve({
     ]
 }));
 
-export const searchFilms = jest.fn(()=>Promise.resolve({
+export const searchFilmsResponse = {
     "content": [
         {
             "id": "3bfd3bca-2cd3-4c8b-99ce-c56d69319c6a",
@@ -136,7 +136,9 @@ export const searchFilms = jest.fn(()=>Promise.resolve({
         "first": true,
         "numberOfElements": 12,
         "empty": false
-}));
+}
+
+export const searchFilms = jest.fn(()=>Promise.resolve(searchFilmsResponse));
 
 export const createFilm = jest.fn(()=>Promise.resolve({
     "id": "1b12236a-aca9-47bc-95ac-f3978836de2c",
