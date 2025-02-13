@@ -1,8 +1,8 @@
 import React from "react";
 
-const SearchForm = ({ register, handleSubmit, onSubmit, errors }) => {
+const SearchForm = ({ register, onSubmit, errors }) => {
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="search-bar-wrapper">
+    <form onSubmit={onSubmit} className="search-bar-wrapper">
       <input {...register("title")} className="search-bar" type="text" placeholder="Search..." />
       <button className="image-button" type="submit">
         <img src="/images/search_button.png" alt="Search" />

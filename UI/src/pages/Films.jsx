@@ -37,6 +37,10 @@ function Films() {
   };
 
   useEffect(() => {
+    setQueryParams(new URLSearchParams(location.search));
+  }, [location.search]);
+
+  useEffect(() => {
     if (userData) {
       getUserPersonalList();
     }
@@ -51,12 +55,14 @@ function Films() {
 
   const handleSearch = async (data) => {
     try {
-      const paramsJSON = {
-        title: data.title || undefined,
-        year: data.year || undefined,
-        genre: data.genre || undefined,
-        age_restriction: data.ageRestriction || undefined
-      };
+      const paramsJSON = JSON.parse(JSON.stringify({
+        "title": data.title,
+        "year": data.year,
+        "genre": data.genre,
+        "age_restriction": data.ageRestriction
+      }, (key, value) => {
+          return value === null || value === "" ? undefined : value;
+      }));
       const newParams = new URLSearchParams(paramsJSON);
       setQueryParams(newParams);
       setPageNumber(0);
@@ -133,7 +139,7 @@ function Films() {
       <div className="films-body">
         <div className="film-list">
           <h1 style={{ textAlign: "center" }}>Watch all movies and series you want!</h1>
-          <SearchForm register={register} handleSubmit={handleSubmit} onSubmit={handleSearch} errors={errors} />
+          <SearchForm register={register} onSubmit={handleSubmit(handleSearch)} errors={errors} />
           <FilmList
             films={films}
             hoveredId={hoveredId}
