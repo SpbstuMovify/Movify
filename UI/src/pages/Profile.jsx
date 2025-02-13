@@ -51,7 +51,6 @@ function Profile() {
         role: userData.role,
         token: response.token
       });
-      console.log(response)
     } catch (error) {
       switch (error.response?.status) {
         case 500:
