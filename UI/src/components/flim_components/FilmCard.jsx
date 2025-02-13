@@ -2,7 +2,7 @@ import React from "react";
 import { apiBaseURL } from "../../services/api";
 import "../../pages/Films.css"
 
-const FilmCard = ({ film, isHovered, onMouseEnter, onMouseLeave, onClick, onAddFavorite, onRemoveFavorite, userData, personalList }) => {
+const FilmCard = ({ film, isHovered, onMouseEnter, onDeleteFilm, onMouseLeave, onClick, onAddFavorite, onRemoveFavorite, userData, personalList }) => {
   const isFavorite = personalList && personalList.some(obj => obj.id === film.id);
 
   return (
@@ -14,6 +14,7 @@ const FilmCard = ({ film, isHovered, onMouseEnter, onMouseLeave, onClick, onAddF
       onClick={() => onClick(film.id)}
     >
       <img
+        data-testid="film-logo"
         className="film-logo"
         src={film.thumbnail ? `${apiBaseURL}${film.thumbnail}` : "/images/no_image.jpg"}
       />

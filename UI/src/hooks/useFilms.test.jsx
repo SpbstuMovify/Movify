@@ -54,8 +54,6 @@ describe('useFilms hook', () => {
       expect(films.length).toBeGreaterThan(0);
     });
   
-    screen.debug();
-  
     expect(searchFilms).toHaveBeenCalledWith(
       50,
       0,
