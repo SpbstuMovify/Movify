@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { searchFilms } from "../services/api";
 import mappingJSON from "../configs/config";
 
-export function useFilms(queryParams, pageSizeInitial = 5, initialPageNumber = 0) {
+export const useFilms = (queryParams, pageSizeInitial = 5, initialPageNumber = 0) => {
   const [films, setFilms] = useState([]);
   const [pageSize, setPageSize] = useState(pageSizeInitial);
   const [pageNumber, setPageNumber] = useState(initialPageNumber);
@@ -26,6 +26,7 @@ export function useFilms(queryParams, pageSizeInitial = 5, initialPageNumber = 0
 
   const getFilms = async () => {
     const filmsResponse = await searchFilms(pageSize, pageNumber, queryParams.get("year"), queryParams.get("genre"), queryParams.get("title"), queryParams.get("age_restriction"));
+    console.log(filmsResponse);
     getPages(filmsResponse);
   };
 
