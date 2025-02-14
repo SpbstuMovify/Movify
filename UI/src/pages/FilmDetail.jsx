@@ -23,7 +23,7 @@ import {
 import FilmDetailHeader from "../components/film_detail_components/FilmDetailHeader";
 import FilmInfoSection from "../components/film_detail_components/FilmInfoSection";
 import FilmEpisodesPanel from "../components/film_detail_components/FilmEpisodesPanel";
-import AddEpisodeForm from "../components/film_detail_components/AddEpisodesForm";
+import AddEpisodeForm from "../components/film_detail_components/AddEpisodeForm";
 
 function FilmDetail() {
   const { userData, clearUserData } = useAuth();
