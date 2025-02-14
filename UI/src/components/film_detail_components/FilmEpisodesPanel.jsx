@@ -122,6 +122,7 @@ const FilmEpisodesPanel = ({
                 <input
                   style={{ display: "none" }}
                   id="episode-upload"
+                  data-testid="episode-upload"
                   type="file"
                   accept="video/*"
                   onChange={(e) => handleVideoUpload(selectedEpisode.id, e.target.files[0])}
