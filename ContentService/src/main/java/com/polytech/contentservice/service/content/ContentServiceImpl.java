@@ -5,6 +5,7 @@ import com.polytech.contentservice.dto.content.ContentSearchDto;
 import com.polytech.contentservice.dto.episode.EpisodeDto;
 import com.polytech.contentservice.entity.Content;
 import com.polytech.contentservice.entity.QContent;
+import com.polytech.contentservice.exception.NotFoundException;
 import com.polytech.contentservice.mapper.ContentMapper;
 import com.polytech.contentservice.mapper.EpisodeMapper;
 import com.polytech.contentservice.repository.ContentRepository;
@@ -67,7 +68,7 @@ public class ContentServiceImpl implements ContentService {
 
   private Content getContentById(UUID contentId) {
     return contentRepository.findById(contentId)
-        .orElseThrow(() -> new IllegalArgumentException("Episode not found"));
+        .orElseThrow(() -> new NotFoundException("Episode not found"));
   }
 
   @Override
