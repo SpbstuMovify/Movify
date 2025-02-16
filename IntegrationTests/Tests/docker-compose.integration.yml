@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  test-movify-db:
+    image: postgres:15
+    container_name: test-movify-db
+    environment:
+      - POSTGRES_DB=movify-db
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+    ports:
+      - '5434:5432'
+    networks:
+      - test
+
+  test-auth-service-mock:
+    image: auth-service-mock:latest
+    container_name: test-auth-service-mock
+    build:
+      context: ../Mock/AuthServiceMock
+      dockerfile: Dockerfile
+    ports:
+      - "8079:8079"
+    networks:
+      - test
+
+  test-content-service:
+    image: content-service:latest
+    container_name: test-content-service
+    build:
+      context: ../../ContentService
+      dockerfile: Dockerfile
+    depends_on:
+      - test-movify-db
+      - test-auth-service-mock
+    ports:
+      - "8085:8085"
+      - "9095:9095"
+    environment:
+      - GRPC_AUTH_HOST=test-auth-service-mock
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://test-movify-db/movify-db
+    networks:
+      - test
+
+networks:
+  test:
+    driver: bridge
