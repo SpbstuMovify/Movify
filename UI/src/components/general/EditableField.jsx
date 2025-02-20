@@ -76,6 +76,7 @@ const EditableField = ({ label,
                   <button
                       onClick={(e)=>handleSave(value)}
                       className="edit-image-button"
+                      data-testid="save-image-button"
                       style={{ marginLeft: "10px", border: "none" }}
                   >
                       <img src="/images/border_checkmark.png" />
@@ -88,6 +89,7 @@ const EditableField = ({ label,
                       hidden={disableEditButton}
                       onClick={() => setIsEditing(true)}
                       className="edit-image-button"
+                      data-testid="edit-image-button"
                       style={{ marginLeft: "10px", border: "none" }}
                   >
                       <img src="/images/pencil.png" />

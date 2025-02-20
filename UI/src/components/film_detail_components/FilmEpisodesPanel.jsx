@@ -23,7 +23,7 @@ const FilmEpisodesPanel = ({
       <div style={{ minWidth: "44.4vw", minHeight: "12vh" }}>
         <select
           onChange={(e) => {
-            setSelectedSeason(e.target.value);
+            setSelectedSeason(Number(e.target.value));
             setSelectedEpisode(null);
           }}
           className="episode-select"

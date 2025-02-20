@@ -30,7 +30,7 @@ function FilmDetail() {
   const { contentId } = useParams();
 
   const [filmInfo, setFilmInfo] = useState(null);
-  const [filmEpisodes, setFilmEpisodes] = useState([]);
+  const [filmEpisodes, setFilmEpisodes] = useState(null);
   const [seasonArray, setSeasonArray] = useState([]);
   const [selectedSeason, setSelectedSeason] = useState();
   const [selectedEpisode, setSelectedEpisode] = useState();
@@ -299,7 +299,6 @@ function FilmDetail() {
                 filmForm={filmForm}
                 userData={userData}
                 updateField={updateField}
-                mappingJSON={mappingJSON}
                 currentYear={currentYear}
             />
           </div>
