@@ -1,9 +1,10 @@
 import React from "react";
 import { Controller } from "react-hook-form";
 import EditableField from "../general/EditableField";
+import mappingJSON from "../../configs/config";
 import "../../pages/FilmDetail.css"
 
-const FilmInfoSection = ({ filmInfo, filmForm, userData, updateField, mappingJSON, currentYear }) => {
+const FilmInfoSection = ({ filmInfo, filmForm, userData, updateField, currentYear }) => {
   if (!filmInfo) return null;
   return (
     <div className="film-detail-info">

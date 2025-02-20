@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom'
+export const apiBaseURL = "apiBaseURL";
 
 export const register = jest.fn(()=>Promise.resolve({
     "login": "login",
@@ -175,36 +176,36 @@ export const createEpisode = jest.fn(()=>Promise.resolve({
 
 export const getPersonalList = jest.fn(()=>Promise.resolve([
     {
-        "id": "0247c06b-1dc0-409a-9622-31c55e79b358",
+        "id": "3bfd3bca-2cd3-4c8b-99ce-c56d69319c6a",
         "year": 2024,
-        "title": "Планета обезьян: Новое царство",
+        "title": "Фоллаут",
         "quality": "P1080",
-        "genre": "ACTION_FILM",
-        "category": "MOVIE",
-        "description": "После падения человеческой цивилизации обезьяны построили свое общество, но столкнулись с новыми угрозами, угрожающими их существованию. Лидер Цезарь борется за будущее своего народа.",
+        "genre": "DRAMA",
+        "category": "SERIES",
+        "description": "Постапокалиптический мир после ядерной катастрофы. Герои борются за выживание в пустошах, где радиация, мутанты и жажда власти становятся главными угрозами.",
         "thumbnail": null,
-        "publisher": "20th Century Studios",
+        "publisher": "Amazon Prime Video",
         "age_restriction": "SIXTEEN_PLUS",
         "cast_members": [
             {
-                "id": "6f29c24e-8b0b-4890-86e9-40682dcbd650",
-                "employee_full_name": "Джуди Грир",
-                "role_name": "Зира"
+                "id": "d0445d71-4c2e-4815-83ba-44a1bb3e780d",
+                "employee_full_name": "Уолтон Гоггинс",
+                "role_name": "Мутант-одиночка"
             },
             {
-                "id": "506ac869-29c8-4aab-a9aa-8ce8a32ce9e2",
-                "employee_full_name": "Фрея Аллан",
-                "role_name": "Выжившая из человеческого поселения"
+                "id": "d97f0fc7-a8d8-4417-8837-1440b1aa3802",
+                "employee_full_name": "Кайл МакЛахлен",
+                "role_name": "Ученый из убежища"
             },
             {
-                "id": "44165bc6-efb0-4134-9ff2-57cc24011319",
-                "employee_full_name": "Оуэн Тиг",
-                "role_name": "Молодой лидер обезьян"
+                "id": "ada48311-18fe-410a-bd56-115f28f452cb",
+                "employee_full_name": "Ксения Раппопорт",
+                "role_name": "Лидер сопротивления"
             },
             {
-                "id": "8184422c-4cad-4d67-84d7-0d089cb366f7",
-                "employee_full_name": "Энди Серкис",
-                "role_name": "Цезарь (захват движения)"
+                "id": "14449075-86df-4976-b3ea-77b2d89b69f6",
+                "employee_full_name": "Элла Пернелл",
+                "role_name": "Выжившая"
             }
         ]
     }

@@ -92,8 +92,8 @@ describe("FilmEpisodesPanel", () => {
       />
     );
     const seasonSelect = screen.getByRole("combobox");
-    fireEvent.change(seasonSelect, { target: { value: "2" } });
-    expect(setSelectedSeason).toHaveBeenCalledWith("2");
+    fireEvent.change(seasonSelect, { target: { value: 2 } });
+    expect(setSelectedSeason).toHaveBeenCalledWith(Number(2));
     expect(setSelectedEpisode).toHaveBeenCalledWith(null);
   });
 
