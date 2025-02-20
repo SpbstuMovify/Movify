@@ -1,12 +1,21 @@
 import { render, screen } from "@testing-library/react"
-import { RouterProvider, createMemoryRouter } from "react-router-dom";
+import { RouterProvider, createMemoryRouter, createBrowserRouter } from "react-router-dom";
 import '@testing-library/jest-dom'
 import routesConfig from "./configs/routesConfig";
+import App from './App.jsx';
 
 jest.clearAllMocks();
 jest.mock('@services/api', () => require('./__mocks__/services/api'));
 
-describe('App routing of unprotected components', () => {
+describe('App component', () => {
+      
+      test("renders App with RouterProvider", () => {
+        const { container } = render(<App />);
+        expect(container.querySelector(".app")).toBeInTheDocument();
+      });
+})
+
+describe('Routing of unprotected components', () => {
     test('renders Home page at root "/"', async () => {
         const router = createMemoryRouter(routesConfig, {
             initialEntries: ["/"]
