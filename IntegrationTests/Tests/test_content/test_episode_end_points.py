@@ -56,7 +56,7 @@ UPDATED_EPISODE = {
 
 default_content_url = f"http://localhost:8085/v1/contents"
 default_episode_url = f"http://localhost:8085/v1/episodes"
-
+illegal_episode_id = "bfa2b698-a1b5-4b2c-abfb-5feba20e2642"
 def test_create_episode():
     created_content_response = requests.post(default_content_url, json=CONTENT_PAYLOAD, headers=headers)
     assert created_content_response.status_code == 200, f"Ожидался статус 200, получен {created_content_response.status_code}, {created_content_response.json()}"
@@ -69,6 +69,20 @@ def test_create_episode():
     assert created_episode_response.json()['description'] == DEFAULT_EPISODE['description'], f"Неверный description при создании эпизода"
     assert created_episode_response.json()["id"] is not None, f'ID в ответе от сервера не должен быть null'
 
+def test_negative_create_duplicated_episode():
+    created_content_response = requests.post(default_content_url, json=CONTENT_PAYLOAD, headers=headers)
+    assert created_content_response.status_code == 200, f"Ожидался статус 200, получен {created_content_response.status_code}, {created_content_response.json()}"
+    DEFAULT_EPISODE['content_id'] = created_content_response.json()['id']
+    created_episode_response = requests.post(default_episode_url, json=DEFAULT_EPISODE, headers=headers)
+    assert created_episode_response.status_code == 200, f"Ожидался статус 200, получен {created_episode_response.status_code}, {created_episode_response.json()}"
+    assert created_episode_response.json()['episode_num'] == DEFAULT_EPISODE['episode_num'], f"Неверный episode_num при создании эпизода"
+    assert created_episode_response.json()['season_num'] == DEFAULT_EPISODE['season_num'], f"Неверный season_num при создании эпизода"
+    assert created_episode_response.json()['title'] == DEFAULT_EPISODE['title'], f"Неверный title при создании эпизода"
+    assert created_episode_response.json()['description'] == DEFAULT_EPISODE['description'], f"Неверный description при создании эпизода"
+    assert created_episode_response.json()["id"] is not None, f'ID в ответе от сервера не должен быть null'
+    created_episode_response = requests.post(default_episode_url, json=DEFAULT_EPISODE, headers=headers)
+    assert created_episode_response.status_code == 400, f"Ожидался статус 400, получен {created_episode_response.status_code}, {created_episode_response.json()}"
+
 def test_get_episode_by_id():
     created_content_response = requests.post(default_content_url, json=CONTENT_PAYLOAD, headers=headers)
     assert created_content_response.status_code == 200, f"Ожидался статус 200, получен {created_content_response.status_code}, {created_content_response.json()}"
@@ -80,6 +94,16 @@ def test_get_episode_by_id():
     assert response.status_code == 200, f"Ожидался статус 200, получен {response.status_code}, {response.json()}"
     assert response.json()["id"] == created_episode_response.json()["id"], f"Найден неверный статус, ожидался id = {created_episode_response.json()['id']} найден эпизод с id = {response.json()['id']}"
 
+def test_not_found_get_episode_by_id():
+    created_content_response = requests.post(default_content_url, json=CONTENT_PAYLOAD, headers=headers)
+    assert created_content_response.status_code == 200, f"Ожидался статус 200, получен {created_content_response.status_code}, {created_content_response.json()}"
+    DEFAULT_EPISODE['content_id'] = created_content_response.json()['id']
+    created_episode_response = requests.post(default_episode_url, json=DEFAULT_EPISODE, headers=headers)
+    assert created_episode_response.status_code == 200, f"Ожидался статус 200, получен {created_episode_response.status_code}, {created_episode_response.json()}"
+    find_url = f"{default_episode_url}/" + illegal_episode_id
+    response = requests.get(find_url, headers=headers)
+    assert response.status_code == 404, f"Ожидался статус 404, получен {response.status_code}, {response.json()}"
+
 def test_delete_episode_by_id():
     created_content_response = requests.post(default_content_url, json=CONTENT_PAYLOAD, headers=headers)
     assert created_content_response.status_code == 200, f"Ожидался статус 200, получен {created_content_response.status_code}, {created_content_response.json()}"
@@ -90,6 +114,14 @@ def test_delete_episode_by_id():
     response = requests.delete(url_with_episode_id, headers=headers)
     assert response.status_code == 200, f"Ожидался статус 200, получен {response.status_code}, {response.json()}"
     response = requests.get(url_with_episode_id, headers=headers)
+    assert response.status_code == 404, f"Ожидался статус 404, получен {response.status_code}, {response.json()}"
+
+def test_not_found_delete_episode_by_id():
+    created_content_response = requests.post(default_content_url, json=CONTENT_PAYLOAD, headers=headers)
+    assert created_content_response.status_code == 200, f"Ожидался статус 200, получен {created_content_response.status_code}, {created_content_response.json()}"
+    DEFAULT_EPISODE['content_id'] = created_content_response.json()['id']
+    url_with_episode_id = f"{default_episode_url}/" + illegal_episode_id
+    response = requests.delete(url_with_episode_id, headers=headers)
     assert response.status_code == 404, f"Ожидался статус 404, получен {response.status_code}, {response.json()}"
 
 def test_get_all_episodes_by_content():
@@ -120,7 +152,11 @@ def test_get_all_episodes_by_content():
     assert len(response.json()) == 2, f"Найдено неверное количество эпизодов для контента с id = {str(created_content_response1.json()['id'])}"
     assert all(item["id"] == e1_response.json()['id'] or item["id"] == e3_response.json()['id'] for item in response.json())
 
-def test_update_content():
+def test_negative_get_all_episodes_by_content():
+    response = requests.get(default_episode_url + "?content_id=" + illegal_episode_id, headers=headers)
+    assert response.status_code == 404, f"Ожидался статус 404, получен {response.status_code}, {response.json()}"
+
+def test_update_episode():
     created_content_response = requests.post(default_content_url, json=CONTENT_PAYLOAD, headers=headers)
     assert created_content_response.status_code == 200, f"Ожидался статус 200, получен {created_content_response.status_code}, {created_content_response.json()}"
     DEFAULT_EPISODE['content_id'] = created_content_response.json()['id']
@@ -132,3 +168,11 @@ def test_update_content():
     response = requests.get(url_with_episode_id, headers=headers)
     assert response.status_code == 200, f"Ожидался статус 200, получен {response.status_code}, {response.json()}"
     assert response.json()["status"] == UPDATED_EPISODE["status"], f"Статус эпизода с id = {created_episode_response.json()['id']} не были обновлены"
+
+def test_not_found_update_episode():
+    created_content_response = requests.post(default_content_url, json=CONTENT_PAYLOAD, headers=headers)
+    assert created_content_response.status_code == 200, f"Ожидался статус 200, получен {created_content_response.status_code}, {created_content_response.json()}"
+    DEFAULT_EPISODE['content_id'] = created_content_response.json()['id']
+    url_with_episode_id = f"{default_episode_url}/" + illegal_episode_id
+    response = requests.put(url_with_episode_id, json=UPDATED_EPISODE, headers=headers)
+    assert response.status_code == 404, f"Ожидался статус 404, получен {response.status_code}, {response.json()}"
