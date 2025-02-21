@@ -21,6 +21,8 @@ CONTENT_PAYLOAD = {
     ]
 }
 
+illegal_content_id = "bfa2b698-a1b5-4b2c-abfb-5feba20e2642"
+
 UPDATED_CONTENT_PAYLOAD = {
     "publisher": "Zetflix",
 }
@@ -62,6 +64,14 @@ def test_create_content1():
     assert response.json()["publisher"] == CONTENT_PAYLOAD["publisher"], f'Создан content с неверным publisher'
     assert response.json()["id"] is not None, f'ID в ответе от сервера не должен быть null'
 
+def test_negative_create_content1():
+    CONTENT_PAYLOAD_COPY = dict(CONTENT_PAYLOAD)
+    CONTENT_PAYLOAD_COPY["age_restriction"] = None
+    CONTENT_PAYLOAD_COPY["quality"] = None
+    CONTENT_PAYLOAD_COPY["title"] = None
+    response = requests.post(default_content_url, json=CONTENT_PAYLOAD_COPY, headers=headers)
+    assert response.status_code == 401, f"Ожидался статус 401, получен {response.status_code}, {response.json()}"
+
 def test_get_page_of_contents():
     url = f"http://localhost:8085/v1/contents?page_number=0&page_size=4"
 
@@ -72,6 +82,12 @@ def test_get_page_of_contents():
     assert len(response.json()) == 2, f'Неверное количество найденных элементов'
     assert all(item["id"] == id2 or item["id"] == id1 for item in response.json())
 
+def test_empty_get_page_of_contents():
+    url = f"http://localhost:8085/v1/contents?page_number=0&page_size=4"
+    response = requests.get(url, headers=headers)
+    assert response.status_code == 200, f"Ожидался статус 200, получен {response.status_code}, {response.json()}"
+    assert len(response.json()) == 0, f'Неверное количество найденных элементов'
+
 def test_get_content_by_id():
     created_content_response = requests.post(default_content_url, json=CONTENT_PAYLOAD, headers=headers)
 
@@ -81,6 +97,14 @@ def test_get_content_by_id():
     assert response.status_code == 200, f"Ожидался статус 200, получен {response.status_code}, {response.json()}"
     assert response.json()["id"] == created_content_response.json()["id"], f'Найден content с неверным id'
 
+def test_negative_get_content_by_id():
+    created_content_response = requests.post(default_content_url, json=CONTENT_PAYLOAD, headers=headers)
+
+    assert created_content_response.status_code == 200, f"Ожидался статус 200, получен {created_content_response.status_code}, {created_content_response.json()}"
+    find_url = f"{default_content_url}/" + illegal_content_id
+    response = requests.get(find_url, headers=headers)
+    assert response.status_code == 404, f"Ожидался статус 404, получен {response.status_code}, {response.json()}"
+
 def test_delete_content_by_id():
     created_content_response = requests.post(default_content_url, json=CONTENT_PAYLOAD, headers=headers)
 
@@ -89,6 +113,11 @@ def test_delete_content_by_id():
     response = requests.delete(url_with_content_id, headers=headers)
     assert response.status_code == 200, f"Ожидался статус 200, получен {response.status_code}, {response.json()}"
     response = requests.get(url_with_content_id, headers=headers)
+    assert response.status_code == 404, f"Ожидался статус 404, получен {response.status_code}, {response.json()}"
+
+def test_negative_delete_content_by_id():
+    url_with_content_id = f"{default_content_url}/" + illegal_content_id
+    response = requests.delete(url_with_content_id, headers=headers)
     assert response.status_code == 404, f"Ожидался статус 404, получен {response.status_code}, {response.json()}"
 
 def test_update_content():
@@ -102,6 +131,12 @@ def test_update_content():
     assert response.status_code == 200, f"Ожидался статус 200, получен {response.status_code}, {response.json()}"
     assert response.json()["publisher"] == UPDATED_CONTENT_PAYLOAD["publisher"], f'Найден content с неверными данными'
 
+def test_negative_update_content():
+    url_with_content_id = f"{default_content_url}/" + str(illegal_content_id)
+    response = requests.put(url_with_content_id, json=UPDATED_CONTENT_PAYLOAD, headers=headers)
+    assert response.status_code == 404, f"Ожидался статус 404, получен {response.status_code}, {response.json()}"
+    response = requests.get(url_with_content_id, headers=headers)
+
 def test_get_content_with_filter():
     created_content_response = requests.post(default_content_url, json=CONTENT_PAYLOAD, headers=headers)
     assert created_content_response.status_code == 200, f"Ожидался статус 200, получен {created_content_response.status_code}, {created_content_response.json()}"
@@ -114,3 +149,17 @@ def test_get_content_with_filter():
     assert response.status_code == 200, f"Ожидался статус 200, получен {response.status_code}, {response.json()}"
     assert len(response.json()['content']) == 1, f'Неверное количество найденных элементов'
     assert response.json()['content'][0]['id'] == created_content_response.json()["id"], f'Найден content с неверными данными'
+
+def test_empty_get_content_with_filter():
+    created_content_response = requests.post(default_content_url, json=CONTENT_PAYLOAD, headers=headers)
+    assert created_content_response.status_code == 200, f"Ожидался статус 200, получен {created_content_response.status_code}, {created_content_response.json()}"
+    created_content_response = requests.post(default_content_url, json=CONTENT_PAYLOAD1, headers=headers)
+    assert created_content_response.status_code == 200, f"Ожидался статус 200, получен {created_content_response.status_code}, {created_content_response.json()}"
+
+    url_for_searching_content = f"{default_content_url}/search"
+    search_payload_copy = dict(CONTENT_SEARCH_PAYLOAD)
+    search_payload_copy["title"] = "aaaaaaa"
+    response = requests.post(url_for_searching_content, json=search_payload_copy, headers=headers)
+
+    assert response.status_code == 200, f"Ожидался статус 200, получен {response.status_code}, {response.json()}"
+    assert len(response.json()['content']) == 0, f'Неверное количество найденных элементов'

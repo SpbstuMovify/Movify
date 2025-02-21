@@ -68,6 +68,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8079:8079"
+    environment:
+      - GrpcClient__ContentServiceUrl=http://test-content-service-for-auth-service:9095
     networks:
       - test
 
