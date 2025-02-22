@@ -52,7 +52,7 @@ public class MediaGrpcServerTest
         
         _chunkerCallbackServiceMock.Verify(
             x => x.OnSuccess(
-                It.Is<ProcessVideoDtoCallbackSuccessDto>(
+                It.Is<ProcessVideoCallbackSuccessDto>(
                     dto =>
                         dto.Key == request.Key &&
                         dto.BaseUrl == request.BaseUrl
@@ -82,7 +82,7 @@ public class MediaGrpcServerTest
         
         _chunkerCallbackServiceMock.Verify(
             x => x.OnFailed(
-                It.Is<ProcessVideoDtoCallbackFailedDto>(
+                It.Is<ProcessVideoCallbackFailedDto>(
                     dto =>
                         dto.Key == request.Key
                 )

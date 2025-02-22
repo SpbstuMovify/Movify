@@ -28,7 +28,7 @@ public class ChunkerCallbackServiceTest
         // Arrange
         // Допустим, Key имеет вид content123/episodeABC/file.mp4
         // тогда episodeId = episodeABC
-        var successDto = new ProcessVideoDtoCallbackSuccessDto("content123/episodeABC/file.mp4", "http://example.com");
+        var successDto = new ProcessVideoCallbackSuccessDto("content123/episodeABC/file.mp4", "http://example.com");
 
         // Act
         await _service.OnSuccess(successDto);
@@ -51,7 +51,7 @@ public class ChunkerCallbackServiceTest
     public async Task OnSuccess_WithMissingSecondElement_SetsEpisodeIdEmpty()
     {
         // Arrange
-        var successDto = new ProcessVideoDtoCallbackSuccessDto("contentOnly", "http://example.com");
+        var successDto = new ProcessVideoCallbackSuccessDto("contentOnly", "http://example.com");
 
         // Act
         await _service.OnSuccess(successDto);
@@ -75,7 +75,7 @@ public class ChunkerCallbackServiceTest
     {
         // Arrange
         // Key = content123/episodeABC/file.mp4 => episodeId = "episodeABC"
-        var failedDto = new ProcessVideoDtoCallbackFailedDto("content123/episodeABC/file.mp4");
+        var failedDto = new ProcessVideoCallbackFailedDto("content123/episodeABC/file.mp4");
 
         // Act
         await _service.OnFailed(failedDto);
@@ -98,7 +98,7 @@ public class ChunkerCallbackServiceTest
     public async Task OnFailed_WithMissingSecondElement_SetsEpisodeIdEmpty()
     {
         // Arrange
-        var failedDto = new ProcessVideoDtoCallbackFailedDto("justOnePart");
+        var failedDto = new ProcessVideoCallbackFailedDto("justOnePart");
 
         // Act
         await _service.OnFailed(failedDto);

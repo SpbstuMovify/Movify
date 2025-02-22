@@ -24,9 +24,7 @@ public class ExternalAuthenticationHandler(
         string? authorization = Request.Headers.Authorization;
         if (string.IsNullOrEmpty(authorization))
         {
-            const string detail = "Missing 'Authorization' header";
-            _logger.LogWarning(detail);
-            return AuthenticateResult.Fail(detail);
+            return AuthenticateResult.NoResult();
         }
 
         const string bearerPrefix = "Bearer ";

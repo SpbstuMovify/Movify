@@ -53,7 +53,7 @@ public class ExternalAuthenticationHandlerTest
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal("Missing 'Authorization' header", result.Failure?.Message);
+        Assert.Null(result.Failure?.Message);
     }
 
     [Fact]
