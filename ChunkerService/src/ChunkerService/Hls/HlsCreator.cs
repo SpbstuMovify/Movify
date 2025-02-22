@@ -2,48 +2,44 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Text;
 
+using ChunkerService.Dtos.Hls;
+using ChunkerService.Services;
+using ChunkerService.Utils.ProcessRunners;
+
 namespace ChunkerService.Hls;
 
-public class HlsCreator(ILogger<HlsCreator> logger) : IHlsCreator
+public class HlsCreator(
+    ILogger<HlsCreator> logger,
+    IProcessRunner processRunner,
+    IFileService fileService
+) : IHlsCreator
 {
     private readonly ConcurrentDictionary<Guid, CancellationTokenSource> _cancellationTokens = new();
 
     /// <summary>
     /// Создаёт HLS-потоки разных качеств и мастер-файл.
     /// </summary>
-    /// <param name="ffmpegPath">Путь к ffmpeg.exe (можно указать "ffmpeg", если он в PATH).</param>
-    /// <param name="inputFile">Путь к исходному видео файлу.</param>
-    /// <param name="outputDirectory">Папка, в которой будут формироваться выходные файлы и плейлисты.</param>
-    /// <param name="variants">Список вариантов (качеств) для HLS.</param>
-    /// <param name="segmentDuration">Продолжительность сегмента (чанка) в секундах.</param>
-    /// <param name="audioBitrate">Битрейт аудио (например, 128000 = 128 kb/s).</param>
-    /// <param name="additionalFfmpegArgs">Дополнительные аргументы для ffmpeg.</param>
+    /// <param name="hslParams"></param>
+    /// <param name="cancellationToken"></param>
     public async Task CreateHlsMasterPlaylistAsync(
-        string ffmpegPath,
-        string inputFile,
-        string outputDirectory,
-        List<HlsVariant> variants,
-        int segmentDuration = 10,
-        int audioBitrate = 128_000,
-        string additionalFfmpegArgs = "",
-        CancellationToken cancellationToken = default
+        HlsParamsDto hslParams,
+        CancellationToken cancellationToken
     )
     {
-        if (!Directory.Exists(outputDirectory))
+        if (!fileService.DirectoryExists(hslParams.OutputDirectory))
         {
-            Directory.CreateDirectory(outputDirectory);
+            fileService.CreateDirectory(hslParams.OutputDirectory);
         }
 
         var generatedPlaylists = new List<string>();
-
         var ffmpegTasks = new List<Task>();
 
-        int availableThreads = Environment.ProcessorCount / variants.Count;
-        int optimalThreads = Math.Max(1, availableThreads);
+        var availableThreads = Environment.ProcessorCount / hslParams.Variants.Count;
+        var optimalThreads = Math.Max(1, availableThreads);
 
         logger.LogInformation($"Threads per task[{optimalThreads}]");
 
-        foreach (var variant in variants)
+        foreach (var variant in hslParams.Variants)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -51,10 +47,9 @@ public class HlsCreator(ILogger<HlsCreator> logger) : IHlsCreator
                 return;
             }
 
-            string playlistFileName = $"{variant.Name}.m3u8";
-            string playlistFullPath = Path.Combine(outputDirectory, playlistFileName);
-
-            string segmentFileNameTemplate = Path.Combine(outputDirectory, $"{variant.Name}_%03d.ts");
+            var playlistFileName = $"{variant.Name}.m3u8";
+            var playlistFullPath = Path.Combine(hslParams.OutputDirectory, playlistFileName);
+            var segmentFileNameTemplate = Path.Combine(hslParams.OutputDirectory, $"{variant.Name}_%03d.ts");
 
             // ffmpeg:
             //   -vf scale=w:h          — изменяем размер кадра.
@@ -65,30 +60,38 @@ public class HlsCreator(ILogger<HlsCreator> logger) : IHlsCreator
             //   -hls_segment_filename  — шаблон названий сегментов.
             //   -f hls                 — формат вывода (HLS).
             //   {variant.Name}.m3u8    — конечный плейлист.
-            string arguments =
+            var arguments =
                 $"-loglevel info " +
-                $"-i \"{inputFile}\" " +
+                $"-i \"{hslParams.InputFile}\" " +
                 $"-vf scale={variant.Width}:{variant.Height} " +
                 $"-c:v h264 -b:v {variant.VideoBitrate} -preset veryfast " +
                 $"-threads {optimalThreads} " +
-                $"-c:a aac -b:a {audioBitrate} -ac 2 " +
-                $"{additionalFfmpegArgs} " +
-                $"-hls_time {segmentDuration} " +
+                $"-c:a aac -b:a {hslParams.AudioBitrate} -ac 2 " +
+                $"{hslParams.AdditionalFfmpegArgs} " +
+                $"-hls_time {hslParams.SegmentDuration} " +
                 $"-hls_playlist_type vod " +
                 $"-hls_segment_filename \"{segmentFileNameTemplate}\" " +
                 $"-f hls \"{playlistFullPath}\"";
 
-            ffmpegTasks.Add(RunFfmpegAsync(ffmpegPath, arguments, cancellationToken));
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = hslParams.FfmpegPath,
+                Arguments = arguments,
+                UseShellExecute = false,
+                RedirectStandardError = true,
+                RedirectStandardOutput = true,
+                CreateNoWindow = true
+            };
 
+            ffmpegTasks.Add(processRunner.RunProcessAsync(startInfo, cancellationToken));
             generatedPlaylists.Add(playlistFileName);
         }
 
-        // Создаём общий мастер-файл master.m3u8
         await Task.WhenAll(ffmpegTasks);
 
         if (!cancellationToken.IsCancellationRequested)
         {
-            await CreateMasterM3u8Async(outputDirectory, generatedPlaylists, variants, cancellationToken);
+            await CreateMasterM3U8Async(hslParams.OutputDirectory, generatedPlaylists, hslParams.Variants, cancellationToken);
         }
     }
 
@@ -98,15 +101,26 @@ public class HlsCreator(ILogger<HlsCreator> logger) : IHlsCreator
     /// <param name="outputDirectory">Папка, где будет создаваться master.m3u8.</param>
     /// <param name="playlists">Список файлов плейлистов (например, "360p.m3u8" и т.д.).</param>
     /// <param name="variants">Список вариантов (качеств), соответствующих плейлистам.</param>
-    private async Task CreateMasterM3u8Async(string outputDirectory, List<string> playlists, List<HlsVariant> variants, CancellationToken cancellationToken)
+    /// <param name="cancellationToken"></param>
+    private async Task CreateMasterM3U8Async(
+        string outputDirectory,
+        List<string> playlists,
+        List<HlsVariantDto> variants,
+        CancellationToken cancellationToken
+    )
     {
-        string masterFilePath = Path.Combine(outputDirectory, "master.m3u8");
+        if (playlists.Count != variants.Count)
+        {
+            throw new ArgumentException("Playlist count mismatch");
+        }
 
-        StringBuilder sb = new StringBuilder();
+        var masterFilePath = Path.Combine(outputDirectory, "master.m3u8");
+
+        var sb = new StringBuilder();
         sb.AppendLine("#EXTM3U");
         sb.AppendLine("#EXT-X-VERSION:3");
 
-        for (int i = 0; i < playlists.Count; i++)
+        for (var i = 0; i < playlists.Count; i++)
         {
             var variant = variants[i];
             sb.AppendLine(
@@ -119,65 +133,11 @@ public class HlsCreator(ILogger<HlsCreator> logger) : IHlsCreator
 
         try
         {
-            await File.WriteAllTextAsync(masterFilePath, sb.ToString(), cancellationToken);
+            await fileService.WriteAllTextAsync(masterFilePath, sb.ToString(), cancellationToken);
         }
         catch (TaskCanceledException)
         {
             logger.LogInformation("Create master m3u8 forcibly terminated due to cancellation");
-        }
-    }
-
-    /// <summary>
-    /// Запускает ffmpeg с указанными аргументами.
-    /// </summary>
-    /// <param name="ffmpegPath">Путь к ffmpeg.exe.</param>
-    /// <param name="arguments">Аргументы командной строки ffmpeg.</param>
-    private async Task RunFfmpegAsync(string ffmpegPath, string arguments, CancellationToken cancellationToken)
-    {
-        ProcessStartInfo startInfo = new ProcessStartInfo
-        {
-            FileName = ffmpegPath,
-            Arguments = arguments,
-            UseShellExecute = false,
-            RedirectStandardError = true,
-            RedirectStandardOutput = true,
-            CreateNoWindow = true
-        };
-
-        using (Process process = new Process { StartInfo = startInfo })
-        {
-            process.OutputDataReceived += (sender, e) =>
-            {
-                if (!string.IsNullOrEmpty(e.Data))
-                {
-                    logger.LogInformation($"[ffmpeg output] {e.Data}");
-                }
-            };
-            process.ErrorDataReceived += (sender, e) =>
-            {
-                if (!string.IsNullOrEmpty(e.Data))
-                {
-                    logger.LogInformation($"[ffmpeg output] {e.Data}");
-                }
-            };
-
-            process.Start();
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
-
-            try
-            {
-                await process.WaitForExitAsync(cancellationToken);
-            }
-            catch (TaskCanceledException)
-            {
-                if (!process.HasExited)
-                {
-                    process.Kill();
-                    await process.WaitForExitAsync();
-                    logger.LogInformation("FFmpeg process forcibly terminated due to cancellation");
-                }
-            }
         }
     }
 
@@ -189,10 +149,12 @@ public class HlsCreator(ILogger<HlsCreator> logger) : IHlsCreator
 
     public void CancelToken(Guid guid)
     {
-        if (_cancellationTokens.TryRemove(guid, out var cts))
+        if (!_cancellationTokens.TryRemove(guid, out var cts))
         {
-            logger.LogInformation("_cancellationTokens");
-            cts?.Cancel();
+            return;
         }
+
+        logger.LogInformation("_cancellationTokens");
+        cts.Cancel();
     }
 }

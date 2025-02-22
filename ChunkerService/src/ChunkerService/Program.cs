@@ -1,9 +1,10 @@
+using ChunkerService.FileProcessing;
+using ChunkerService.FileProcessing.FileProcessors;
 using ChunkerService.Grpc;
-using ChunkerService.Hls;
 using ChunkerService.Repositories;
 using ChunkerService.Services;
 using ChunkerService.Utils.Configuration;
-using ChunkerService.Utils.FileProcessing;
+using ChunkerService.Utils.ProcessRunners;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,10 +14,10 @@ if (!Directory.Exists(".tmp"))
 }
 
 builder.Configuration
-    .SetBasePath(builder.Environment.ContentRootPath)
-    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
-    .AddEnvironmentVariables();
+       .SetBasePath(builder.Environment.ContentRootPath)
+       .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+       .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+       .AddEnvironmentVariables();
 
 if (builder.Environment.IsDevelopment())
 {
@@ -27,12 +28,16 @@ builder.Services.AddGrpc();
 
 builder.Services.AddGrpcClient(builder.Configuration);
 builder.Services.AddAws(builder.Configuration);
-builder.Services.AddHls(builder.Configuration);
 
 builder.Services.AddScoped<IChunkerRepository, ChunkerRepository>();
 builder.Services.AddScoped<IChunkerService, ChunkerService.Services.ChunkerService>();
 
-builder.Services.AddSingleton<IHlsCreator, HlsCreator>();
+builder.Services.AddSingleton<IFileService, FileService>();
+builder.Services.AddSingleton<IProcessRunner, FfmpegProcessRunner>();
+
+builder.Services.AddHls(builder.Configuration);
+
+builder.Services.AddSingleton<IFileProcessorFactory, FileProcessorFactory>();
 builder.Services.AddSingleton<IFileProcessingQueue, FileProcessingQueue>();
 builder.Services.AddHostedService<FileProcessingService>();
 

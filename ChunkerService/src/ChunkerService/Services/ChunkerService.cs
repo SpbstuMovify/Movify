@@ -1,5 +1,5 @@
 using ChunkerService.Dtos.Chunker;
-using ChunkerService.Utils.FileProcessing;
+using ChunkerService.FileProcessing;
 
 namespace ChunkerService.Services;
 

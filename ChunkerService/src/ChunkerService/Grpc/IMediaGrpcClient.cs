@@ -4,5 +4,5 @@ namespace ChunkerService.Grpc;
 
 public interface IMediaGrpcClient
 {
-    Task ProcessVideoCallback(ProcessVideoDtoCallbackDto processVideoDto);
+    Task ProcessVideoCallback(ProcessVideoCallbackDto processVideoCallbackDto);
 }
