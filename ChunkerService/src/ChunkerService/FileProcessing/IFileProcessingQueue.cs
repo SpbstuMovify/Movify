@@ -1,4 +1,4 @@
-namespace ChunkerService.Utils.FileProcessing;
+namespace ChunkerService.FileProcessing;
 
 public interface IFileProcessingQueue
 {

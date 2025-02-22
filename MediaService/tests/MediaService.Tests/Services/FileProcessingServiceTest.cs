@@ -27,7 +27,7 @@ public class FileProcessingServiceTest
         _processorMock = new Mock<IFileProcessor>();
         _processorFactoryMock = new Mock<IFileProcessorFactory>();
 
-        var loggerMock = new Mock<ILogger<FileProcessingServiceV1>>();
+        var loggerMock = new Mock<ILogger<FileProcessingService>>();
         var scopeFactoryMock = new Mock<IServiceScopeFactory>();
         var scopeMock = new Mock<IServiceScope>();
 

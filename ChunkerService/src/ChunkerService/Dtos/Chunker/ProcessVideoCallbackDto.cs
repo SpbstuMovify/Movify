@@ -1,7 +1,8 @@
 namespace ChunkerService.Dtos.Chunker;
 
-public record ProcessVideoDto(
+public record ProcessVideoCallbackDto(
     string BucketName,
     string Key,
-    string BaseUrl
+    string? BaseUrl,
+    string? Error
 );

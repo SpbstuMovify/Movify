@@ -1,5 +1,5 @@
 namespace MediaService.Dtos.Chunker;
 
-public record ProcessVideoDtoCallbackFailedDto(
+public record ProcessVideoCallbackFailedDto(
     string Key
 );

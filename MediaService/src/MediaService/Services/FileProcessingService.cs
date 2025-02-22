@@ -8,7 +8,7 @@ public class FileProcessingService(
     IFileProcessingQueue fileProcessingQueue,
     IServiceScopeFactory serviceScopeFactory,
     IFileProcessorFactory fileProcessorFactory,
-    ILogger<FileProcessingServiceV1> logger
+    ILogger<FileProcessingService> logger
 ) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

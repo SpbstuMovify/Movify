@@ -19,12 +19,12 @@ public class MediaGrpcServer(
     {
         if (string.IsNullOrEmpty(request.Error))
         {
-            await chunkerCallbackService.OnSuccess(new ProcessVideoDtoCallbackSuccessDto(request.Key, request.BaseUrl));
+            await chunkerCallbackService.OnSuccess(new ProcessVideoCallbackSuccessDto(request.Key, request.BaseUrl));
         }
         else
         {
             logger.LogWarning($"Something went wrong while processing video: {request.Error}");
-            await chunkerCallbackService.OnFailed(new ProcessVideoDtoCallbackFailedDto(request.Key));
+            await chunkerCallbackService.OnFailed(new ProcessVideoCallbackFailedDto(request.Key));
         }
 
         return new Empty();

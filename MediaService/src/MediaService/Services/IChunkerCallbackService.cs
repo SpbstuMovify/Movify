@@ -4,6 +4,6 @@ namespace MediaService.Services;
 
 public interface IChunkerCallbackService
 {
-    Task OnSuccess(ProcessVideoDtoCallbackSuccessDto successDto);
-    Task OnFailed(ProcessVideoDtoCallbackFailedDto failedDto);
+    Task OnSuccess(ProcessVideoCallbackSuccessDto successCallbackSuccessDto);
+    Task OnFailed(ProcessVideoCallbackFailedDto failedCallbackFailedDto);
 }
