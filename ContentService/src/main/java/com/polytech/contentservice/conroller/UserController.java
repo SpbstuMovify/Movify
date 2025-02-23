@@ -146,7 +146,7 @@ public class UserController {
   public UserLoginResponseDto login(@Valid @RequestBody UserLoginDto userDto,
                                     @RequestHeader String ip) {
     UserDto user = userService.getUserInformation(userMapper.toFindUserDto(userDto));
-    UserDto newUser = createUserDtoWithPassword(userDto, user);
+    UserDto newUser = userMapper.createUserDtoWithPassword(userDto, user);
     return authService.login(newUser, ip);
   }
 
@@ -177,17 +177,5 @@ public class UserController {
     userService.updateUserInformation(userId, userDto);
   }
 
-  private UserDto createUserDtoWithPassword(UserLoginDto userDto, UserDto user) {
-    return UserDto.builder()
-        .userId(user.userId())
-        .firstName(user.firstName())
-        .lastName(user.lastName())
-        .email(user.email())
-        .login(user.login())
-        .role(user.role())
-        .passwordHash(user.passwordHash())
-        .passwordSalt(user.passwordSalt())
-        .password(userDto.password())
-        .build();
-  }
+
 }
