@@ -116,4 +116,61 @@ public class ExtensionsTest
         Assert.NotNull(provider.GetService<IHlsCreator>());
         Assert.NotNull(provider.GetService<IFileProcessor>());
     }
+
+    [Fact]
+    public void AddGrpcClient_InvalidGrpcClientConfiguration_ThrowsOptionsValidationException()
+    {
+        // Arrange
+        var invalidConfig = new ConfigurationBuilder()
+                            .AddInMemoryCollection(new Dictionary<string, string?>())
+                            .Build();
+        
+        _services.AddGrpcClient(invalidConfig);
+        var provider = _services.BuildServiceProvider();
+        
+        // Act & Assert
+        Assert.Throws<OptionsValidationException>(() => provider.GetService<IMediaGrpcClient>());
+    }
+
+    [Fact]
+    public void AddAws_InvalidAwsConfiguration_ThrowsOptionsValidationException()
+    {
+        // Arrange
+        var invalidSettings = new Dictionary<string, string?>
+        {
+            { "Aws:AccessKey", "test-access-key" },
+            { "Aws:SecretKey", "test-secret-key" },
+            { "Aws:Region", "us-west-2" },
+            { "Aws:UsePathStyle", "true" }
+        };
+        var invalidConfig = new ConfigurationBuilder()
+                            .AddInMemoryCollection(invalidSettings)
+                            .Build();
+        _services.AddAws(invalidConfig);
+        var provider = _services.BuildServiceProvider();
+
+        // Act & Assert
+        Assert.Throws<OptionsValidationException>(() => provider.GetService<IAmazonS3>());
+    }
+    
+    [Fact]
+    public void AddHls_InvalidHlsConfiguration_ThrowsInvalidOperationException()
+    {
+        // Arrange
+        var invalidSettings = new Dictionary<string, string?>
+        {
+            { "Hls:Variants:0:Name", "Variant1" },
+            { "Hls:Variants:0:Width", "1920" },
+            { "Hls:Variants:0:Height", "1080" },
+            { "Hls:Variants:0:VideoBitrate", "5000" }
+        };
+        var invalidConfig = new ConfigurationBuilder()
+                            .AddInMemoryCollection(invalidSettings)
+                            .Build();
+        _services.AddHls(invalidConfig);
+        var provider = _services.BuildServiceProvider();
+
+        // Act & Assert
+        Assert.Throws<InvalidOperationException>(() => provider.GetService<IHlsCreator>());
+    }
 }

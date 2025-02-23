@@ -133,4 +133,118 @@ public class MediaGrpcClientTest
             Times.Once
         );
     }
+
+    [Theory]
+    [InlineData(null, "")]
+    [InlineData("", "")]
+    [InlineData("https://example.com", "https://example.com")]
+    public async Task ProcessVideoCallback_ShouldUseEmptyString_WhenBaseUrlIsNullOrEmpty(
+        string inputBaseUrl,
+        string expectedBaseUrl
+    )
+    {
+        // Arrange
+        var dto = new ProcessVideoCallbackDto(
+            "validBucket",
+            "validKey",
+            inputBaseUrl,
+            "some error"
+        );
+
+        _mediaServiceClientMock
+            .Setup(
+                x => x.ProcessVideoCallbackAsync(
+                    It.IsAny<Movify.ProcessVideoCallbackRequest>(),
+                    It.IsAny<Metadata>(),
+                    It.IsAny<DateTime?>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .Returns(
+                new AsyncUnaryCall<Empty>(
+                    Task.FromResult(new Empty()),
+                    Task.FromResult(new Metadata()),
+                    () => new Status(StatusCode.OK, string.Empty),
+                    () => [],
+                    () => { }
+                )
+            );
+
+        // Act
+        await _client.ProcessVideoCallback(dto);
+
+        // Assert
+        _mediaServiceClientMock.Verify(
+            x => x.ProcessVideoCallbackAsync(
+                It.Is<Movify.ProcessVideoCallbackRequest>(
+                    r =>
+                        r.BucketName == "validBucket" &&
+                        r.Key == "validKey" &&
+                        r.BaseUrl == expectedBaseUrl && // проверяем подстановку
+                        r.Error == "some error"
+                ),
+                It.IsAny<Metadata>(),
+                It.IsAny<DateTime?>(),
+                It.IsAny<CancellationToken>()
+            ),
+            Times.Once
+        );
+    }
+
+    [Theory]
+    [InlineData(null, "")]
+    [InlineData("", "")]
+    [InlineData("some error message", "some error message")]
+    public async Task ProcessVideoCallback_ShouldUseEmptyString_WhenErrorIsNullOrEmpty(
+        string inputError,
+        string expectedError
+    )
+    {
+        // Arrange
+        var dto = new ProcessVideoCallbackDto(
+            "validBucket",
+            "validKey",
+            "https://example.com",
+            inputError
+        );
+
+        _mediaServiceClientMock
+            .Setup(
+                x => x.ProcessVideoCallbackAsync(
+                    It.IsAny<Movify.ProcessVideoCallbackRequest>(),
+                    It.IsAny<Metadata>(),
+                    It.IsAny<DateTime?>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .Returns(
+                new AsyncUnaryCall<Empty>(
+                    Task.FromResult(new Empty()),
+                    Task.FromResult(new Metadata()),
+                    () => new Status(StatusCode.OK, string.Empty),
+                    () => [],
+                    () => { }
+                )
+            );
+
+        // Act
+        await _client.ProcessVideoCallback(dto);
+
+        // Assert
+        _mediaServiceClientMock.Verify(
+            x => x.ProcessVideoCallbackAsync(
+                It.Is<Movify.ProcessVideoCallbackRequest>(
+                    r =>
+                        r.BucketName == "validBucket" &&
+                        r.Key == "validKey" &&
+                        r.BaseUrl == "https://example.com" &&
+                        r.Error == expectedError // проверяем подстановку
+                ),
+                It.IsAny<Metadata>(),
+                It.IsAny<DateTime?>(),
+                It.IsAny<CancellationToken>()
+            ),
+            Times.Once
+        );
+    }
 }
