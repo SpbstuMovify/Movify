@@ -6,8 +6,11 @@ public class AwsOptions
 {
     public const string SectionName = "Aws";
 
-    public string? AccessKey { get; init; }
-    public string? SecretKey { get; init; }
+    [Required(ErrorMessage = "AccessKey is required")]
+    public required string AccessKey { get; init; }
+
+    [Required(ErrorMessage = "SecretKey is required")]
+    public required string SecretKey { get; init; }
 
     [Required(ErrorMessage = "Region is required")]
     public required string Region { get; init; }

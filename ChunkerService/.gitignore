@@ -26,6 +26,9 @@ nupkg/
 # tmp
 .tmp/
 
+# TestResult
+TestResult/
+
 # User-specific files
 *.suo
 *.user
