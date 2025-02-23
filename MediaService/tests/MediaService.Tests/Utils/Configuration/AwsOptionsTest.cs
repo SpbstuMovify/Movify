@@ -35,8 +35,8 @@ public class AwsOptionsTest
         // Arrange
         var options = new AwsOptions
         {
-            AccessKey = null,
-            SecretKey = null,
+            AccessKey = null!,
+            SecretKey = null!,
             Region = null!,
             ServiceUrl = null!,
             UsePathStyle = true
@@ -46,7 +46,9 @@ public class AwsOptionsTest
         var validationResults = ValidateModel(options);
 
         // Assert
-        Assert.Equal(2, validationResults.Count);
+        Assert.Equal(4, validationResults.Count);
+        Assert.Contains(validationResults, r => r.ErrorMessage == "AccessKey is required");
+        Assert.Contains(validationResults, r => r.ErrorMessage == "SecretKey is required");
         Assert.Contains(validationResults, r => r.ErrorMessage == "Region is required");
         Assert.Contains(validationResults, r => r.ErrorMessage == "ServiceUrl is required");
     }

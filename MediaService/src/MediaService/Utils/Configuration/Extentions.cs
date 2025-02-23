@@ -102,23 +102,13 @@ public static class Extensions
             {
                 var awsOptions = sp.GetRequiredService<IOptions<AwsOptions>>().Value;
 
-                var sharedFile = new SharedCredentialsFile();
-                if (!sharedFile.TryGetProfile("default", out var profile) || !AWSCredentialsFactory.TryGetAWSCredentials(profile, sharedFile, out var credentials))
-                {
-                    var accessKey = awsOptions.AccessKey ?? throw new InvalidOperationException("AccessKey is not configured");
-                    var secretKey = awsOptions.SecretKey ?? throw new InvalidOperationException("SecretKey is not configured");
-                    credentials = new BasicAWSCredentials(accessKey, secretKey);
-                }
-
-                var region = awsOptions.Region;
-                var serviceUrl = awsOptions.ServiceUrl;
-                var usePathStyle = awsOptions.UsePathStyle;
+                var credentials = new BasicAWSCredentials(awsOptions.AccessKey, awsOptions.SecretKey);
 
                 var s3Config = new AmazonS3Config
                 {
-                    RegionEndpoint = RegionEndpoint.GetBySystemName(region),
-                    ServiceURL = serviceUrl,
-                    ForcePathStyle = usePathStyle
+                    RegionEndpoint = RegionEndpoint.GetBySystemName(awsOptions.Region),
+                    ServiceURL = awsOptions.ServiceUrl,
+                    ForcePathStyle = awsOptions.UsePathStyle
                 };
 
                 return new AmazonS3Client(credentials, s3Config);
