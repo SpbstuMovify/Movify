@@ -18,6 +18,20 @@ public class UserMapper {
         .build();
   }
 
+  public UserDto createUserDtoWithPassword(UserLoginDto userDto, UserDto user) {
+    return UserDto.builder()
+        .userId(user.userId())
+        .firstName(user.firstName())
+        .lastName(user.lastName())
+        .email(user.email())
+        .login(user.login())
+        .role(user.role())
+        .passwordHash(user.passwordHash())
+        .passwordSalt(user.passwordSalt())
+        .password(userDto.password())
+        .build();
+  }
+
   public User convertToUserEntity(UserRegisterDto user) {
     return User.builder()
         .firstName(user.firstName())

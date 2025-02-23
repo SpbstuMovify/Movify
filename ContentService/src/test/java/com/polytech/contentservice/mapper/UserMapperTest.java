@@ -9,6 +9,7 @@ import com.polytech.contentservice.dto.user.login.UserLoginDto;
 import com.polytech.contentservice.dto.user.register.UserRegisterDto;
 import com.polytech.contentservice.dto.user.search.UserSearchDto;
 import com.polytech.contentservice.entity.User;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Spy;
@@ -33,6 +34,35 @@ class UserMapperTest {
     assertEquals(userLoginDto.login(), actualDto.login());
     assertEquals(userLoginDto.email(), actualDto.email());
     assertEquals(userLoginDto.searchType(), actualDto.searchType());
+  }
+
+  @Test
+  void createUserDtoWithPassword() {
+    UserLoginDto userLoginDto = UserLoginDto.builder()
+        .login("login")
+        .email("a@mail.ru")
+        .searchType(UserSearchType.LOGIN)
+        .password("aaaaa111")
+        .build();
+    UserDto user = UserDto.builder()
+        .userId(UUID.randomUUID())
+        .firstName("firstName")
+        .lastName("lastName")
+        .email("a@mail.ru")
+        .login("login")
+        .role(Role.USER)
+        .passwordHash("passwordHash")
+        .passwordSalt("passwordSalt")
+        .build();
+    UserDto actualDto = userMapper.createUserDtoWithPassword(userLoginDto, user);
+    assertNotNull(actualDto);
+    assertEquals(user.login(), actualDto.login());
+    assertEquals(user.firstName(), actualDto.firstName());
+    assertEquals(user.lastName(), actualDto.lastName());
+    assertEquals(user.email(), actualDto.email());
+    assertEquals(userLoginDto.password(), actualDto.password());
+    assertEquals(user.passwordSalt(), actualDto.passwordSalt());
+    assertEquals(user.passwordHash(), actualDto.passwordHash());
   }
 
   @Test
