@@ -2,11 +2,9 @@ package com.polytech.contentservice.conroller;
 
 import com.polytech.contentservice.common.Role;
 import com.polytech.contentservice.dto.episode.EpisodeDto;
-import com.polytech.contentservice.dto.user.detailed.UserDto;
 import com.polytech.contentservice.service.auth.AuthService;
 import com.polytech.contentservice.service.content.ContentService;
 import com.polytech.contentservice.service.episode.EpisodeService;
-import com.polytech.contentservice.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -93,7 +91,7 @@ public class EpisodeController {
 
   @GetMapping
   @Operation(
-      summary = "Получение всех эпизодоа, связанных с контентом",
+      summary = "Получение всех эпизодов, связанных с контентом",
       description = "Получаем все эпизоды, связанные с заданным контентом")
   public Set<EpisodeDto> getAllEpisodesForContent(
       @Parameter(description = "ID фильма или сериала", example = "1b12236a-aca9-47bc-95ac-f3978836de2c")

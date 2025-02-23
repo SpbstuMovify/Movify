@@ -3,8 +3,11 @@ package com.polytech.contentservice.common.converter;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.polytech.contentservice.common.AgeRestriction;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -13,27 +16,36 @@ class AgeRestrictionConverterTest {
   @Spy
   private AgeRestrictionConverter converter;
 
-  @Test
-  void testConvertToDatabaseColumn() {
-    assertEquals("6+", converter.convertToDatabaseColumn(AgeRestriction.SIX_PLUS));
-    assertEquals("12+", converter.convertToDatabaseColumn(AgeRestriction.TWELVE_PLUS));
-    assertEquals("16+", converter.convertToDatabaseColumn(AgeRestriction.SIXTEEN_PLUS));
-    assertEquals("18+", converter.convertToDatabaseColumn(AgeRestriction.EIGHTEEN_PLUS));
+  @ParameterizedTest
+  @EnumSource(AgeRestriction.class)
+  void testConvertToDatabaseColumn(AgeRestriction ageRestriction) {
+    assertEquals(ageRestriction.getRestriction(), converter.convertToDatabaseColumn(ageRestriction));
     assertNull(converter.convertToDatabaseColumn(null));
   }
 
-  @Test
-  void testConvertToEntityAttribute() {
-    assertEquals(AgeRestriction.SIX_PLUS, converter.convertToEntityAttribute("6+"));
-    assertEquals(AgeRestriction.TWELVE_PLUS, converter.convertToEntityAttribute("12+"));
-    assertEquals(AgeRestriction.SIXTEEN_PLUS, converter.convertToEntityAttribute("16+"));
-    assertEquals(AgeRestriction.EIGHTEEN_PLUS, converter.convertToEntityAttribute("18+"));
+  @ParameterizedTest
+  @EnumSource(AgeRestriction.class)
+  void testConvertToEntityAttribute(AgeRestriction ageRestriction) {
+    assertEquals(ageRestriction, converter.convertToEntityAttribute(ageRestriction.getRestriction()));
     assertNull(converter.convertToEntityAttribute(null));
   }
 
-  @Test
-  void testConvertToEntityAttributeInvalid() {
-    assertThrows(IllegalArgumentException.class, () -> converter.convertToEntityAttribute("21+"));
+  @ParameterizedTest
+  @NullSource
+  void testNullConvertToDatabaseColumn(AgeRestriction ageRestriction) {
+    assertNull(converter.convertToDatabaseColumn(ageRestriction));
+  }
+
+  @ParameterizedTest
+  @NullSource
+  void testNullConvertToEntityAttribute(String ageRestriction) {
+    assertNull(converter.convertToEntityAttribute(ageRestriction));
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = { "12321", "pop", "1.5+", "+", " ", "" })
+  void testConvertToEntityAttributeInvalid(String ageRestriction) {
+    assertThrows(IllegalArgumentException.class, () -> converter.convertToEntityAttribute(ageRestriction));
   }
 
 }
