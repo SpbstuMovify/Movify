@@ -98,7 +98,6 @@ jacocoTestReport {
                     "com/polytech/contentservice/service/auth/AuthGrpcClientImpl*",
                     "com/polytech/contentservice/entity/QEpisode*",
                     "com/polytech/contentservice/config/*",
-                    "com/polytech/contentservice/common/strategy/*",
                     "com/polytech/contentservice/exception/*",
                     "com/polytech/contentservice/entity/QAuthAttempts*",
                     "com/polytech/contentservice/entity/QCastMember*",
