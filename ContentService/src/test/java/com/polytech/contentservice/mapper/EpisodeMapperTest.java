@@ -70,6 +70,33 @@ class EpisodeMapperTest {
   }
 
   @Test
+  void patchUpdateWithNoUpdate() {
+    Episode oldEpisode = Episode.builder()
+        .id(UUID.randomUUID())
+        .content(Content.builder().id(UUID.randomUUID()).build())
+        .title("title")
+        .storyline("storyline")
+        .seasonNumber(1)
+        .episodeNumber(2)
+        .storyline("storyline")
+        .s3BucketName("s3BucketName")
+        .status(EpisodeStatus.NOT_UPLOADED)
+        .build();
+    EpisodeDto newEpisode = EpisodeDto.builder()
+        .build();
+    Episode updatedEpisode = episodeMapper.patchUpdate(oldEpisode, newEpisode);
+    assertNotNull(updatedEpisode);
+    assertEquals(oldEpisode.getTitle(), updatedEpisode.getTitle());
+    assertEquals(oldEpisode.getId(), updatedEpisode.getId());
+    assertEquals(oldEpisode.getStoryline(), updatedEpisode.getStoryline());
+    assertEquals(oldEpisode.getEpisodeNumber(), updatedEpisode.getEpisodeNumber());
+    assertEquals(oldEpisode.getS3BucketName(), updatedEpisode.getS3BucketName());
+    assertEquals(oldEpisode.getSeasonNumber(), updatedEpisode.getSeasonNumber());
+    assertEquals(oldEpisode.getStatus(), updatedEpisode.getStatus());
+    assertEquals(oldEpisode.getContent().getId(), updatedEpisode.getContent().getId());
+  }
+
+  @Test
   void convertToEpisodeEntity() {
     Content content = Content.builder()
             .id(UUID.randomUUID())

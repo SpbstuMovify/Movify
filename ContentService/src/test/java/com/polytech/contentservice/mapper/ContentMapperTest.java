@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import com.polytech.contentservice.common.Category;
+import com.polytech.contentservice.common.Genre;
+import com.polytech.contentservice.common.Quality;
 import com.polytech.contentservice.dto.castmember.CastMemberDto;
 import com.polytech.contentservice.dto.content.ContentDto;
 import com.polytech.contentservice.entity.CastMember;
@@ -85,6 +88,13 @@ class ContentMapperTest {
   void testPatchUpdate() {
     ContentDto updatedContentDto = ContentDto.builder()
         .title("Updated Movie")
+        .year(2002)
+        .quality(Quality.P144)
+        .genre(Genre.ACTION_FILM)
+        .category(Category.MOVIE)
+        .description("description")
+        .publisher("publisher")
+        .thumbnail("thumbnail")
         .build();
 
     when(castMemberMapper.convertToSetOfCastMemberEntity(any())).thenReturn(Set.of(castMember));
@@ -92,8 +102,32 @@ class ContentMapperTest {
 
     assertNotNull(result);
     assertEquals(content.getId(), result.getId());
-    assertEquals("Updated Movie", result.getTitle());
+    assertEquals(updatedContentDto.title(), result.getTitle());
+    assertEquals(updatedContentDto.year(), result.getYear());
+    assertEquals(updatedContentDto.quality(), result.getQuality());
+    assertEquals(updatedContentDto.category(), result.getCategory());
+    assertEquals(updatedContentDto.description(), result.getDescription());
+    assertEquals(updatedContentDto.publisher(), result.getPublisher());
+    assertEquals(updatedContentDto.thumbnail(), result.getThumbnail());
+  }
+
+  @Test
+  void testPatchUpdateWithNoUpdate() {
+    ContentDto updatedContentDto = ContentDto.builder()
+        .build();
+
+    when(castMemberMapper.convertToSetOfCastMemberEntity(any())).thenReturn(Set.of(castMember));
+    Content result = contentMapper.patchUpdate(content, updatedContentDto);
+
+    assertNotNull(result);
+    assertEquals(content.getId(), result.getId());
     assertEquals(content.getYear(), result.getYear());
+    assertEquals(content.getYear(), result.getYear());
+    assertEquals(content.getQuality(), result.getQuality());
+    assertEquals(content.getCategory(), result.getCategory());
+    assertEquals(content.getDescription(), result.getDescription());
+    assertEquals(content.getPublisher(), result.getPublisher());
+    assertEquals(content.getThumbnail(), result.getThumbnail());
   }
 
   private ContentDto getContentDto(UUID contentId) {
@@ -117,6 +151,10 @@ class ContentMapperTest {
         .creationDate(LocalDateTime.now())
         .updatedDate(LocalDateTime.now())
         .castMembers(Set.of(castMember))
+        .genre(Genre.ACTION_FILM)
+        .thumbnail("thumbnail")
+        .category(Category.MOVIE)
+        .quality(Quality.P144)
         .build();
   }
 

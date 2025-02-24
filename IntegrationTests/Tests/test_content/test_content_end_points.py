@@ -70,7 +70,7 @@ def test_negative_create_content1():
     CONTENT_PAYLOAD_COPY["quality"] = None
     CONTENT_PAYLOAD_COPY["title"] = None
     response = requests.post(default_content_url, json=CONTENT_PAYLOAD_COPY, headers=headers)
-    assert response.status_code == 401, f"Ожидался статус 401, получен {response.status_code}, {response.json()}"
+    assert response.status_code == 400, f"Ожидался статус 400, получен {response.status_code}, {response.json()}"
 
 def test_get_page_of_contents():
     url = f"http://localhost:8085/v1/contents?page_number=0&page_size=4"
