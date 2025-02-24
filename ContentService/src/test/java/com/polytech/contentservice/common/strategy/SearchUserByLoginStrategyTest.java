@@ -55,7 +55,7 @@ class SearchUserByLoginStrategyTest {
         .userId(invalidId)
         .email("iii@mail.ru")
         .login("iii")
-        .searchType(UserSearchType.ID)
+        .searchType(UserSearchType.LOGIN)
         .build();
     when(userRepository.findByLogin(eq(unknownUser.login()))).thenReturn(Optional.empty());
 
