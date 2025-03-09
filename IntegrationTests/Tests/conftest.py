@@ -50,7 +50,7 @@ def docker_compose(request):
 
     try:
         logger.info(f"Starting services: {services_info}")
-        subprocess.check_call(["docker-compose", "-f", compose_file, "up", "-d"] + services)
+        subprocess.check_call(["docker", "compose", "-f", compose_file, "up", "-d"] + services)
 
         time.sleep(15)
 
@@ -59,14 +59,14 @@ def docker_compose(request):
     finally:
         logger.info("Collecting container logs...")
         try:
-            logs = subprocess.check_output(["docker-compose", "-f", compose_file, "logs"])
+            logs = subprocess.check_output(["docker", "compose", "-f", compose_file, "logs"])
             logger.info(f"Docker-compose logs:\n\n{logs.decode('utf-8')}")
         except subprocess.CalledProcessError as e:
             logger.error(f"Error collecting logs: {e}")
 
         logger.info("Stopping containers...")
         try:
-            subprocess.check_call(["docker-compose", "-f", compose_file, "down"])
+            subprocess.check_call(["docker", "compose", "-f", compose_file, "down"])
         except subprocess.CalledProcessError as e:
             logger.error(f"Error stopping containers: {e}")
 

@@ -14,7 +14,7 @@ services:
       - test
 
   test-auth-service-mock:
-    image: auth-service-mock:latest
+    image: alexchemis/auth-service-mock:latest
     container_name: test-auth-service-mock
     build:
       context: ../Mocks/AuthServiceMock
@@ -25,7 +25,7 @@ services:
       - test
 
   test-content-service-for-mock-auth-service:
-    image: content-service:latest
+    image: alexchemis/content-service:latest
     container_name: test-content-service
     build:
       context: ../../ContentService
@@ -43,7 +43,7 @@ services:
       - test
 
   test-content-service-for-auth-service:
-    image: content-service:latest
+    image: alexchemis/content-service:latest
     container_name: test-content-service
     build:
       context: ../../ContentService
@@ -61,7 +61,7 @@ services:
       - test
 
   test-auth-service:
-    image: auth-service:latest
+    image: alexchemis/auth-service:latest
     container_name: test-auth-service
     build:
       context: ../../AuthService
