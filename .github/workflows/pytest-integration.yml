@@ -9,6 +9,7 @@ permissions:
 
 jobs:
   integration-tests:
+    needs: docker-build
     runs-on: ubuntu-latest
 
     steps:
