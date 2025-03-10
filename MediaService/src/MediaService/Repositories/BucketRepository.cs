@@ -5,6 +5,7 @@ using Amazon.S3.Model;
 
 using MediaService.Dtos.S3;
 using MediaService.Utils.Exceptions;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 
 namespace MediaService.Repositories;
 
@@ -47,11 +48,17 @@ public class BucketRepository(
 
     public async Task DeleteBucketAsync(string bucketName)
     {
+        if (!await DoesBucketExist(bucketName))
+        {
+            logger.LogWarning($"Bucket '{bucketName}' does not exist");
+            throw new NotFoundException($"Bucket {bucketName} does not exist");
+        }
+
         var response = await s3Client.DeleteBucketAsync(bucketName);
 
         switch (response.HttpStatusCode)
         {
-            case HttpStatusCode.OK: return;
+            case HttpStatusCode.NoContent: return;
             default:
                 logger.LogWarning($"Unexpected status code from S3: {response.HttpStatusCode}");
                 throw new AmazonS3Exception($"Unexpected status code from S3: {response.HttpStatusCode}");
@@ -66,7 +73,7 @@ public class BucketRepository(
         if (!await DoesBucketExist(bucketName))
         {
             logger.LogWarning($"Bucket '{bucketName}' does not exist");
-            throw new NotFoundException($"Bucket {bucketName} does not exist.");
+            throw new NotFoundException($"Bucket {bucketName} does not exist");
         }
 
         var request = new ListObjectsV2Request()
@@ -137,7 +144,13 @@ public class BucketRepository(
         if (!await DoesBucketExist(bucketName))
         {
             logger.LogWarning($"Bucket '{bucketName}' does not exist");
-            throw new NotFoundException($"Bucket {bucketName} does not exist.");
+            throw new NotFoundException($"Bucket {bucketName} does not exist");
+        }
+
+        if (!await DoesFileExist(bucketName, key))
+        {
+            logger.LogWarning($"File '{key}' in bucket '{bucketName}' does not exist");
+            throw new NotFoundException($"File '{key}' in bucket '{bucketName}' does not exist");
         }
 
         var response = await s3Client.GetObjectAsync(bucketName, key);
@@ -150,9 +163,6 @@ public class BucketRepository(
                     response.Headers.ContentType,
                     key.Contains("/") ? key.Substring(key.LastIndexOf("/", StringComparison.Ordinal) + 1) : key
                 );
-            case HttpStatusCode.NotFound:
-                logger.LogWarning($"File in bucket[{bucketName}] by key[{key}] does not exist");
-                throw new NotFoundException($"File in bucket[{bucketName}] by key[{key}] does not exist");
             default:
                 logger.LogWarning($"Unexpected status code from S3: {response.HttpStatusCode}");
                 throw new AmazonS3Exception($"Unexpected status code from S3: {response.HttpStatusCode}");
@@ -167,14 +177,20 @@ public class BucketRepository(
         if (!await DoesBucketExist(bucketName))
         {
             logger.LogWarning($"Bucket '{bucketName}' does not exist");
-            throw new NotFoundException($"Bucket {bucketName} does not exist.");
+            throw new NotFoundException($"Bucket {bucketName} does not exist");
+        }
+
+        if (!await DoesFileExist(bucketName, key))
+        {
+            logger.LogWarning($"File '{key}' in bucket '{bucketName}' does not exist");
+            throw new NotFoundException($"File '{key}' in bucket '{bucketName}' does not exist");
         }
 
         var response = await s3Client.DeleteObjectAsync(bucketName, key);
 
         switch (response.HttpStatusCode)
         {
-            case HttpStatusCode.OK: return;
+            case HttpStatusCode.NoContent: return;
             default:
                 logger.LogWarning($"Unexpected status code from S3: {response.HttpStatusCode}");
                 throw new AmazonS3Exception($"Unexpected status code from S3: {response.HttpStatusCode}");
@@ -197,4 +213,20 @@ public class BucketRepository(
     }
 
     private async Task<bool> DoesBucketExist(string bucketName) { return await Amazon.S3.Util.AmazonS3Util.DoesS3BucketExistV2Async(s3Client, bucketName); }
+    
+    private async Task<bool> DoesFileExist(string bucketName, string key) 
+    {
+        try
+        {
+            var response = await s3Client.GetObjectMetadataAsync(bucketName, key);
+            return true;
+        }
+        catch (AmazonS3Exception ex)
+        {
+            if (ex.StatusCode == HttpStatusCode.NotFound)
+                return false;
+            else
+                throw;
+        }
+    }
 }
