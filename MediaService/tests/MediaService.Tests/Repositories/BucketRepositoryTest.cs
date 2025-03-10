@@ -166,23 +166,22 @@ public class BucketRepositoryTest
     #region DeleteBucketAsync
 
     [Fact]
-    public async Task DeleteBucketAsync_WithHttpStatusCodeOK_DoesNotThrow()
+    public async Task DeleteBucketAsync_WithHttpStatusCodeNoContent_DoesNotThrow()
     {
         // Arrange
         var bucketName = "some-bucket";
 
         _s3ClientMock
-            .Setup(c => c.GetACLAsync(bucketName, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new GetACLResponse { HttpStatusCode = HttpStatusCode.OK });
+            .Setup(c => c.ListBucketsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ListBucketsResponse
+            {
+                HttpStatusCode = HttpStatusCode.OK,
+                Buckets = new List<S3Bucket> { new S3Bucket { BucketName = bucketName } }
+            });
 
         _s3ClientMock
             .Setup(c => c.DeleteBucketAsync(bucketName, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(
-                new DeleteBucketResponse
-                {
-                    HttpStatusCode = HttpStatusCode.OK
-                }
-            );
+            .ReturnsAsync(new DeleteBucketResponse { HttpStatusCode = HttpStatusCode.NoContent });
 
         // Act
         var exception = await Record.ExceptionAsync(() => _bucketRepository.DeleteBucketAsync(bucketName));
@@ -386,24 +385,23 @@ public class BucketRepositoryTest
     }
 
     [Fact]
-    public async Task DownloadFileAsync_WithHttpStatusCodeNotFound_ThrowsResourceNotFoundException()
+    public async Task DownloadFileAsync_WithFileNotFound_ThrowsNotFoundException()
     {
         // Arrange
         var bucketName = "existing-bucket";
         var key = "no-file.txt";
 
         _s3ClientMock
-            .Setup(c => c.GetACLAsync(bucketName, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new GetACLResponse { HttpStatusCode = HttpStatusCode.OK });
+            .Setup(c => c.ListBucketsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ListBucketsResponse
+            {
+                HttpStatusCode = HttpStatusCode.OK,
+                Buckets = new List<S3Bucket> { new S3Bucket { BucketName = bucketName } }
+            });
 
         _s3ClientMock
-            .Setup(c => c.GetObjectAsync(bucketName, key, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(
-                new GetObjectResponse
-                {
-                    HttpStatusCode = HttpStatusCode.NotFound
-                }
-            );
+            .Setup(c => c.GetObjectMetadataAsync(bucketName, key, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new AmazonS3Exception("Not found") { StatusCode = HttpStatusCode.NotFound });
 
         // Act & Assert
         await Assert.ThrowsAsync<NotFoundException>(() => _bucketRepository.DownloadFileAsync(bucketName, key));
@@ -466,24 +464,27 @@ public class BucketRepositoryTest
     }
 
     [Fact]
-    public async Task DeleteFileAsync_WithHttpStatusCodeOK_DoesNotThrow()
+    public async Task DeleteFileAsync_WithHttpStatusCodeNoContent_DoesNotThrow()
     {
         // Arrange
         var bucketName = "existing-bucket";
         var key = "file.txt";
 
         _s3ClientMock
-            .Setup(c => c.GetACLAsync(bucketName, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new GetACLResponse { HttpStatusCode = HttpStatusCode.OK });
+            .Setup(c => c.ListBucketsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ListBucketsResponse
+            {
+                HttpStatusCode = HttpStatusCode.OK,
+                Buckets = new List<S3Bucket> { new S3Bucket { BucketName = bucketName } }
+            });
+
+        _s3ClientMock
+            .Setup(c => c.GetObjectMetadataAsync(bucketName, key, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new GetObjectMetadataResponse { HttpStatusCode = HttpStatusCode.OK });
 
         _s3ClientMock
             .Setup(c => c.DeleteObjectAsync(bucketName, key, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(
-                new DeleteObjectResponse
-                {
-                    HttpStatusCode = HttpStatusCode.OK
-                }
-            );
+            .ReturnsAsync(new DeleteObjectResponse { HttpStatusCode = HttpStatusCode.NoContent });
 
         // Act
         var exception = await Record.ExceptionAsync(() => _bucketRepository.DeleteFileAsync(bucketName, key));
