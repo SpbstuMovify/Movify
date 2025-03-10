@@ -13,6 +13,19 @@ services:
     networks:
       - test
 
+  test-movify-s3:
+    image: minio/minio:latest
+    container_name: test-movify-s3
+    ports:
+      - "9000:9000"
+      - "9090:9090"
+    environment:
+      MINIO_ROOT_USER: "admin"
+      MINIO_ROOT_PASSWORD: "admin_password"
+    command: server /data --console-address ":9090"
+    networks:
+      - test
+
   test-auth-service-mock:
     image: alexchemis/auth-service-mock:latest
     container_name: test-auth-service-mock
@@ -21,6 +34,28 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8079:8079"
+    networks:
+      - test
+
+  test-content-service-mock:
+    image: alexchemis/content-service-mock:latest
+    container_name: test-content-service-mock
+    build:
+      context: ../Mocks/ContentServiceMock
+      dockerfile: Dockerfile
+    ports:
+      - "9095:9095"
+    networks:
+      - test
+
+  test-chunker-service-mock:
+    image: alexchemis/chunker-service-mock:latest
+    container_name: test-chunker-service-mock
+    build:
+      context: ../Mocks/ContentServiceMock
+      dockerfile: Dockerfile
+    ports:
+      - "8076:8076"
     networks:
       - test
 
@@ -70,6 +105,89 @@ services:
       - "8079:8079"
     environment:
       - GrpcClient__ContentServiceUrl=http://test-content-service-for-auth-service:9095
+    networks:
+      - test
+
+  test-media-service-for-mocks:
+    image: alexchemis/media-service:latest
+    container_name: test-media-service-for-mocks
+    build:
+      context: ../../MediaService
+      dockerfile: Dockerfile
+    ports:
+      - "8078:8078"
+      - "8077:8077"
+    environment:
+      - Aws__ServiceUrl=http://test-movify-s3:9000
+      - GrpcClient__AuthServiceUrl=http://test-auth-service-mock:8079
+      - GrpcClient__ChunkerServiceUrl=http://test-chunker-service-mock:8076
+      - GrpcClient__ContentServiceUrl=http://test-content-service-mock:9095
+    networks:
+      - test
+
+  test-media-service-for-content-service:
+    image: alexchemis/media-service:latest
+    container_name: test-media-service-for-content-service
+    build:
+      context: ../../MediaService
+      dockerfile: Dockerfile
+    ports:
+      - "8078:8078"
+      - "8077:8077"
+    environment:
+      - Aws__ServiceUrl=http://test-movify-s3:9000
+      - GrpcClient__AuthServiceUrl=http://test-auth-service-mock:8079
+      - GrpcClient__ChunkerServiceUrl=http://test-chunker-service-mock:8076
+      - GrpcClient__ContentServiceUrl=http://test-content-service-for-mock-auth-service:9095
+    networks:
+      - test
+
+  test-media-service-for-content-service-and-auth-service:
+    image: alexchemis/media-service:latest
+    container_name: test-media-service-for-content-service-and-auth-service
+    build:
+      context: ../../MediaService
+      dockerfile: Dockerfile
+    ports:
+      - "8078:8078"
+      - "8077:8077"
+    environment:
+      - Aws__ServiceUrl=http://test-movify-s3:9000
+      - GrpcClient__AuthServiceUrl=http://test-auth-service:8079
+      - GrpcClient__ChunkerServiceUrl=http://test-chunker-service-mock:8076
+      - GrpcClient__ContentServiceUrl=http://test-content-service-for-auth-service:9095
+    networks:
+      - test
+
+  test-media-service-for-content-service-and-chunker-service:
+    image: alexchemis/media-service:latest
+    container_name: test-media-service-for-content-service-and-chunker-service
+    build:
+      context: ../../MediaService
+      dockerfile: Dockerfile
+    ports:
+      - "8078:8078"
+      - "8077:8077"
+    environment:
+      - Aws__ServiceUrl=http://test-movify-s3:9000
+      - GrpcClient__AuthServiceUrl=http://test-auth-service-mock:8079
+      - GrpcClient__ChunkerServiceUrl=http://test-chunker-service:8076
+      - GrpcClient__ContentServiceUrl=http://test-content-service-for-mock-auth-service:9095
+    networks:
+      - test
+
+  test-chunker-service:
+    image: alexchemis/chunker-service:latest
+    container_name: test-chunker-service
+    build:
+      context: ../../ChunkerService
+      dockerfile: Dockerfile
+    ports:
+      - "8076:8076"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Test
+      - Aws__ServiceUrl=http://test-movify-s3:9000
+      - GrpcClient__MediaServiceUrl=http://test-media-service-for-content-service-and-chunker-service:8077
     networks:
       - test
 
