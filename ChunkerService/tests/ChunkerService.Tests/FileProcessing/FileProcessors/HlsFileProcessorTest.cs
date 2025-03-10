@@ -35,7 +35,6 @@ public class HlsFileProcessorTest
         _hlsCreatorMock = new Mock<IHlsCreator>();
         _fileServiceMock = new Mock<IFileService>();
 
-        // Настройка опций для HLS
         var hlsOptions = new HlsOptions
         {
             FfmpegPath = "ffmpeg",
@@ -49,11 +48,9 @@ public class HlsFileProcessorTest
         };
         _options = Options.Create(hlsOptions);
 
-        // Мок репозитория и gRPC-клиента, которые получаются через scope
         _chunkerRepositoryMock = new Mock<IChunkerRepository>();
         _mediaGrpcClientMock = new Mock<IMediaGrpcClient>();
 
-        // Мок ServiceProvider, возвращающего необходимые сервисы
         var serviceProviderMock = new Mock<IServiceProvider>();
 
         serviceProviderMock
@@ -81,20 +78,17 @@ public class HlsFileProcessorTest
         // Arrange
         var request = new FileProcessorRequest("temp", "test-bucket", "videos/video.mp4", "http://example.com");
 
-        // Мокаем загрузку файла
         var fileContent = new MemoryStream("file content"u8.ToArray());
         var fileToProcess = new FileData(fileContent, "video/mp4", "video.mp4");
         _chunkerRepositoryMock
             .Setup(r => r.DownloadFileAsync(request.BucketName, request.Key))
             .ReturnsAsync(fileToProcess);
 
-        // Мокаем создание файла для записи
         var fileCreationStream = new MemoryStream();
         _fileServiceMock
             .Setup(fs => fs.CreateFile(It.IsAny<string>()))
             .Returns(fileCreationStream);
 
-        // Мокаем создание токена отмены
         var hlsToken = CancellationToken.None;
         var capturedGuid = Guid.Empty;
         _hlsCreatorMock
@@ -102,12 +96,10 @@ public class HlsFileProcessorTest
             .Callback<Guid>(g => capturedGuid = g)
             .Returns(hlsToken);
 
-        // Мокаем успешное создание HLS-мастер-плейлиста
         _hlsCreatorMock
             .Setup(h => h.CreateHlsMasterPlaylistAsync(It.IsAny<HlsParamsDto>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        // Мокаем файлы, которые должны быть загружены после создания HLS-потоков
         var hlsStreamPath = Path.Combine(request.Path, "hls");
         var filePaths = new[]
         {
@@ -119,17 +111,14 @@ public class HlsFileProcessorTest
             .Setup(fs => fs.GetFiles(hlsStreamPath))
             .Returns(filePaths);
 
-        // Мокаем открытие файлов для чтения
         _fileServiceMock
             .Setup(fs => fs.OpenReadFile(It.IsAny<string>()))
             .Returns(new MemoryStream("dummy content"u8.ToArray()));
 
-        // Мокаем загрузку файлов в репозиторий
         _chunkerRepositoryMock
             .Setup(r => r.UploadFileAsync(It.IsAny<FileData>(), request.BucketName, It.IsAny<string>()))
             .ReturnsAsync(new S3ObjectDto(request.BucketName, "http://presigned.url"));
 
-        // Мокаем callback для успешной обработки видео
         _mediaGrpcClientMock
             .Setup(m => m.ProcessVideoCallback(It.IsAny<ProcessVideoCallbackDto>()))
             .Returns(Task.CompletedTask);
@@ -138,12 +127,9 @@ public class HlsFileProcessorTest
         await _processor.ProcessAsync(request, _serviceScope, hlsToken);
 
         // Assert
-
-        // Проверяем, что CreateToken и CancelToken вызываются
         _hlsCreatorMock.Verify(h => h.CreateToken(It.IsAny<Guid>()), Times.Once);
         _hlsCreatorMock.Verify(h => h.CancelToken(capturedGuid), Times.Once);
 
-        // Проверяем, что CreateHlsMasterPlaylistAsync вызывается с ожидаемыми параметрами
         _hlsCreatorMock.Verify(
             h => h.CreateHlsMasterPlaylistAsync(
                 It.Is<HlsParamsDto>(
@@ -161,7 +147,6 @@ public class HlsFileProcessorTest
             Times.Once
         );
 
-        // Проверяем, что UploadFileAsync вызывается для каждого файла с корректными ключами и content-type
         var prefix = request.Key[..request.Key.LastIndexOf('/')];
         _chunkerRepositoryMock.Verify(
             r => r.UploadFileAsync(
@@ -188,7 +173,6 @@ public class HlsFileProcessorTest
             Times.Once
         );
 
-        // Проверяем, что вызывается callback с успешным masterKey
         _mediaGrpcClientMock.Verify(
             m => m.ProcessVideoCallback(
                 It.Is<ProcessVideoCallbackDto>(
@@ -209,20 +193,17 @@ public class HlsFileProcessorTest
         // Arrange
         var request = new FileProcessorRequest("temp", "test-bucket", "videos/video.mp4", "http://example.com");
 
-        // Мокаем загрузку файла
         var fileContent = new MemoryStream("file content"u8.ToArray());
         var fileToProcess = new FileData(fileContent, "video/mp4", "video.mp4");
         _chunkerRepositoryMock
             .Setup(r => r.DownloadFileAsync(request.BucketName, request.Key))
             .ReturnsAsync(fileToProcess);
 
-        // Мокаем создание файла для записи
         var fileCreationStream = new MemoryStream();
         _fileServiceMock
             .Setup(fs => fs.CreateFile(It.IsAny<string>()))
             .Returns(fileCreationStream);
 
-        // Мокаем создание токена отмены
         var hlsToken = CancellationToken.None;
         var capturedGuid = Guid.Empty;
         _hlsCreatorMock
@@ -230,13 +211,11 @@ public class HlsFileProcessorTest
             .Callback<Guid>(g => capturedGuid = g)
             .Returns(hlsToken);
 
-        // Мокаем метод создания HLS-плейлиста, выбрасывающий исключение
         const string exceptionMessage = "Test exception";
         _hlsCreatorMock
             .Setup(h => h.CreateHlsMasterPlaylistAsync(It.IsAny<HlsParamsDto>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new Exception(exceptionMessage));
 
-        // Мокаем callback для обработки ошибки
         _mediaGrpcClientMock
             .Setup(m => m.ProcessVideoCallback(It.IsAny<ProcessVideoCallbackDto>()))
             .Returns(Task.CompletedTask);
@@ -245,7 +224,6 @@ public class HlsFileProcessorTest
         var ex = await Assert.ThrowsAsync<Exception>(() => _processor.ProcessAsync(request, _serviceScope, hlsToken));
         Assert.Equal(exceptionMessage, ex.Message);
 
-        // Проверяем, что в callback передается исходный ключ и текст ошибки
         _mediaGrpcClientMock.Verify(
             m => m.ProcessVideoCallback(
                 It.Is<ProcessVideoCallbackDto>(
@@ -260,7 +238,6 @@ public class HlsFileProcessorTest
             Times.Once
         );
 
-        // Проверяем, что CancelToken вызывается в блоке finally
         _hlsCreatorMock.Verify(h => h.CancelToken(capturedGuid), Times.Once);
     }
 }

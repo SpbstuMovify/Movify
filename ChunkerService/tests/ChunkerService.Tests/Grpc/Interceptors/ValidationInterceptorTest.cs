@@ -14,7 +14,7 @@ public class ValidationInterceptorTest
     [Fact]
     public async Task ProcessVideoRequest_WithValidData_PassesValidation()
     {
-        // Arrange: все поля заданы корректно
+        // Arrange
         var request = new Movify.ProcessVideoRequest
         {
             BaseUrl = "http://example.com",
@@ -52,7 +52,7 @@ public class ValidationInterceptorTest
         string expectedError
     )
     {
-        // Arrange: BaseUrl не задан или содержит только пробелы
+        // Arrange
         var request = new Movify.ProcessVideoRequest
         {
             BaseUrl = baseUrl,
@@ -88,7 +88,7 @@ public class ValidationInterceptorTest
         string expectedError
     )
     {
-        // Arrange: BucketName не задан или состоит только из пробелов
+        // Arrange
         var request = new Movify.ProcessVideoRequest
         {
             BaseUrl = baseUrl,
@@ -124,7 +124,7 @@ public class ValidationInterceptorTest
         string expectedError
     )
     {
-        // Arrange: Key не задан или содержит только пробелы
+        // Arrange
         var request = new Movify.ProcessVideoRequest
         {
             BaseUrl = baseUrl,
@@ -153,7 +153,7 @@ public class ValidationInterceptorTest
     [Fact]
     public async Task UnsupportedRequest_ThrowsRpcException()
     {
-        // Arrange: передаётся неподдерживаемый тип запроса
+        // Arrange
         var request = new object();
         var context = new TestServerCallContext();
 

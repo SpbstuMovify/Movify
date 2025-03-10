@@ -30,10 +30,8 @@ public class FileProcessingServiceTest
         var scopeFactoryMock = new Mock<IServiceScopeFactory>();
         var scopeMock = new Mock<IServiceScope>();
 
-        // Настройка фабрики областей
         scopeFactoryMock.Setup(s => s.CreateScope()).Returns(scopeMock.Object);
 
-        // При запросе процессора по типу Hls возвращаем наш _processorMock
         _processorMock.SetupGet(p => p.Type).Returns(FileProcessorType.Hls);
         var processorFactory = new FileProcessorFactory(new List<IFileProcessor> { _processorMock.Object });
 
@@ -52,38 +50,30 @@ public class FileProcessingServiceTest
         // Arrange
         var fileTask = new FileProcessingTask("test-bucket", "some/key", "http://example.com");
 
-        // Настраиваем очередь: первый вызов возвращает задание, второй — генерирует отмену цикла.
         _queueMock.SetupSequence(q => q.DequeueAsync(It.IsAny<CancellationToken>()))
                   .ReturnsAsync(fileTask)
                   .ThrowsAsync(new OperationCanceledException());
 
-        // При попытке проверить существование временного пути:
-        // Любой путь, начинающийся на ".tmp/" — не существует (чтобы был вызов CreateDirectory)
         _fileServiceMock.Setup(fs => fs.DirectoryExists(It.Is<string>(s => s.StartsWith(".tmp" + Path.DirectorySeparatorChar))))
                         .Returns(false);
-        // А для родительского каталога ".tmp" возвращаем true (чтобы удалить его)
+
         _fileServiceMock.Setup(fs => fs.DirectoryExists(".tmp"))
                         .Returns(true);
 
-        // Настраиваем вызов ProcessAsync
         _processorMock.Setup(p => p.ProcessAsync(It.IsAny<FileProcessorRequest>(), It.IsAny<IServiceScope>(), It.IsAny<CancellationToken>()))
                       .Returns(Task.CompletedTask)
                       .Verifiable();
 
-        // Настраиваем методы для создания и удаления каталогов
         _fileServiceMock.Setup(fs => fs.CreateDirectory(It.Is<string>(s => s.StartsWith(".tmp"))));
         _fileServiceMock.Setup(fs => fs.DeleteDirectory(".tmp", true));
 
         // Act
         using var cts = new CancellationTokenSource(500);
         await _serviceUnderTest.StartAsync(cts.Token);
-        // Небольшая задержка для обработки задания
         await Task.Delay(100);
         await _serviceUnderTest.StopAsync(CancellationToken.None);
 
         // Assert
-
-        // Проверяем, что ProcessAsync был вызван с FileProcessorRequest, в котором путь начинается с ".tmp"
         _processorMock.Verify(
             p => p.ProcessAsync(
                 It.Is<FileProcessorRequest>(
@@ -99,9 +89,7 @@ public class FileProcessingServiceTest
             Times.Once
         );
 
-        // Проверяем, что для временного пути был вызов создания каталога
         _fileServiceMock.Verify(fs => fs.CreateDirectory(It.Is<string>(s => s.StartsWith(".tmp"))), Times.Once);
-        // Проверяем, что в блоке finally удаляется родительский каталог ".tmp"
         _fileServiceMock.Verify(fs => fs.DeleteDirectory(".tmp", true), Times.Once);
     }
 
@@ -181,7 +169,7 @@ public class FileProcessingServiceTest
         await Task.Delay(100);
         await _serviceUnderTest.StopAsync(CancellationToken.None);
 
-        // Assert: если очередь возвращает null, процессор не запрашивается
+        // Assert
         _processorMock.Verify(p => p.ProcessAsync(It.IsAny<FileProcessorRequest>(), It.IsAny<IServiceScope>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }
