@@ -28,13 +28,11 @@ public class HlsCreatorTest
         _hlsCreator = new HlsCreator(loggerMock.Object, _processRunnerMock.Object, _fileServiceMock.Object);
     }
 
-    // Вспомогательный метод для создания HlsParamsDto с указанным числом вариантов
     private static HlsParamsDto CreateSampleHlsParamsDto(int variantCount = 1)
     {
         var variants = new List<HlsVariantDto>();
         for (var i = 0; i < variantCount; i++)
         {
-            // Название вида "variant1", "variant2", и т.д.
             variants.Add(new HlsVariantDto($"variant{i + 1}", 640 * (i + 1), 360 * (i + 1), 800000 * (i + 1)));
         }
 
@@ -60,7 +58,7 @@ public class HlsCreatorTest
         // Act
         await _hlsCreator.CreateHlsMasterPlaylistAsync(hlsParams, cts.Token);
 
-        // Assert: если каталог не существует, должен быть вызов CreateDirectory
+        // Assert
         _fileServiceMock.Verify(fs => fs.CreateDirectory(hlsParams.OutputDirectory), Times.Once);
     }
 
@@ -96,7 +94,7 @@ public class HlsCreatorTest
         // Act
         await _hlsCreator.CreateHlsMasterPlaylistAsync(hlsParams, cts.Token);
 
-        // Assert: для каждого варианта должен быть вызван процесс ffmpeg
+        // Assert
         _processRunnerMock.Verify(pr => pr.RunProcessAsync(It.IsAny<ProcessStartInfo>(), It.IsAny<CancellationToken>()), Times.Exactly(variantCount));
         Assert.Equal(variantCount, processStartInfos.Count);
         foreach (var variant in hlsParams.Variants)
@@ -121,12 +119,12 @@ public class HlsCreatorTest
         // Arrange
         var hlsParams = CreateSampleHlsParamsDto();
         var cts = new CancellationTokenSource();
-        await cts.CancelAsync(); // Отмена до начала выполнения
+        await cts.CancelAsync();
 
         // Act
         await _hlsCreator.CreateHlsMasterPlaylistAsync(hlsParams, cts.Token);
 
-        // Assert: если токен отменён, ни ffmpeg, ни запись master.m3u8 не выполняются
+        // Assert
         _processRunnerMock.Verify(pr => pr.RunProcessAsync(It.IsAny<ProcessStartInfo>(), It.IsAny<CancellationToken>()), Times.Never);
         _fileServiceMock.Verify(fs => fs.WriteAllTextAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -143,12 +141,11 @@ public class HlsCreatorTest
             .Setup(pr => pr.RunProcessAsync(It.IsAny<ProcessStartInfo>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        // Имитируем выброс TaskCanceledException при записи master.m3u8
         _fileServiceMock
             .Setup(fs => fs.WriteAllTextAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new TaskCanceledException());
 
-        // Act & Assert: исключение не должно быть проброшено наружу
+        // Act & Assert
         var exception = await Record.ExceptionAsync(() => _hlsCreator.CreateHlsMasterPlaylistAsync(hlsParams, cts.Token));
         Assert.Null(exception);
     }
@@ -170,7 +167,7 @@ public class HlsCreatorTest
     [Fact]
     public void CancelToken_DoesNotThrow_WhenTokenNotFound()
     {
-        // Act & Assert: если токен с данным Guid не найден, метод не должен выбрасывать исключение
+        // Act & Assert
         var nonExistentGuid = Guid.NewGuid();
         var exception = Record.Exception(() => _hlsCreator.CancelToken(nonExistentGuid));
         Assert.Null(exception);
@@ -185,7 +182,6 @@ public class HlsCreatorTest
         var cts = new CancellationTokenSource();
         _fileServiceMock.Setup(fs => fs.DirectoryExists(hlsParams.OutputDirectory)).Returns(true);
 
-        // Завершаем задачи ffmpeg мгновенно
         _processRunnerMock
             .Setup(pr => pr.RunProcessAsync(It.IsAny<ProcessStartInfo>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
@@ -208,7 +204,7 @@ public class HlsCreatorTest
         // Act
         await _hlsCreator.CreateHlsMasterPlaylistAsync(hlsParams, cts.Token);
 
-        // Assert: master.m3u8 должен содержать стандартные заголовки и ссылки для каждого варианта
+        // Assert
         Assert.NotNull(masterPlaylistContent);
         Assert.Contains("#EXTM3U", masterPlaylistContent);
         Assert.Contains("#EXT-X-VERSION:3", masterPlaylistContent);

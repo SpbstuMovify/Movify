@@ -95,7 +95,7 @@ public class HlsOptionsTest
         {
             FfmpegPath = @"C:\ffmpeg\bin\ffmpeg.exe",
             Variants = [validVariant],
-            SegmentDuration = 0, // Неверное значение
+            SegmentDuration = 0,
             AudioBitrate = 0
         };
 

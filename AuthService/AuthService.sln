@@ -5,21 +5,16 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E61D96B0-7985-45CA-8AF6-BA42B8217153}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthService", "src\AuthService\AuthService.csproj", "{B1621625-2314-475D-83F9-EC9E2BA059AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthService", "src\AuthService\AuthService.csproj", "{B1621625-2314-475D-83F9-EC9E2BA059AD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{1A8C8F14-0F68-4FBF-B8B7-2D27FB54C0B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthService.Tests", "tests\AuthService.Tests\AuthService.Tests.csproj", "{0E168C93-7800-4045-816F-BDBB93F4DE29}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthService.IntegrationTests", "tests\AuthService.IntegrationTests\AuthService.IntegrationTests.csproj", "{B19E963A-937C-48D8-8C08-0CC80BEBF971}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthService.Tests", "tests\AuthService.Tests\AuthService.Tests.csproj", "{0E168C93-7800-4045-816F-BDBB93F4DE29}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B1621625-2314-475D-83F9-EC9E2BA059AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -30,14 +25,12 @@ Global
 		{0E168C93-7800-4045-816F-BDBB93F4DE29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E168C93-7800-4045-816F-BDBB93F4DE29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E168C93-7800-4045-816F-BDBB93F4DE29}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B19E963A-937C-48D8-8C08-0CC80BEBF971}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B19E963A-937C-48D8-8C08-0CC80BEBF971}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B19E963A-937C-48D8-8C08-0CC80BEBF971}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B19E963A-937C-48D8-8C08-0CC80BEBF971}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B1621625-2314-475D-83F9-EC9E2BA059AD} = {E61D96B0-7985-45CA-8AF6-BA42B8217153}
 		{0E168C93-7800-4045-816F-BDBB93F4DE29} = {1A8C8F14-0F68-4FBF-B8B7-2D27FB54C0B6}
-		{B19E963A-937C-48D8-8C08-0CC80BEBF971} = {1A8C8F14-0F68-4FBF-B8B7-2D27FB54C0B6}
 	EndGlobalSection
 EndGlobal

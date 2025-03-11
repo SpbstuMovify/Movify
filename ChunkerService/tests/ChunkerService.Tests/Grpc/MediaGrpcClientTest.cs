@@ -15,7 +15,7 @@ namespace ChunkerService.Tests.Grpc;
 public class MediaGrpcClientTest
 {
     private readonly Mock<Movify.MediaService.MediaServiceClient> _mediaServiceClientMock;
-    private readonly MediaGrpcClient _client; // Тестируемый класс
+    private readonly MediaGrpcClient _client;
 
     public MediaGrpcClientTest()
     {
@@ -36,7 +36,6 @@ public class MediaGrpcClientTest
     )
     {
         // Arrange
-        // В данном тесте значение Error можно задать произвольным, так как валидация проходит только для BucketName и Key
         var dto = new ProcessVideoCallbackDto(bucketName, key, baseUrl, "some error");
 
         // Act
@@ -180,7 +179,7 @@ public class MediaGrpcClientTest
                     r =>
                         r.BucketName == "validBucket" &&
                         r.Key == "validKey" &&
-                        r.BaseUrl == expectedBaseUrl && // проверяем подстановку
+                        r.BaseUrl == expectedBaseUrl &&
                         r.Error == "some error"
                 ),
                 It.IsAny<Metadata>(),
@@ -238,7 +237,7 @@ public class MediaGrpcClientTest
                         r.BucketName == "validBucket" &&
                         r.Key == "validKey" &&
                         r.BaseUrl == "https://example.com" &&
-                        r.Error == expectedError // проверяем подстановку
+                        r.Error == expectedError
                 ),
                 It.IsAny<Metadata>(),
                 It.IsAny<DateTime?>(),
