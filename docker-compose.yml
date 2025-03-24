@@ -33,7 +33,7 @@ services:
       - app
 
   content-service:
-    image: content-service:latest
+    image: alexchemis/content-service:latest
     build:
       context: ./ContentService
       dockerfile: Dockerfile
@@ -50,6 +50,7 @@ services:
       - app
 
   auth-service:
+    image: alexchemis/auth-service:latest
     container_name: auth-service
     build:
       context: ./AuthService
@@ -60,6 +61,7 @@ services:
       - app
 
   media-service:
+    image: alexchemis/media-service:latest
     container_name: media-service
     build:
       context: ./MediaService
@@ -73,6 +75,7 @@ services:
       - app
 
   chunker-service:
+    image: alexchemis/chunker-service:latest
     container_name: chunker-service
     build:
       context: ./ChunkerService
@@ -85,6 +88,7 @@ services:
       - app
 
   api-gateway:
+    image: alexchemis/api-gateway:latest
     container_name: api-gateway
     build:
       context: ./Gateway
@@ -98,6 +102,7 @@ services:
       - app
 
   client:
+    image: alexchemis/client:latest
     container_name: client
     build:
       context: ./UI

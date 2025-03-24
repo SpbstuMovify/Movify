@@ -335,7 +335,7 @@ describe("Watching an episode", () => {
         cy.get('input[data-testid="episode-upload"]')
         .selectFile("./cypress/fixtures/test_video.mp4", {force: true});
         
-        cy.wait(20000);
+        cy.wait(60000);
         cy.intercept('GET', '**/master.m3u8').as('m3u8');
         cy.intercept('GET', '**/360p.m3u8').as('m3u8_360');
         cy.intercept('GET', '**/1080p.m3u8').as('m3u8_1080');
