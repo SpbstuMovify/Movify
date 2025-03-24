@@ -9,6 +9,7 @@ lerna-debug.log*
 
 node_modules
 coverage
+cypress/screenshots
 dist
 dist-ssr
 *.local

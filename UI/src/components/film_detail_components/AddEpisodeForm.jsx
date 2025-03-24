@@ -36,6 +36,7 @@ const AddEpisodeForm = ({
               id="season_num"
               type="number"
               className="add-episode-input"
+              data-test-cy="add-season-input"
               {...register("season_num", { 
                 required: "Season number is required", 
                 max: {
@@ -60,6 +61,7 @@ const AddEpisodeForm = ({
               id="episode_num"
               type="number"
               className="add-episode-input"
+              data-test-cy="add-episode-input"
               {...register("episode_num", { 
                 required: "Episode number is required", 
                 max: {

@@ -13,7 +13,9 @@
     "test": "craco test",
     "clear_jest_cache": "craco test --clearCache",
     "show_jest_config": "craco test --verbose --showConfig",
-    "coverage": "craco test --coverage --watchAll"
+    "coverage": "craco test --coverage --watchAll",
+    "test:e2e": "cypress open --e2e",
+    "test:e2e:ci": "cypress run --e2e"
   },
   "dependencies": {
     "@mui/material": "^5.15.19",
@@ -39,6 +41,7 @@
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@vitejs/plugin-react": "^4.2.1",
+    "cypress": "^14.2.0",
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.0",
