@@ -2,6 +2,7 @@ import { TEST_FILM_DATA } from "../fixtures/e2e_test_config";
 
 describe("Viewing favorites", () => {
     beforeEach(() => {
+        cy.wait(20000);
         cy.deleteTestUser();
         cy.clearTestFilms();
 

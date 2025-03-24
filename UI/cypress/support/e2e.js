@@ -27,6 +27,7 @@ const api = axios.create({
 const createAdminUser = async () => {
     try{
         await api.post('/users/register', TEST_ADMIN_DATA);
+        await setTimeout(10000);
     }
     catch(err) {
         console.error(err);
