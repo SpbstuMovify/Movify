@@ -22,6 +22,7 @@ const FilmEpisodesPanel = ({
     <div className="player-wrapper">
       <div style={{ minWidth: "44.4vw", minHeight: "12vh" }}>
         <select
+          data-test-cy="season-select"
           onChange={(e) => {
             setSelectedSeason(Number(e.target.value));
             setSelectedEpisode(null);
@@ -47,6 +48,7 @@ const FilmEpisodesPanel = ({
               )
             }
             className="episode-select"
+            data-test-cy="episode-select"
             value={selectedEpisode ? selectedEpisode.episode_num : ""}
           >
             <option value="" disabled hidden>
@@ -66,11 +68,13 @@ const FilmEpisodesPanel = ({
                 url={`http://localhost:8090${selectedEpisode.s3_bucket_name}`}
                 controls
                 playing={false}
+                data-test-cy="react-player"
                 width="44.4vw"
                 height="25vw"
                 />
             ) : (
-                <div className="player-placeholder">{processEpisodeStatus(selectedEpisode.status)}</div>
+                <div data-test-cy="player-placeholder"
+                className="player-placeholder">{processEpisodeStatus(selectedEpisode.status)}</div>
             )
             ) : (
             ""

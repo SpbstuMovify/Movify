@@ -147,6 +147,7 @@ const FilmInfoSection = ({ filmInfo, filmForm, userData, updateField, currentYea
                   <button
                     className="cast-member-button"
                     style={{ marginRight: "7px" }}
+                    data-test-cy="remove-cast-member-button"
                     onClick={() =>
                       updateField("cast_members", filmInfo.cast_members.filter((m) => m !== member))
                     }
@@ -196,6 +197,7 @@ const FilmInfoSection = ({ filmInfo, filmForm, userData, updateField, currentYea
                     <button
                       style={{ marginLeft: "7px" }}
                       className="cast-member-button"
+                      data-test-cy="add-cast-member-button"
                       onClick={() =>
                         updateField("cast_members", [
                           ...filmInfo.cast_members,

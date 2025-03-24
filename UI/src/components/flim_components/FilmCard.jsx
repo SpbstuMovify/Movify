@@ -8,6 +8,7 @@ const FilmCard = ({ film, isHovered, onMouseEnter, onDeleteFilm, onMouseLeave, o
   return (
     <div
       key={film.id}
+      data-test-cy="film-button"
       className={isHovered ? "film-element film-element-hover" : "film-element"}
       onMouseEnter={() => onMouseEnter(film.id)}
       onMouseLeave={() => onMouseLeave()}
@@ -20,12 +21,12 @@ const FilmCard = ({ film, isHovered, onMouseEnter, onDeleteFilm, onMouseLeave, o
       />
       <div className="film-info">
         <div className="film-element-header">
-          <h2 className="film-title">{film.title}</h2>
+          <h2 className="film-title" data-test-cy="film-title">{film.title}</h2>
           <div style={{ display: "flex", gap: "10px" }}>
             <h2 className="age-restriction">{film.age_restriction}</h2>
             {userData && (
               isFavorite ? (
-                <button className="image-button" style={{ border: "none" }}
+                <button data-test-cy="remove-from-favorites" className="image-button" style={{ border: "none" }}
                   onMouseEnter={() => onMouseLeave()}
                   onMouseLeave={() => onMouseEnter(film.id)}
                   onClick={(e) => { e.stopPropagation(); onRemoveFavorite(film.id); }}>

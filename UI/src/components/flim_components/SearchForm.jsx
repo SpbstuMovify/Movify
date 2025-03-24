@@ -4,7 +4,7 @@ const SearchForm = ({ register, onSubmit, errors }) => {
   return (
     <form onSubmit={onSubmit} className="search-bar-wrapper">
       <input {...register("title")} className="search-bar" type="text" placeholder="Search..." />
-      <button className="image-button" type="submit">
+      <button data-test-cy="search-button" className="image-button" type="submit">
         <img src="/images/search_button.png" alt="Search" />
       </button>
       {errors.root && (

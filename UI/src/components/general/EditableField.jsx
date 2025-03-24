@@ -68,7 +68,7 @@ const EditableField = ({ label,
   }
 
   const elements = (
-      <>
+      <div data-test-cy="editable-field">
           <b style={{ whiteSpace: "nowrap" }}>{label}</b>
           {isEditing ? (
               <>
@@ -96,7 +96,7 @@ const EditableField = ({ label,
                   </button>
               </>
           )}
-      </>
+      </div>
   );
 
   return isPTag ? <p style={{ marginTop: "0", display: "flex"}}>{elements}</p> : <>{elements}</>;

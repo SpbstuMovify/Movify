@@ -152,7 +152,33 @@ describe("Register Component", () => {
         expect(await screen.findByText("Password should include at least one uppercase latin letter")).toBeInTheDocument();
     });
 
-    test("submits form and navigates to /films on success", async () => {
+    test("shows error if password is not long enough (5 symbols)", async () => {
+        renderWithRouter(<Register />);
+    
+        const passwordInput = screen.getByPlaceholderText("Enter the password");
+    
+        await act(async () => {
+            await userEvent.type(passwordInput, "passw");
+            fireEvent.click(screen.getByRole("button", { name: "Create" }));
+        });
+    
+        expect(await screen.findByText("Password must be from 6 to 32 symbols long")).toBeInTheDocument();
+    });
+
+    test("shows error if password is too long (33 symbols)", async () => {
+        renderWithRouter(<Register />);
+    
+        const passwordInput = screen.getByPlaceholderText("Enter the password");
+    
+        await act(async () => {
+            await userEvent.type(passwordInput, "W2!wwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
+            fireEvent.click(screen.getByRole("button", { name: "Create" }));
+        });
+    
+        expect(await screen.findByText("Password must be from 6 to 32 symbols long")).toBeInTheDocument();
+    });
+
+    test("submits form and navigates to /films on success when password is 6 symbols long", async () => {
         mockRegisterUser.mockResolvedValue({ token: "fakeToken", login: "testuser" });
     
         renderWithRouter(<Register />);
@@ -160,8 +186,98 @@ describe("Register Component", () => {
         await act(async () => {
             await userEvent.type(screen.getByPlaceholderText("Login"), "testuser");
             await userEvent.type(screen.getByPlaceholderText("Email"), "test@example.com");
-            await userEvent.type(screen.getByPlaceholderText("Enter the password"), "Password1!");
-            await userEvent.type(screen.getByPlaceholderText("Repeat the password"), "Password1!");
+            await userEvent.type(screen.getByPlaceholderText("Enter the password"), "Pass1!");
+            await userEvent.type(screen.getByPlaceholderText("Repeat the password"), "Pass1!");
+            const termsCheckbox = screen.getByRole("checkbox", { name: "I agree to" });
+            await userEvent.click(termsCheckbox);
+    
+            await fireEvent.click(screen.getByRole("button", { name: "Create" }));
+        });
+    
+        await waitFor(() => {
+            expect(mockRegisterUser).toHaveBeenCalledWith(
+                "test@example.com",
+                "Password1!",
+                "testuser",
+                "", "" 
+            );
+            expect(mockSetUserData).toHaveBeenCalled();
+            expect(mockNavigate).toHaveBeenCalledWith("/films");
+        });
+    
+        expect(screen.getByText("Registration successful!")).toBeInTheDocument();
+    });
+
+    test("submits form and navigates to /films on success when password is 32 symbols long", async () => {
+        mockRegisterUser.mockResolvedValue({ token: "fakeToken", login: "testuser" });
+    
+        renderWithRouter(<Register />);
+    
+        await act(async () => {
+            await userEvent.type(screen.getByPlaceholderText("Login"), "testuser");
+            await userEvent.type(screen.getByPlaceholderText("Email"), "test@example.com");
+            await userEvent.type(screen.getByPlaceholderText("Enter the password"), "Passssssssssssssssssssssssssss1!");
+            await userEvent.type(screen.getByPlaceholderText("Repeat the password"), "Pass1!");
+            const termsCheckbox = screen.getByRole("checkbox", { name: "I agree to" });
+            await userEvent.click(termsCheckbox);
+    
+            await fireEvent.click(screen.getByRole("button", { name: "Create" }));
+        });
+    
+        await waitFor(() => {
+            expect(mockRegisterUser).toHaveBeenCalledWith(
+                "test@example.com",
+                "Password1!",
+                "testuser",
+                "", "" 
+            );
+            expect(mockSetUserData).toHaveBeenCalled();
+            expect(mockNavigate).toHaveBeenCalledWith("/films");
+        });
+    
+        expect(screen.getByText("Registration successful!")).toBeInTheDocument();
+    });
+
+    test("submits form and navigates to /films on success (password is 19 symbols long)", async () => {
+        mockRegisterUser.mockResolvedValue({ token: "fakeToken", login: "testuser" });
+    
+        renderWithRouter(<Register />);
+    
+        await act(async () => {
+            await userEvent.type(screen.getByPlaceholderText("Login"), "testuser");
+            await userEvent.type(screen.getByPlaceholderText("Email"), "test@example.com");
+            await userEvent.type(screen.getByPlaceholderText("Enter the password"), "Passsssssssssword1!");
+            await userEvent.type(screen.getByPlaceholderText("Repeat the password"), "Passsssssssssword1!");
+            const termsCheckbox = screen.getByRole("checkbox", { name: "I agree to" });
+            await userEvent.click(termsCheckbox);
+    
+            await fireEvent.click(screen.getByRole("button", { name: "Create" }));
+        });
+    
+        await waitFor(() => {
+            expect(mockRegisterUser).toHaveBeenCalledWith(
+                "test@example.com",
+                "Password1!",
+                "testuser",
+                "", "" 
+            );
+            expect(mockSetUserData).toHaveBeenCalled();
+            expect(mockNavigate).toHaveBeenCalledWith("/films");
+        });
+    
+        expect(screen.getByText("Registration successful!")).toBeInTheDocument();
+    });
+
+    test("submits form and navigates to /films on success (password is 16 symbols long)", async () => {
+        mockRegisterUser.mockResolvedValue({ token: "fakeToken", login: "testuser" });
+    
+        renderWithRouter(<Register />);
+    
+        await act(async () => {
+            await userEvent.type(screen.getByPlaceholderText("Login"), "testuser");
+            await userEvent.type(screen.getByPlaceholderText("Email"), "test@example.com");
+            await userEvent.type(screen.getByPlaceholderText("Enter the password"), "Passssssssword1!");
+            await userEvent.type(screen.getByPlaceholderText("Repeat the password"), "Passssssssword1!");
             const termsCheckbox = screen.getByRole("checkbox", { name: "I agree to" });
             await userEvent.click(termsCheckbox);
     
