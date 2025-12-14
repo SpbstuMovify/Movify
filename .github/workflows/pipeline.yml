@@ -1,112 +1,457 @@
-name: CI/CD Pipeline
+name: ci
 
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches: ["main"]
+    tags: ["v*"]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
 
+defaults:
+  run:
+    shell: bash
+
+env:
+  PYTHON_VERSION: "3.12.4"
+  NODE_VERSION: "18.16.0"
+
+  INTEGRATION_DIR: "IntegrationTests/Tests"
+  INTEGRATION_COMPOSE: "docker-compose.integration.yml"
+  UI_DIR: "UI"
+
+  DOCKER_BUILDKIT: "1"
+  COMPOSE_DOCKER_CLI_BUILD: "1"
+  BUILDKIT_PROGRESS: "plain"
+
 jobs:
-  docker-build:
+  changes:
+    name: changes
     runs-on: ubuntu-latest
+    outputs:
+      auth: ${{ steps.filter.outputs.auth }}
+      media: ${{ steps.filter.outputs.media }}
+      chunker: ${{ steps.filter.outputs.chunker }}
+      content: ${{ steps.filter.outputs.content }}
+      ui: ${{ steps.filter.outputs.ui }}
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v1
+      - uses: actions/checkout@v4
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          fetch-depth: 0
 
-      - name: Build and push Integration Docker images
-        working-directory: IntegrationTests/Tests
-        run: |
-          docker compose -f docker-compose.integration.yml build
-          docker compose -f docker-compose.integration.yml push
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            auth:
+              - 'AuthService/**'
+              - '.github/workflows/**'
+            media:
+              - 'MediaService/**'
+              - '.github/workflows/**'
+            chunker:
+              - 'ChunkerService/**'
+              - '.github/workflows/**'
+            content:
+              - 'ContentService/**'
+              - '.github/workflows/**'
+            ui:
+              - 'UI/**'
+              - '.github/workflows/**'
 
-      - name: Build and push E2E Docker images
+  unit-authservice:
+    name: unit-authservice
+    needs: changes
+    if: needs.changes.outputs.auth == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+          cache: true
+          cache-dependency-path: |
+            AuthService/**/packages.lock.json
+
+      - name: Test
+        working-directory: AuthService
         run: |
-          docker compose build
-          docker compose push
+          set -euo pipefail
+          sln="$(ls -1 *.sln | head -n 1)"
+          dotnet restore "$sln"
+          dotnet test "$sln" -c Release --no-restore --logger "trx;LogFileName=AuthService.trx"
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-authservice-results
+          path: |
+            AuthService/**/TestResults/**
+            AuthService/**/*.trx
+          if-no-files-found: ignore
+          retention-days: 14
+
+  unit-mediaservice:
+    name: unit-mediaservic
+    needs: changes
+    if: needs.changes.outputs.media == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+          cache: true
+          cache-dependency-path: |
+            AuthService/**/packages.lock.json
+
+      - name: Test
+        working-directory: MediaService
+        run: |
+          set -euo pipefail
+          sln="$(ls -1 *.sln | head -n 1)"
+          dotnet restore "$sln"
+          dotnet test "$sln" -c Release --no-restore --logger "trx;LogFileName=MediaService.trx"
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-mediaservice-results
+          path: |
+            MediaService/**/TestResults/**
+            MediaService/**/*.trx
+          if-no-files-found: ignore
+          retention-days: 14
+
+  unit-chunkerservice:
+    name: unit-chunkerservice
+    needs: changes
+    if: needs.changes.outputs.chunker == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+          cache: true
+          cache-dependency-path: |
+            AuthService/**/packages.lock.json
+
+      - name: Test
+        working-directory: ChunkerService
+        run: |
+          set -euo pipefail
+          sln="$(ls -1 *.sln | head -n 1)"
+          dotnet restore "$sln"
+          dotnet test "$sln" -c Release --no-restore --logger "trx;LogFileName=ChunkerService.trx"
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-chunkerservice-results
+          path: |
+            ChunkerService/**/TestResults/**
+            ChunkerService/**/*.trx
+          if-no-files-found: ignore
+          retention-days: 14
+
+  unit-contentservice:
+    name: unit-contentservice
+    needs: changes
+    if: needs.changes.outputs.content == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      - name: Test
+        working-directory: ContentService
+        run: |
+          set -euo pipefail
+          if [ -f "./gradlew" ]; then
+            chmod +x ./gradlew
+            ./gradlew test
+          elif [ -f "./mvnw" ]; then
+            chmod +x ./mvnw
+            ./mvnw -B test
+          elif [ -f "pom.xml" ]; then
+            mvn -B test
+          else
+            echo "No Gradle/Maven build found in ContentService" >&2
+            exit 1
+          fi
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: contentservice-unit-reports
+          path: |
+            ContentService/build/reports
+            ContentService/build/test-results
+            ContentService/target/surefire-reports
+          if-no-files-found: ignore
+          retention-days: 14
+
+  unit-frontend:
+    name: unit-frontend
+    needs: changes
+    if: needs.changes.outputs.ui == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ${{ env.UI_DIR }}/package-lock.json
+
+      - name: Install
+        working-directory: ${{ env.UI_DIR }}
+        run: npm ci
+
+      - name: Run unit tests
+        working-directory: ${{ env.UI_DIR }}
+        env:
+          CI: "true"
+        run: npm test -- --watchAll=false --silent
+
+      - name: Upload UI artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-unit-artifacts
+          path: |
+            UI/coverage
+          if-no-files-found: ignore
+          retention-days: 14
 
   integration-tests:
-    needs: docker-build
+    name: integration-tests
     runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs:
+      - unit-authservice
+      - unit-mediaservice
+      - unit-chunkerservice
+      - unit-contentservice
+    if: |
+      always() &&
+      needs.unit-authservice.result != 'failure' &&
+      needs.unit-mediaservice.result != 'failure' &&
+      needs.unit-chunkerservice.result != 'failure' &&
+      needs.unit-contentservice.result != 'failure'
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.12.4"
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: ${{ env.INTEGRATION_DIR }}/requirements.txt
 
-      - name: Install Dependencies
-        working-directory: IntegrationTests/Tests
+      - name: Install dependencies
+        working-directory: ${{ env.INTEGRATION_DIR }}
         run: |
+          set -euo pipefail
           python -m pip install --upgrade pip
           pip install -r ./requirements.txt
-      
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v1
+
+      - name: Build integration images (local)
+        working-directory: ${{ env.INTEGRATION_DIR }}
+        run: |
+          set -euo pipefail
+          docker compose -f "${INTEGRATION_COMPOSE}" build
+
+      - name: Run pytest
+        working-directory: ${{ env.INTEGRATION_DIR }}
+        run: |
+          set -euo pipefail
+          pytest -s -v --junitxml=pytest-integration.xml
+
+      - name: Upload pytest report
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Pull Docker images
-        working-directory: IntegrationTests/Tests
-        run: |
-          docker compose -f docker-compose.integration.yml pull
-
-      - name: Run Pytest Integration Tests
-        working-directory: IntegrationTests/Tests
-        run: |
-          pytest -s -v
+          name: pytest-integration-report
+          path: ${{ env.INTEGRATION_DIR }}/pytest-integration.xml
+          if-no-files-found: ignore
+          retention-days: 14
 
   e2e-tests:
-    needs: docker-build  #[docker-build, integration-tests]
+    name: e2e-tests
     runs-on: ubuntu-latest
+    timeout-minutes: 45
+    needs:
+      - unit-authservice
+      - unit-mediaservice
+      - unit-chunkerservice
+      - unit-contentservice
+      - unit-frontend
+    if: |
+      always() &&
+      needs.unit-authservice.result != 'failure' &&
+      needs.unit-mediaservice.result != 'failure' &&
+      needs.unit-chunkerservice.result != 'failure' &&
+      needs.unit-contentservice.result != 'failure' &&
+      needs.unit-frontend.result != 'failure'
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Pull Docker images for e2e
+      - name: Detect root compose file
+        id: compose
         run: |
-          docker compose pull
+          set -euo pipefail
+          for f in compose.yaml compose.yml docker-compose.yml docker-compose.yaml; do
+            if [ -f "$f" ]; then
+              echo "file=$f" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          done
+          echo "No compose file found in repo root." >&2
+          exit 1
 
       - name: Set up Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: "18.16.0"
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ${{ env.UI_DIR }}/package-lock.json
 
       - name: Install E2E dependencies
-        working-directory: UI
+        working-directory: ${{ env.UI_DIR }}
         run: |
+          set -euo pipefail
           npm ci
+
+      - name: Build e2e images (local)
+        run: |
+          set -euo pipefail
+          docker compose -f "${{ steps.compose.outputs.file }}" build
 
       - name: Start E2E environment
         run: |
-          docker compose up -d
+          set -euo pipefail
+          docker compose -f "${{ steps.compose.outputs.file }}" up -d --wait
 
-      - name: Run Cypress Tests
-        working-directory: UI
+      - name: Run Cypress tests
+        working-directory: ${{ env.UI_DIR }}
         run: |
+          set -euo pipefail
           npm run test:e2e:ci
+
+      - name: Dump compose state & logs (on failure)
+        if: failure()
+        run: |
+          set +e
+          docker compose -f "${{ steps.compose.outputs.file }}" ps
+          docker compose -f "${{ steps.compose.outputs.file }}" logs --no-color --timestamps
+          exit 0
+
+      - name: Upload Cypress artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-artifacts
+          path: |
+            UI/cypress/videos
+            UI/cypress/screenshots
+            UI/cypress/results
+          if-no-files-found: ignore
+          retention-days: 14
 
       - name: Stop E2E environment
         if: always()
         run: |
-          docker compose down
+          set -euo pipefail
+          docker compose -f "${{ steps.compose.outputs.file }}" down --remove-orphans
+
+  publish-images:
+    name: publish-images
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [integration-tests, e2e-tests]
+    if: github.event_name == 'push'
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect root compose file
+        id: compose
+        run: |
+          set -euo pipefail
+          for f in compose.yaml compose.yml docker-compose.yml docker-compose.yaml; do
+            if [ -f "$f" ]; then
+              echo "file=$f" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          done
+          echo "No compose file found in repo root." >&2
+          exit 1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to registry (GHCR preferred)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.DOCKER_USERNAME || github.actor }}
+          password: ${{ secrets.DOCKER_PASSWORD || secrets.GITHUB_TOKEN }}
+
+      - name: Build & push integration images
+        working-directory: ${{ env.INTEGRATION_DIR }}
+        run: |
+          set -euo pipefail
+          docker compose -f "${INTEGRATION_COMPOSE}" build
+          docker compose -f "${INTEGRATION_COMPOSE}" push
+
+      - name: Build & push e2e images
+        run: |
+          set -euo pipefail
+          docker compose -f "${{ steps.compose.outputs.file }}" build
+          docker compose -f "${{ steps.compose.outputs.file }}" push
+
+  pass:
+    name: pass
+    runs-on: ubuntu-latest
+    needs: [integration-tests, e2e-tests, publish-images]
+    if: |
+      always() &&
+      needs.integration-tests.result == 'success' &&
+      needs.e2e-tests.result == 'success' &&
+      (github.event_name != 'push' || needs.publish-images.result == 'success')
+    steps:
+      - run: echo "All required checks passed"
