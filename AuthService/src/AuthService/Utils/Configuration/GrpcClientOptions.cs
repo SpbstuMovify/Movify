@@ -4,7 +4,7 @@ namespace AuthService.Utils.Configuration;
 
 public class GrpcClientOptions
 {
-    public const string SectionName = "GrpcClient";
+    public static readonly string SectionName = "GrpcClient";
     
     [Required(ErrorMessage = "ContentServiceUrl is required")]
     [Url(ErrorMessage = "ContentServiceUrl must be a valid URL")]

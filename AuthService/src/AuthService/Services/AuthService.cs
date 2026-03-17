@@ -43,7 +43,7 @@ public class AuthService(
     {
         logger.LogInformation("Register user procedure has started");
 
-        var salt = encryptor.GetSalt();
+        var salt = encryptor.GenerateSalt();
         var pwdHash = encryptor.GetHash(registerUserRequest.Password, salt);
         var token = jwtBuilder.GetToken(
             new UserClaimsData
@@ -68,14 +68,14 @@ public class AuthService(
         try
         {
             var validatedData = jwtBuilder.ValidateToken(validateTokenRequest.Token);
-            logger.LogDebug($"Token validated data: email[{validatedData.Email}], role[{validatedData.Role}]");
+            logger.LogDebug("Token validated data: email[{Email}], role[{Role}]", validatedData.Email, validatedData.Role);
 
-            var role = await contentGrpcClient.GetUserRoleAsync(validatedData.Email);
+            var role = await contentGrpcClient.GetUserRoleAsync(validatedData.Email).ConfigureAwait(false);
 
             if (role != validatedData.Role)
             {
                 var message = $"Role: '{role}' for email: '{validatedData.Email}' received, role: '{validatedData.Role}' expected";
-                logger.LogWarning($"Token validation failed: {message}");
+                logger.LogWarning("Token validation failed: {Message}", message);
                 throw new TokenValidationException(message);
             }
 
@@ -87,7 +87,7 @@ public class AuthService(
         }
         catch (SecurityTokenException ex)
         {
-            logger.LogWarning(ex, $"Token validation failed: {ex.Message}");
+            logger.LogWarning(ex, "Token validation failed: {Message}", ex.Message);
             throw new TokenValidationException(ex.Message, ex);
         }
         catch (RpcException ex) when (ex.StatusCode == StatusCode.NotFound)

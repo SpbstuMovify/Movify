@@ -110,7 +110,7 @@ public class AuthServiceTest
         };
 
         _encryptorMock
-            .Setup(e => e.GetSalt())
+            .Setup(e => e.GenerateSalt())
             .Returns(expectedSalt);
 
         _encryptorMock

@@ -15,10 +15,10 @@ public class ValidationInterceptor : Interceptor
 
         if (validationErrors.Count != 0)
         {
-            throw new RpcException(new Status(StatusCode.InvalidArgument, "Incorrect request data:" + string.Join("; ", validationErrors)));
+            throw new RpcException(new Status(StatusCode.InvalidArgument, $"Incorrect {nameof(request)} data: {string.Join("; ", validationErrors)}"));
         }
 
-        return await continuation(request, context);
+        return await continuation(request, context).ConfigureAwait(false);
     }
 
     private static List<string> ValidateRequest<TRequest>(TRequest request)

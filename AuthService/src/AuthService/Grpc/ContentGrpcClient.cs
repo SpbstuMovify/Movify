@@ -5,13 +5,21 @@ public class ContentGrpcClient(
     Movify.ContentService.ContentServiceClient contentClient
 ) : IContentGrpcClient
 {
-    public async Task<string> GetUserRoleAsync(string email)
+    public Task<string> GetUserRoleAsync(string email)
     {
         logger.LogInformation("Getting user role");
-        
-        if (string.IsNullOrWhiteSpace(email)) throw new ArgumentException("Email cannot be null or empty", nameof(email));
-        
-        var response = await contentClient.GetUserRoleAsync(new Movify.UserRoleRequest { Email = email });
+
+        ArgumentException.ThrowIfNullOrWhiteSpace(email);
+
+        return GetUserRoleInternalAsync(email);
+    }
+
+    private async Task<string> GetUserRoleInternalAsync(string email)
+    {
+        var response = await contentClient
+            .GetUserRoleAsync(new Movify.UserRoleRequest { Email = email })
+            .ConfigureAwait(false);
+
         return response.Role;
     }
 }
