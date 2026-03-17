@@ -15,7 +15,7 @@ public class ErrorHandlerInterceptor(ILogger<ErrorHandlerInterceptor> logger) : 
     {
         try
         {
-            return await continuation(request, context);
+            return await continuation(request, context).ConfigureAwait(false);
         }
         catch (AuthServiceException ex)
         {
@@ -24,12 +24,12 @@ public class ErrorHandlerInterceptor(ILogger<ErrorHandlerInterceptor> logger) : 
         }
         catch (RpcException ex) when (ex.StatusCode == StatusCode.InvalidArgument)
         {
-            logger.LogWarning(ex, $"RpcException status code: {ex.StatusCode}, detail: {ex.Status.Detail} in gRPC call");
+            logger.LogWarning(ex, "RpcException status code: {StatusCode}, detail: {Detail} in gRPC call", ex.StatusCode, ex.Status.Detail);
             throw new RpcException(new Status(ex.StatusCode, ex.Message));
         }
         catch (RpcException ex)
         {
-            logger.LogWarning(ex, $"RpcException status code: {ex.StatusCode}, detail: {ex.Status.Detail} in gRPC call");
+            logger.LogWarning(ex, "RpcException status code: {StatusCode}, detail: {Detail} in gRPC call", ex.StatusCode, ex.Status.Detail);
             throw new RpcException(new Status(StatusCode.Internal, "Internal server error"));
         }
         catch (Exception ex)

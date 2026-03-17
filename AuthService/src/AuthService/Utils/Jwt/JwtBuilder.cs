@@ -74,8 +74,10 @@ public class JwtBuilder(IOptions<JwtOptions> options) : IJwtBuilder
             {
                 RequireExpirationTime = true,
                 ValidateLifetime = true,
-                ValidateIssuer = false,
-                ValidateAudience = false,
+                ValidateIssuer = true,
+                ValidIssuer = _options.Issuer,
+                ValidateAudience = true,
+                ValidAudience = _options.Audience,
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(key),
                 ClockSkew = TimeSpan.Zero

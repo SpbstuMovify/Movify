@@ -18,7 +18,7 @@ public class ValidationInterceptor : Interceptor
             throw new RpcException(new Status(StatusCode.InvalidArgument, "Incorrect request data:" + string.Join("; ", validationErrors)));
         }
 
-        return await continuation(request, context);
+        return await continuation(request, context).ConfigureAwait(false);
     }
 
     private static List<string> ValidateRequest<TRequest>(TRequest request)

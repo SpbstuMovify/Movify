@@ -63,7 +63,7 @@ public class AuthGrpcServer(
     )
     {
         logger.LogInformation("ValidateToken request received");
-        var response = await authService.ValidateTokenAsync(new ValidateTokenRequestDto { Token = request.Token });
+        var response = await authService.ValidateTokenAsync(new ValidateTokenRequestDto { Token = request.Token }).ConfigureAwait(false);
 
         return new Movify.ValidationTokenResponse
         {
