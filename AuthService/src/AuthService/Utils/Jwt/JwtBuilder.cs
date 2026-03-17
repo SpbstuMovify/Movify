@@ -9,9 +9,10 @@ using System.Text;
 
 namespace AuthService.Utils.Jwt;
 
-public class JwtBuilder(IOptions<JwtOptions> options) : IJwtBuilder
+public class JwtBuilder(IOptions<JwtOptions> options, TimeProvider timeProvider) : IJwtBuilder
 {
     private readonly JwtOptions _options = options.Value;
+    private readonly TimeProvider _timeProvider = timeProvider;
 
     public string GetToken(UserClaimsData userClaimsData)
     {
@@ -27,16 +28,19 @@ public class JwtBuilder(IOptions<JwtOptions> options) : IJwtBuilder
             new("userRole", userClaimsData.Role)
         };
 
-        var expirationDate = DateTime.UtcNow.AddSeconds(_options.ExpirySeconds);
+        var now = _timeProvider.GetUtcNow();
+        var expirationDate = now.AddSeconds(_options.ExpirySeconds);
+
         var jwt = new JwtSecurityToken(
+            issuer: _options.Issuer,
+            audience: _options.Audience,
             claims: claims,
-            notBefore: DateTime.UtcNow,
-            expires: expirationDate,
+            notBefore: now.UtcDateTime,
+            expires: expirationDate.UtcDateTime,
             signingCredentials: signingCredentials
         );
 
-        var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-        return encodedJwt;
+        return new JwtSecurityTokenHandler().WriteToken(jwt);
     }
 
     public UserClaimsData ValidateToken(string token)
@@ -65,7 +69,7 @@ public class JwtBuilder(IOptions<JwtOptions> options) : IJwtBuilder
         {
             var tokenHandler = new JwtSecurityTokenHandler();
 
-            var jwtToken = (JwtSecurityToken)tokenHandler.ReadToken(token);
+            var jwtToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
             if (jwtToken == null) return null;
 
             var key = Encoding.UTF8.GetBytes(_options.Secret);
@@ -83,10 +87,13 @@ public class JwtBuilder(IOptions<JwtOptions> options) : IJwtBuilder
                 ClockSkew = TimeSpan.Zero
             };
 
-            var principal = tokenHandler.ValidateToken(token, parameters, out _);
-            return principal;
+            return tokenHandler.ValidateToken(token, parameters, out _);
         }
-        catch (Exception)
+        catch (SecurityTokenException)
+        {
+            return null;
+        }
+        catch (ArgumentException)
         {
             return null;
         }

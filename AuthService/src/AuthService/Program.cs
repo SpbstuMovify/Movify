@@ -63,4 +63,4 @@ if (app.Environment.IsDevelopment())
 app.MapGrpcService<AuthGrpcServer>();
 logger.LogInformation("Endpoints mapped");
 
-app.Run();
+await app.RunAsync().ConfigureAwait(false);

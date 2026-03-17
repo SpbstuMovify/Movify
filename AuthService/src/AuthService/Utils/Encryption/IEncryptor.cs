@@ -2,7 +2,7 @@
 
 public interface IEncryptor
 {
-    string GetSalt();
+    string GenerateSalt();
 
     string GetHash(
         string value,

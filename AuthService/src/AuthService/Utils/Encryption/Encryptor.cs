@@ -7,7 +7,7 @@ public class Encryptor : IEncryptor
     private const int SaltSize = 40;
     private const int IterationsCount = 100000;
 
-    public string GetSalt()
+    public string GenerateSalt()
     {
         var saltBytes = new byte[SaltSize];
         using var rng = RandomNumberGenerator.Create();

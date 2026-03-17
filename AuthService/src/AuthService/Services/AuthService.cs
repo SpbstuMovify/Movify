@@ -43,7 +43,7 @@ public class AuthService(
     {
         logger.LogInformation("Register user procedure has started");
 
-        var salt = encryptor.GetSalt();
+        var salt = encryptor.GenerateSalt();
         var pwdHash = encryptor.GetHash(registerUserRequest.Password, salt);
         var token = jwtBuilder.GetToken(
             new UserClaimsData

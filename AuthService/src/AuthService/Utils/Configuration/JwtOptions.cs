@@ -4,7 +4,7 @@ namespace AuthService.Utils.Configuration;
 
 public class JwtOptions
 {
-    public const string SectionName = "Jwt";
+    public static readonly string SectionName = "Jwt";
     
     [Required(ErrorMessage = "Secret is required")]
     [MinLength(16, ErrorMessage = "Secret must be at least 16 characters long")]

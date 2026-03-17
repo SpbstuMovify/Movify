@@ -42,6 +42,7 @@ public static class Extentions
                 .ValidateDataAnnotations()
                 .ValidateOnStart();
 
+        services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IJwtBuilder, JwtBuilder>();
     }
 }
